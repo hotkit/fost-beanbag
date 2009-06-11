@@ -1,0 +1,29 @@
+#!/bin/bash
+cd `dirname $0`
+
+export LD_LIBRARY_PATH=../dist/lib
+
+if test -z $1
+then {
+    export VARIANTS=debug
+} else {
+    export VARIANTS=$1
+}
+fi
+
+if ../bjam -j`grep -c ^processor /proc/cpuinfo` toolset=gcc $VARIANTS
+then {
+    if ../dist/bin/ftest -b false \
+        libfost-cache-test-smoke.so \
+        libfost-jsondb-test-smoke.so \
+        libfost-schema-test-smoke.so
+    then {
+        echo fost-orm smoke tests passed
+    } else {
+        exit 1
+    }
+    fi
+} else {
+    exit 1
+}
+fi
