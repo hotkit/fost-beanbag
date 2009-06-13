@@ -1,0 +1,11 @@
+
+lib fost-sql
+    :
+        ../../../Boost//boost-date_time-dll
+        ../../../Boost//boost-thread-dll
+        ../../../fost-base/Cpp/fost-core/
+        ../fost-schema
+        table-builder.cpp
+    :
+        <include>../include
+    ;

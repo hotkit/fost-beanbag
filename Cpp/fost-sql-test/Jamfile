@@ -1,0 +1,34 @@
+
+lib fost-sql-test-smoke
+    :
+        ../../../fost-base/External//uuid
+        ../../../Boost//boost-date_time-dll
+        ../../../Boost//boost-filesystem-dll
+        ../../../Boost//boost-system-dll
+        ../../../Boost//boost-thread-dll
+        ../../../fost-base/Cpp/fost-core/
+        ../../../fost-base/Cpp/fost-test/
+        ../fost-schema/
+        ../fost-sql/
+        tables.cpp
+    :
+        <include>../include
+    ;
+
+install ../../../dist/lib :
+        fost-sql-test-smoke
+    :
+        <target-os>linux:<install-dependencies>on
+        <target-os>linux:<install-type>LIB
+        <target-os>darwin:<install-dependencies>on
+        <target-os>darwin:<install-type>LIB
+        <target-os>windows:<install-type>XXX
+    ;
+
+install ../../../dist/bin :
+        fost-sql-test-smoke
+    :
+        <install-dependencies>on
+        <install-type>EXE
+        <target-os>windows:<install-type>LIB
+    ;
