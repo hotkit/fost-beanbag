@@ -6,6 +6,7 @@ lib fost-sql
         ../../../fost-base/Cpp/fost-core/
         ../fost-schema
         table-builder.cpp
+        sql-driver.cpp
     :
         <include>../include
     ;
