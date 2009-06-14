@@ -17,7 +17,7 @@
 namespace fostlib {
 
 
-    class FOST_SCHEMA_DECLSPEC sql_driver : public dbinterface {
+    class FOST_SQL_DECLSPEC sql_driver : public dbinterface {
     protected:
         explicit sql_driver( const string &driver_name );
     };

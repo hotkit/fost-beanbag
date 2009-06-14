@@ -7,6 +7,7 @@
 
 
 #include "fost-jsondb.hpp"
+#include <fost/db>
 #include <fost/jsondb.hpp>
 #include <fost/unicode.hpp>
 
