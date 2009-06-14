@@ -6,6 +6,13 @@
 */
 
 
+#ifdef WIN32
+    #define FOST_SQL_DECLSPEC __declspec( dllimport )
+#else
+    #define FOST_SQL_DECLSPEC
+#endif
+
+
 #include <fost/db>
 #include <fost/db-driver-sql.hpp>
 
