@@ -20,7 +20,8 @@ using namespace fostlib;
 namespace {
 
 
-    const setting< fostlib::string > c_defaultDriver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"Default driver", L"json", true );
+    const setting< string > c_defaultDriver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"Default driver", L"json", true );
+    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database drivers", L"json", L"libfost-jsondb.so", true );
 
 #ifdef _DEBUG
 #define LOGGING true
@@ -77,19 +78,6 @@ namespace {
 */
 
 
-const dbinterface &fostlib::dbinterface::connection( const json &cnx ) {
-    string driver = cnx[ L"driver" ].get< string >().value( c_defaultDriver.value() );
-    if ( g_interfaces().find( driver ).empty() )
-         throw exceptions::data_driver( L"No driver found", driver );
-    return **g_interfaces().find( driver ).begin();
-}
-const dbinterface &fostlib::dbinterface::connection( const string&read, const nullable< string > &write ) {
-    if ( g_interfaces().find( driver( read, write ) ).empty() )
-        throw exceptions::data_driver( L"No driver found", driver( read, write ) );
-    return **g_interfaces().find( driver( read, write ) ).begin();
-}
-
-
 fostlib::dbinterface::dbinterface( const string &name ) {
     g_interfaces().add( name, this );
 }
@@ -127,6 +115,41 @@ fostlib::dbinterface::recordset::~recordset() {
 */
 
 
+namespace {
+    std::map< string, boost::weak_ptr< dynlib > > &g_dlls() {
+        static std::map< string, boost::weak_ptr< dynlib > > dlls;
+        return dlls;
+    }
+    std::pair< const dbinterface &, boost::shared_ptr< dynlib > > load_driver( const string &driver ) {
+        boost::shared_ptr< dynlib > driver_dll( g_dlls()[ driver ].lock() );
+        if ( g_interfaces().find( driver ).empty() ) {
+            nullable< string > dll = setting< string >::value( L"Database drivers", driver, null );
+            if ( dll.isnull() )
+                throw exceptions::data_driver( L"No driver found", driver );
+            else
+                try {
+                    driver_dll.reset( new dynlib( dll.value() ) );
+                    g_dlls()[ driver ] = driver_dll;
+                    if ( g_interfaces().find( driver ).empty() )
+                        throw exceptions::data_driver( L"No driver found even after loading driver file", driver );
+                } catch ( exceptions::exception &e ) {
+                    e.info() << L"Whilst loading database driver file " << dll.value() << std::endl;
+                    throw;
+                }
+        }
+        return std::make_pair( boost::cref( **g_interfaces().find( driver ).begin() ), driver_dll );
+    }
+    std::pair< const dbinterface &, boost::shared_ptr< dynlib > > connection( const json &cnx ) {
+        string driver = cnx[ L"driver" ].get< string >().value( c_defaultDriver.value() );
+        return load_driver( driver );
+    }
+    std::pair< const dbinterface &, boost::shared_ptr< dynlib > > connection( const string&read, const nullable< string > &write ) {
+        string d = driver( read, write );
+        return load_driver( d );
+    }
+}
+
+
 const setting< bool > fostlib::dbconnection::c_commitCount( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"Commit count", true, true );
 const setting< string > fostlib::dbconnection::c_commitCountDomain( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"Commit count domain", L"Commit count", true );
 
@@ -141,16 +164,16 @@ namespace {
     }
 }
 fostlib::dbconnection::dbconnection( const json &j )
-: configuration( j ), m_interface( dbinterface::connection( j ) ), m_transaction( NULL ) {
-    m_connection = m_interface.reader( *this );
+: configuration( j ), m_interface( ::connection( j ) ), m_transaction( NULL ) {
+    m_connection = m_interface.first.reader( *this );
 }
 fostlib::dbconnection::dbconnection( const fostlib::string &r )
-: configuration( cnx_conf( r, null ) ), m_interface( dbinterface::connection( r, null ) ), m_transaction( NULL ) {
-    m_connection = m_interface.reader( *this );
+: configuration( cnx_conf( r, null ) ), m_interface( ::connection( r, null ) ), m_transaction( NULL ) {
+    m_connection = m_interface.first.reader( *this );
 }
 fostlib::dbconnection::dbconnection( const fostlib::string &r, const fostlib::string &w )
-: configuration( cnx_conf( r, w ) ), m_interface( dbinterface::connection( r, w ) ), m_transaction( NULL ) {
-    m_connection = m_interface.reader( *this );
+: configuration( cnx_conf( r, w ) ), m_interface( ::connection( r, w ) ), m_transaction( NULL ) {
+    m_connection = m_interface.first.reader( *this );
 }
 
 
@@ -172,15 +195,15 @@ try{
 }
 
 void fostlib::dbconnection::create_database( const fostlib::string &name ) {
-    m_interface.create_database( *this, name );
+    driver().create_database( *this, name );
 }
 void fostlib::dbconnection::drop_database( const fostlib::string &name ) {
-    m_interface.drop_database( *this, name );
+    driver().drop_database( *this, name );
 }
 
 
 const dbinterface &fostlib::dbconnection::driver() const {
-    return m_interface;
+    return m_interface.first;
 }
 
 
@@ -197,13 +220,13 @@ recordset fostlib::dbconnection::query( const string &cmd ) {
 
 
 int64_t fostlib::dbconnection::next_id( const string &counter ) {
-    return m_interface.next_id( *this, counter );
+    return driver().next_id( *this, counter );
 }
 int64_t fostlib::dbconnection::current_id( const string &counter ) {
-    return m_interface.current_id( *this, counter );
+    return driver().current_id( *this, counter );
 }
 void fostlib::dbconnection::used_id( const string &counter, int64_t value ) {
-    m_interface.used_id( *this, counter, value );
+    driver().used_id( *this, counter, value );
 }
 
 

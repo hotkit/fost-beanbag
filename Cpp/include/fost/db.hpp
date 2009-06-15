@@ -12,6 +12,7 @@
 
 
 #include <fost/core>
+#include <fost/dynlib.hpp>
 
 
 namespace fostlib {
@@ -54,12 +55,6 @@ namespace fostlib {
         class read;
         class recordset;
         class write;
-
-        /*
-            Allow a database driver to be found given a configuration
-        */
-        static const dbinterface &connection( const json &parameters );
-        static const dbinterface &connection( const string &read, const nullable< string > &write );
 
         /*
             Create and destroy databases
@@ -156,7 +151,7 @@ namespace fostlib {
         accessors< const json > configuration;
 
     private:
-        const dbinterface &m_interface;
+        std::pair< const dbinterface &, boost::shared_ptr< dynlib > > m_interface;
         boost::shared_ptr< dbinterface::read > m_connection;
         dbtransaction *m_transaction;
     };

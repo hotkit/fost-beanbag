@@ -8,9 +8,9 @@ lib fost-schema-test-smoke
         ../../../Boost//boost-thread-dll
         ../../../fost-base/Cpp/fost-core/
         ../../../fost-base/Cpp/fost-test/
-        ../fost-jsondb/
         ../fost-schema/
         database.cpp
+        drivers.cpp
         fields.cpp
         models.attributes.cpp
         models.hierarchy.cpp
@@ -29,7 +29,6 @@ exe fost-schema-test-jsondb-file
         ../../../fost-base/Cpp/fost-cli/
         ../../../fost-base/Cpp/fost-core/
         ../../../fost-base/Cpp/fost-test/
-        ../fost-jsondb/
         ../fost-schema/
         fost-schema-test-smoke
         jsondb-file.cpp
@@ -37,7 +36,17 @@ exe fost-schema-test-jsondb-file
         <include>../include
     ;
 
-install ../../../dist/lib :
+exe fost-schema-test-dyndriver
+    :
+       ../../../fost-base/Cpp/fost-cli/
+       ../fost-schema/
+       dyndriver.cpp
+    :
+        <include>../include
+    ;
+
+install ../../../dist/lib
+    :
         fost-schema-test-smoke
     :
         <target-os>linux:<install-dependencies>on
@@ -47,7 +56,9 @@ install ../../../dist/lib :
         <target-os>windows:<install-type>XXX
     ;
 
-install ../../../dist/bin :
+install ../../../dist/bin
+    :
+        fost-schema-test-dyndriver
         fost-schema-test-jsondb-file
         fost-schema-test-smoke
     :
