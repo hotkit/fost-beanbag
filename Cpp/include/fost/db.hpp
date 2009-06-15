@@ -151,7 +151,7 @@ namespace fostlib {
         accessors< const json > configuration;
 
     private:
-        std::pair< const dbinterface &, boost::shared_ptr< dynlib > > m_interface;
+        std::pair< const dbinterface *, boost::shared_ptr< dynlib > > m_interface;
         boost::shared_ptr< dbinterface::read > m_connection;
         dbtransaction *m_transaction;
     };

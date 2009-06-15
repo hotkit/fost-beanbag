@@ -21,7 +21,11 @@ namespace {
 
 
     const setting< string > c_defaultDriver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"Default driver", L"json", true );
+#ifdef WIN32
+    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database drivers", L"json", L"fost-jsondb.dll", true );
+#else
     const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database drivers", L"json", L"libfost-jsondb.so", true );
+#endif
 
 #ifdef _DEBUG
 #define LOGGING true
@@ -120,7 +124,7 @@ namespace {
         static std::map< string, boost::weak_ptr< dynlib > > dlls;
         return dlls;
     }
-    std::pair< const dbinterface &, boost::shared_ptr< dynlib > > load_driver( const string &driver ) {
+    std::pair< const dbinterface *, boost::shared_ptr< dynlib > > load_driver( const string &driver ) {
         boost::shared_ptr< dynlib > driver_dll( g_dlls()[ driver ].lock() );
         if ( g_interfaces().find( driver ).empty() ) {
             nullable< string > dll = setting< string >::value( L"Database drivers", driver, null );
@@ -137,13 +141,13 @@ namespace {
                     throw;
                 }
         }
-        return std::make_pair( boost::cref( **g_interfaces().find( driver ).begin() ), driver_dll );
+        return std::make_pair( &**g_interfaces().find( driver ).begin(), driver_dll );
     }
-    std::pair< const dbinterface &, boost::shared_ptr< dynlib > > connection( const json &cnx ) {
+    std::pair< const dbinterface *, boost::shared_ptr< dynlib > > connection( const json &cnx ) {
         string driver = cnx[ L"driver" ].get< string >().value( c_defaultDriver.value() );
         return load_driver( driver );
     }
-    std::pair< const dbinterface &, boost::shared_ptr< dynlib > > connection( const string&read, const nullable< string > &write ) {
+    std::pair< const dbinterface *, boost::shared_ptr< dynlib > > connection( const string&read, const nullable< string > &write ) {
         string d = driver( read, write );
         return load_driver( d );
     }
@@ -165,15 +169,15 @@ namespace {
 }
 fostlib::dbconnection::dbconnection( const json &j )
 : configuration( j ), m_interface( ::connection( j ) ), m_transaction( NULL ) {
-    m_connection = m_interface.first.reader( *this );
+    m_connection = m_interface.first->reader( *this );
 }
 fostlib::dbconnection::dbconnection( const fostlib::string &r )
 : configuration( cnx_conf( r, null ) ), m_interface( ::connection( r, null ) ), m_transaction( NULL ) {
-    m_connection = m_interface.first.reader( *this );
+    m_connection = m_interface.first->reader( *this );
 }
 fostlib::dbconnection::dbconnection( const fostlib::string &r, const fostlib::string &w )
 : configuration( cnx_conf( r, w ) ), m_interface( ::connection( r, w ) ), m_transaction( NULL ) {
-    m_connection = m_interface.first.reader( *this );
+    m_connection = m_interface.first->reader( *this );
 }
 
 
@@ -203,7 +207,7 @@ void fostlib::dbconnection::drop_database( const fostlib::string &name ) {
 
 
 const dbinterface &fostlib::dbconnection::driver() const {
-    return m_interface.first;
+    return *m_interface.first;
 }
 
 
