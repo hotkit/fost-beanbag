@@ -21,11 +21,13 @@ FSL_MAIN(
     L"fost-schema-test-dyndriver\nTest the dynamic loading of database driver files\nCopyright (c) 2009, Felspar Co. Ltd."
 )( fostlib::ostream &out, fostlib::arguments &args ) {
     if ( args.size() != 3 ) {
-        out <<  args.size() << L"Usage\n    fost-schema-test-dyndriver driver-name driver-file" << std::endl;
+        out << L"Usage\n    fost-schema-test-dyndriver driver-name driver-file [-d dsn]" << std::endl;
         return 1;
     }
     setting< string > configuration( L"fost-schema-test-dyndriver", L"Database drivers", args[ 1 ].value(), args[ 2 ].value(), false );
-    dbconnection dbc( args[ 1 ].value() + L"/" );
+    nullable< string > dsn = args.commandSwitch( L"d" );
+    out << configuration.name() << ": " << configuration.value() << L": " << dsn.value( L"No DSN" ) << std::endl;
+    dbconnection dbc( concat( args[ 1 ].value() + L"/", dsn.value() ).value() );
     return 0;
 }
 
