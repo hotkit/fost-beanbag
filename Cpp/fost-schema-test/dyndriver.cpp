@@ -27,7 +27,7 @@ FSL_MAIN(
     setting< string > configuration( L"fost-schema-test-dyndriver", L"Database drivers", args[ 1 ].value(), args[ 2 ].value(), false );
     nullable< string > dsn = args.commandSwitch( L"d" );
     out << configuration.name() << ": " << configuration.value() << L": " << dsn.value( L"No DSN" ) << std::endl;
-    dbconnection dbc( concat( args[ 1 ].value() + L"/", dsn.value() ).value() );
+    dbconnection dbc( concat( args[ 1 ].value() + L"/", dsn.value( string() ) ).value() );
     return 0;
 }
 
