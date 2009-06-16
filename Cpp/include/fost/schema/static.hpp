@@ -18,17 +18,47 @@
 namespace fostlib {
 
 
+    /*
+        The base class for all model hierarchies
+    */
     class FOST_SCHEMA_DECLSPEC model_base {
         boost::shared_ptr< instance > m_instance;
     public:
         struct factory_base;
         struct attribute_binding_base;
 
+        typedef enum { a_primary, a_nullable, a_required } attribute_meta;
+        template< typename tag >
+        class attribute_base;
+
         model_base( const factory_base &factory, dbconnection &dbc, const json &j );
         virtual ~model_base();
 
         instance &_instance();
     };
+
+
+    // Stores the binding between an attribute type and it's name
+    struct FOST_SCHEMA_DECLSPEC model_base::attribute_binding_base {
+        attribute_binding_base( const factory_base &factory, const string &name );
+
+        accessors< string > name;
+    };
+
+
+    // An attribute type
+    template< typename tag >
+    class model_base::attribute_base {
+    public:
+        static const struct attribute_binding : public model_base::attribute_binding_base {
+            attribute_binding( const factory_base &factory, const string &name )
+            : attribute_binding_base( factory, name ) {
+            }
+        } binding;
+    };
+
+
+    // Factories are used to create instances of models
     struct FOST_SCHEMA_DECLSPEC model_base::factory_base {
         factory_base( const string &name );
         factory_base( const enclosure &enc, const string &name );
@@ -39,6 +69,9 @@ namespace fostlib {
 
         virtual boost::shared_ptr< meta_instance > _meta() const;
 
+        template< typename tag >
+        const factory_base &operator () ( attribute_base< tag > *attr, wliteral s ) const;
+
     private:
         typedef boost::variant< const enclosure *, const factory_base * > container_type;
         container_type m_container;
@@ -48,17 +81,52 @@ namespace fostlib {
         typedef library< const attribute_binding_base* > attributes_type;
         mutable attributes_type m_attributes;
     };
-    struct FOST_SCHEMA_DECLSPEC model_base::attribute_binding_base {
-        attribute_binding_base( const factory_base &factory, const string &name );
-
-        accessors< string > name;
-    };
 
 
     /*
-        This handles the case for model types that inherit from other model type
+        This handles the case for model types that inherit from other model type.
+        There are two specialisations -- one where there is no superclass and one where
+        there is a superclass model.
     */
     template< typename model_type, typename superclass_type = t_null >
+    class model;
+
+    // Where there is no model superclass
+    template< typename model_type >
+    class model< model_type, t_null > : public model_base {
+    public:
+        typedef model< model_type > superclass;
+
+        struct factory : public model_base::factory_base {
+            factory( const string &name ) : factory_base( name ) {}
+            template< typename E >
+            factory( const E &enc, const string &name ) : factory_base( enc, name ) {}
+
+            using model_base::factory_base::operator ();
+            boost::shared_ptr< model_type > operator () ( dbconnection &dbc, const json &j ) const {
+                return boost::shared_ptr< model_type >(
+                    new model_type( dynamic_cast< const typename model_type::factory& >( *this ), dbc, j )
+                );
+            }
+        };
+
+        static const factory s_factory;
+        static const meta_instance &_meta() {
+            return *s_factory._meta();
+        }
+
+        model( const factory &f, dbconnection &dbc, const json &j )
+        : model_base( f, dbc, j ) {
+        }
+
+        // This describes an attribute. This ensures that every attribute has its own C++ type
+        template< typename tag, typename type, model_base::attribute_meta stereotype >
+        class attribute : public attribute_base< tag > {
+        };
+    };
+
+    // Where there is a model superclass
+    template< typename model_type, typename superclass_type >
     class model : public superclass_type {
     public:
         typedef model< model_type, superclass_type > superclass;
@@ -68,6 +136,7 @@ namespace fostlib {
             template< typename E >
             factory( const E &enc, const string &name ) : superclass_type::factory( enc, name ) {}
 
+            using model_base::factory_base::operator ();
             boost::shared_ptr< model_type > operator () ( dbconnection &dbc, const json &j ) const {
                 return boost::shared_ptr< model_type >(
                     new model_type( dynamic_cast< const typename model_type::factory& >( *this ), dbc, j )
@@ -92,54 +161,26 @@ namespace fostlib {
     };
 
 
-    /*
-        A specialisation that handles the case when a model type does not
-        inherit from another model.
-    */
-    template< typename model_type >
-    class model< model_type, t_null > : public model_base {
-    public:
-        typedef model< model_type > superclass;
-
-        struct factory : public model_base::factory_base {
-            factory( const string &name ) : factory_base( name ) {}
-            template< typename E >
-            factory( const E &enc, const string &name ) : factory_base( enc, name ) {}
-
-            boost::shared_ptr< model_type > operator () ( dbconnection &dbc, const json &j ) const {
-                return boost::shared_ptr< model_type >(
-                    new model_type( dynamic_cast< const typename model_type::factory& >( *this ), dbc, j )
-                );
-            }
-        };
-
-        static const factory s_factory;
-        static const meta_instance &_meta() {
-            return *s_factory._meta();
-        }
-
-        model( const factory &f, dbconnection &dbc, const json &j )
-        : model_base( f, dbc, j ) {
-        }
-
-        typedef enum { a_primary, a_nullable, a_required } attribute_meta;
-        template< typename field_type, attribute_meta = a_required >
-        class attribute {
-        public:
-            static const struct attribute_binding : public model_base::attribute_binding_base {
-                attribute_binding( const string &name )
-                : attribute_binding_base( s_factory, name ) {
-                }
-            } binding;
-        };
-    };
-
-
 }
 
 
+// Used to define the constructors
+#define FSL_CONSTRUCTOR( model ) model( const factory &f, fostlib::dbconnection &d, const fostlib::json &j ) \
+    : superclass( f, d, j ) {}
+
+// Used to declare attributes in the models
+#define FSL_ATTRIBUTE_PK( name, type ) struct name##_tag {}; \
+    attribute< name##_tag, type, fostlib::model_base::a_primary > name;
+#define FSL_ATTRIBUTE_NOT_NULL( name, type ) struct name##_tag {}; \
+    attribute< name##_tag, type, fostlib::model_base::a_required > name;
+#define FSL_ATTRIBUTE_NULL( name, type ) struct name##_tag {}; \
+    attribute< name##_tag, type, fostlib::model_base::a_nullable > name;
+
 // Static creation of the model binding
 #define FSL_MODEL( name ) template<> const name::factory name::superclass::s_factory
+#define FSL_ATTRIBUTE( model, name ) template <> const \
+    fostlib::model_base::attribute_base< model::name##_tag >::attribute_binding \
+        fostlib::model_base::attribute_base< model::name##_tag >::binding( model::s_factory, fostlib::string( #name ) )
 
 
 #endif // FOST_SCHEMA_STATIC_HPP

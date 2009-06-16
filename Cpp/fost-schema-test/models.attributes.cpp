@@ -18,32 +18,28 @@ FSL_TEST_SUITE( basic_attributes );
 
 class SimpleModel : public model< SimpleModel > {
 public:
-    SimpleModel( const factory &f, dbconnection &dbc, const json &j )
-    : superclass( f, dbc, j ) {
-    }
-    attribute< int64_t, a_primary > pk;
-    attribute< string > display_name;
+    FSL_CONSTRUCTOR( SimpleModel );
+    FSL_ATTRIBUTE_PK( pk, int64_t );
+    FSL_ATTRIBUTE_NULL( display_name, string );
 };
 FSL_MODEL( SimpleModel )( L"SimpleModel" );
-template<> template<>
-const SimpleModel::attribute< int64_t, SimpleModel::a_primary >::attribute_binding SimpleModel::attribute< int64_t, SimpleModel::a_primary >::binding( L"pk" );
-template<> template<>
-const SimpleModel::attribute< string >::attribute_binding SimpleModel::attribute< string >::binding( L"display_name" );
+FSL_ATTRIBUTE( SimpleModel, pk );
+FSL_ATTRIBUTE( SimpleModel, display_name );
+
 
 class SubModel : public model< SubModel, SimpleModel > {
 public:
-    SubModel( const factory &f, dbconnection &dbc, const json &j )
-    : superclass( f, dbc, j ) {
-    }
-    attribute< string > name;
+    FSL_CONSTRUCTOR( SubModel );
+    FSL_ATTRIBUTE_NOT_NULL( name, string );
 };
 FSL_MODEL( SubModel )( L"SubModel" );
+FSL_ATTRIBUTE( SubModel, name );
 
 
 FSL_TEST_FUNCTION( base_attribute ) {
-    FSL_CHECK_EQ( ( SimpleModel::attribute< int64_t, SimpleModel::a_primary >::binding.name() ), L"pk" );
+    FSL_CHECK_EQ( ( SimpleModel::attribute< SimpleModel::pk_tag, int64_t, model_base::a_primary >::binding.name() ), L"pk" );
     FSL_CHECK_NOTHROW( SimpleModel::_meta()[ L"pk" ] );
 
-    FSL_CHECK_EQ( SimpleModel::attribute< string >::binding.name(), L"display_name" );
+    FSL_CHECK_EQ( ( SimpleModel::attribute< SimpleModel::display_name_tag, string, model_base::a_nullable >::binding.name() ), L"display_name" );
     FSL_CHECK_NOTHROW( SimpleModel::_meta()[ L"display_name" ] );
 }
