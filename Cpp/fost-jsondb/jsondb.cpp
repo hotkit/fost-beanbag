@@ -10,6 +10,7 @@
 #include <fost/jsondb.hpp>
 #include <fost/db-driver>
 
+#include <fost/exception/not_implemented.hpp>
 #include <fost/exception/not_null.hpp>
 #include <fost/exception/out_of_range.hpp>
 #include <fost/exception/query_failure.hpp>
@@ -115,7 +116,7 @@ namespace {
         jsonreader( dbconnection &d );
 
         boost::shared_ptr< dbinterface::recordset > query( const meta_instance &item, const json &key ) const;
-        boost::shared_ptr< dbinterface::recordset > query( const string &cmd ) const;
+        boost::shared_ptr< dbinterface::recordset > query( const sql::statement &cmd ) const;
 
         boost::shared_ptr< dbinterface::write > writer();
 
@@ -133,7 +134,7 @@ namespace {
         void drop_table( const string &table );
 
         void insert( const instance &object );
-        void execute( const string &cmd );
+        void execute( const sql::statement &cmd );
 
         void commit();
         void rollback();
@@ -214,7 +215,6 @@ void jsonInterface::create_database( dbconnection &dbc, const string &name ) con
     }
 }
 
-#include <fost/exception/not_implemented.hpp>
 void jsonInterface::drop_database( dbconnection &dbc, const string &/*name*/ ) const {
     check_master_write( dbc );
     throw exceptions::not_implemented( L"void jsonInterface::drop_database( dbconnection &dbc, const string &name ) const" );
@@ -262,8 +262,8 @@ boost::shared_ptr< dbinterface::recordset > jsonreader::query( const meta_instan
     } else
         throw exceptions::query_failure( L"Database table not found", item );
 }
-boost::shared_ptr< dbinterface::recordset > jsonreader::query( const string &cmd ) const {
-    throw exceptions::not_implemented( L"jsonreader::query( const string &cmd ) const" );
+boost::shared_ptr< dbinterface::recordset > jsonreader::query( const sql::statement &cmd ) const {
+    throw exceptions::not_implemented( L"jsonreader::query( const sql::statement &cmd ) const" );
 }
 
 boost::shared_ptr< dbinterface::write > jsonreader::writer() {
@@ -304,8 +304,8 @@ void jsonwriter::insert( const instance &object ) {
 }
 
 
-void jsonwriter::execute( const string &cmd ) {
-    throw exceptions::not_implemented( L"jsonwriter::execute( const string &cmd )" );
+void jsonwriter::execute( const sql::statement &cmd ) {
+    throw exceptions::not_implemented( L"jsonwriter::execute( const sql::statement &cmd )" );
 }
 
 void jsonwriter::commit() {
@@ -324,7 +324,7 @@ void jsonwriter::rollback() {
 
 
 jsonrecordset::jsonrecordset( const meta_instance &item, const json &rs )
-: dbinterface::recordset( L"JSON query" ),  m_position( rs.begin() ), m_end( rs.end() ), m_rs( rs ) {
+: dbinterface::recordset( sql::statement( L"JSON query" ) ),  m_position( rs.begin() ), m_end( rs.end() ), m_rs( rs ) {
     for ( meta_instance::const_iterator i( item.begin() ); i != item.end(); ++i )
         m_fieldnames.insert( (*i)->name() );
 }
