@@ -48,6 +48,10 @@ namespace fostlib {
     protected:
         explicit dbinterface( const string &driver_name );
     public:
+        virtual ~dbinterface();
+
+        accessors< string > name;
+
         /*
             Every database driver must implement these interfaces
             #include <fost/db-driver>

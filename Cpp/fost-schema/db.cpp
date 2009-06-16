@@ -82,8 +82,13 @@ namespace {
 */
 
 
-fostlib::dbinterface::dbinterface( const string &name ) {
+fostlib::dbinterface::dbinterface( const string &name )
+: name( name ) {
     g_interfaces().add( name, this );
+}
+fostlib::dbinterface::~dbinterface() {
+    g_interfaces().remove( name(), this );
+    //std::cout << L"Removed driver " << name() << std::endl;
 }
 
 
@@ -125,6 +130,8 @@ namespace {
         return dlls;
     }
     std::pair< const dbinterface *, boost::shared_ptr< dynlib > > load_driver( const string &driver ) {
+        // This code doesn't deal very gracefully with the case where there are more than one driver
+        // in a driver DLL/so
         boost::shared_ptr< dynlib > driver_dll( g_dlls()[ driver ].lock() );
         if ( g_interfaces().find( driver ).empty() ) {
             nullable< string > dll = setting< string >::value( L"Database drivers", driver, null );
