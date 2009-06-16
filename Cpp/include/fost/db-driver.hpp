@@ -30,7 +30,7 @@ namespace fostlib {
         virtual boost::shared_ptr< write > writer() = 0;
 
         virtual boost::shared_ptr< recordset > query( const meta_instance &item, const json &key ) const = 0;
-        virtual boost::shared_ptr< recordset > query( const string &cmd ) const = 0;
+        virtual boost::shared_ptr< recordset > query( const sql::statement &cmd ) const = 0;
 
     protected:
         dbconnection &m_connection;
@@ -51,7 +51,7 @@ namespace fostlib {
         virtual void drop_table( const fostlib::string &table ) = 0;
 
         virtual void insert( const instance &object ) = 0;
-        virtual void execute( const string &cmd ) = 0;
+        virtual void execute( const sql::statement &cmd ) = 0;
 
         virtual void commit() = 0;
         virtual void rollback() = 0;
@@ -64,9 +64,9 @@ namespace fostlib {
 
     class FOST_SCHEMA_DECLSPEC dbinterface::recordset : boost::noncopyable {
     protected:
-        recordset( const fostlib::string &cmd );
+        recordset( const sql::statement &cmd );
     public:
-        fostlib::accessors< const fostlib::string > command;
+        accessors< const sql::statement > command;
 
         virtual ~recordset();
 

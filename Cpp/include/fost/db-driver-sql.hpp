@@ -17,9 +17,53 @@
 namespace fostlib {
 
 
+    namespace sql {
+
+
+        struct table_name_tag : public sql_statement_tag {};
+        typedef tagged_string< table_name_tag, string > table_name;
+
+        struct column_name_tag : public sql_statement_tag {};
+        typedef tagged_string< column_name_tag, string > column_name;
+
+
+    }
+
+
     class FOST_SQL_DECLSPEC sql_driver : public dbinterface {
     protected:
         explicit sql_driver( const string &driver_name );
+
+        /*
+            These functions are used to provide name mangling functionality
+        */
+        virtual sql::table_name table_name( const meta_instance & ) const;
+        virtual sql::column_name column_name( const meta_attribute & ) const;
+
+        virtual sql::statement mangle( const sql::table_name &name ) const = 0;
+        virtual sql::statement mangle( const sql::column_name &name ) const = 0;
+
+    public:
+        class FOST_SQL_DECLSPEC write : public dbinterface::write {
+        protected:
+            write( dbinterface::read &reader );
+
+            const sql_driver &driver() const;
+
+        public:
+            void create_table( const fostlib::meta_instance & );
+
+        protected:
+            /*
+                These hooks allow database tables to be built from a set of standard building blocks
+            */
+            virtual void create_table(
+                const sql::table_name &table,
+                const std::list< std::pair< sql::column_name, sql::statement > > &key,
+                const std::list< std::pair< sql::column_name, sql::statement > > &columns
+            );
+            virtual sql::statement column_type( const meta_attribute & );
+        };
     };
 
 

@@ -5,6 +5,7 @@ lib fost-sql
         ../../../Boost//boost-thread-dll
         ../../../fost-base/Cpp/fost-core/
         ../fost-schema
+        mangling.cpp
         table-builder.cpp
         sql-driver.cpp
     :

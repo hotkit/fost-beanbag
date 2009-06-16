@@ -13,6 +13,25 @@
 using namespace fostlib;
 
 
+/*
+    fostlib::sql_driver
+*/
+
+
 fostlib::sql_driver::sql_driver( const string &name )
 : dbinterface( name ) {
+}
+
+
+/*
+    fostlib::sql_driver::write
+*/
+
+
+fostlib::sql_driver::write::write( fostlib::dbinterface::read &reader )
+: dbinterface::write( reader ) {
+}
+
+const sql_driver &fostlib::sql_driver::write::driver() const {
+    return dynamic_cast< const sql_driver & >( m_connection.driver() );
 }

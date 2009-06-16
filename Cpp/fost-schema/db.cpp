@@ -110,7 +110,7 @@ fostlib::dbinterface::write::~write() {
 }
 
 
-fostlib::dbinterface::recordset::recordset( const string &c )
+fostlib::dbinterface::recordset::recordset( const sql::statement &c )
 : command( c ) {
 }
 
@@ -223,7 +223,7 @@ recordset fostlib::dbconnection::query( const meta_instance &item, const json &k
         throw exceptions::transaction_fault( L"Database connection has not started a read transaction" );
     return m_connection->query( item, key );
 }
-recordset fostlib::dbconnection::query( const string &cmd ) {
+recordset fostlib::dbconnection::query( const sql::statement &cmd ) {
     if ( !m_connection )
         throw exceptions::transaction_fault( L"Database connection has not started a read transaction" );
     return m_connection->query( cmd );
@@ -302,7 +302,7 @@ dbtransaction &fostlib::dbtransaction::insert( const instance &object, boost::fu
     m_transaction->insert( object );
     return *this;
 }
-dbtransaction &fostlib::dbtransaction::execute( const string &command ) {
+dbtransaction &fostlib::dbtransaction::execute( const sql::statement &command ) {
     if ( !m_transaction )
         throw exceptions::transaction_fault( L"This transaction has already been used" );
     m_transaction->execute( command );
@@ -339,7 +339,7 @@ try {
 }
 
 
-const fostlib::string &fostlib::recordset::command() const {
+const sql::statement &fostlib::recordset::command() const {
     return m_interface->command();
 }
 

@@ -13,6 +13,7 @@
 
 #include <fost/core>
 #include <fost/dynlib.hpp>
+#include <fost/string/tagged-string.hpp>
 
 
 namespace fostlib {
@@ -32,6 +33,23 @@ namespace fostlib {
 
 
     }
+
+
+    namespace sql {
+
+
+        struct FOST_SCHEMA_DECLSPEC sql_statement_tag {
+            static void do_encode( fostlib::wliteral from, fostlib::string &into );
+            static void do_encode( const fostlib::string &from, fostlib::string &into );
+            static void check_encoded( const fostlib::string &s );
+        };
+
+        struct statement_tag : public sql_statement_tag {};
+        typedef tagged_string< statement_tag, string > statement;
+
+
+    }
+
 
     // Forward declarations of classes in schema/dynamic.hpp
     class instance;
@@ -85,17 +103,17 @@ namespace fostlib {
         recordset( boost::shared_ptr< dbinterface::recordset > rs );
         ~recordset();
 
-        const fostlib::string &command() const;
+        const sql::statement &command() const;
 
         bool eof() const;
         void moveNext();
 
         std::size_t fields() const;
-        const fostlib::string &name( std::size_t f ) const;
-        const json &field( const fostlib::string &i ) const;
+        const string &name( std::size_t f ) const;
+        const json &field( const string &i ) const;
         const json &field( std::size_t i ) const;
 
-        bool isnull( const fostlib::string & ) const;
+        bool isnull( const string & ) const;
         bool isnull( std::size_t ) const;
 
         json to_json() const;
@@ -115,7 +133,7 @@ namespace fostlib {
         void drop_table( const string &table );
 
         dbtransaction &insert( const instance &object, boost::function< void( void ) > oncommit );
-        dbtransaction &execute( const string &cmd );
+        dbtransaction &execute( const sql::statement &cmd );
 
         void commit();
 
@@ -147,7 +165,7 @@ namespace fostlib {
         void used_id( const string &counter, int64_t value );
 
         recordset query( const meta_instance &item, const json &key = json() );
-        recordset query( const string &cmd );
+        recordset query( const sql::statement &cmd );
 
         bool in_transaction() const;
         dbtransaction &transaction();
