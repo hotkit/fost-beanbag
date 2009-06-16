@@ -38,7 +38,6 @@ fostlib::attribute_base::attribute_base( const meta_attribute &m )
 : m_meta( m ) {
 }
 
-#include <fost/exception/not_implemented.hpp>
 const meta_attribute &fostlib::attribute_base::_meta() const {
     return m_meta;
 }

@@ -68,7 +68,7 @@ boost::shared_ptr< meta_instance > fostlib::model_base::factory_base::_meta() co
         for ( attributes_type::keys_t::const_iterator k( keys.begin() ); k != keys.end(); ++k ) {
             attributes_type::found_t values = m_attributes.find( *k );
             for ( attributes_type::found_t::const_iterator a( values.begin() ); a != values.end(); ++a )
-                m_meta->primary_key( (*a)->name(), L"integer" );
+                (*a)->stereotype().describe( *m_meta, **a );
         }
     }
     return m_meta;
@@ -82,5 +82,35 @@ boost::shared_ptr< meta_instance > fostlib::model_base::factory_base::_meta() co
 fostlib::model_base::attribute_binding_base::attribute_binding_base( const factory_base &factory, const string &name )
 : name( name ) {
     factory.m_attributes.add( name, this );
+}
+
+
+/*
+    fostlib::model_base::tag_base
+*/
+
+
+model_base::attribute_meta fostlib::model_base::primary_tag::stereotype() const {
+    return model_base::a_primary;
+}
+meta_instance &fostlib::model_base::primary_tag::describe( meta_instance &meta, const model_base::attribute_binding_base &binding ) const {
+    meta.primary_key( binding.name(), L"integer" );
+    return meta;
+}
+
+model_base::attribute_meta fostlib::model_base::nullable_tag::stereotype() const {
+    return model_base::a_nullable;
+}
+meta_instance &fostlib::model_base::nullable_tag::describe( meta_instance &meta, const model_base::attribute_binding_base &binding ) const {
+    meta.field( binding.name(), L"integer", false );
+    return meta;
+}
+
+model_base::attribute_meta fostlib::model_base::required_tag::stereotype() const {
+    return model_base::a_required;
+}
+meta_instance &fostlib::model_base::required_tag::describe( meta_instance &meta, const model_base::attribute_binding_base &binding ) const {
+    meta.field( binding.name(), L"integer", true );
+    return meta;
 }
 

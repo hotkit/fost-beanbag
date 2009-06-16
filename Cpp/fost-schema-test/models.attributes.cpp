@@ -43,3 +43,14 @@ FSL_TEST_FUNCTION( base_attribute ) {
     FSL_CHECK_EQ( ( SimpleModel::attribute< SimpleModel::display_name_tag, string, model_base::a_nullable >::binding.name() ), L"display_name" );
     FSL_CHECK_NOTHROW( SimpleModel::_meta()[ L"display_name" ] );
 }
+
+
+FSL_TEST_FUNCTION( meta_data ) {
+    FSL_CHECK( SimpleModel::_meta()[ L"pk" ].key() );
+
+    FSL_CHECK( !SimpleModel::_meta()[ L"display_name" ].key() );
+    FSL_CHECK( !SimpleModel::_meta()[ L"display_name" ].not_null() );
+
+    FSL_CHECK( !SubModel::_meta()[ L"name" ].key() );
+    FSL_CHECK( SubModel::_meta()[ L"name" ].not_null() );
+}
