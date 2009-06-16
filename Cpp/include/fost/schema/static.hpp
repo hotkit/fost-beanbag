@@ -80,9 +80,6 @@ namespace fostlib {
 
         virtual boost::shared_ptr< meta_instance > _meta() const;
 
-        template< typename tag >
-        const factory_base &operator () ( attribute_base< tag > *attr, wliteral s ) const;
-
     private:
         typedef boost::variant< const enclosure *, const factory_base * > container_type;
         container_type m_container;
@@ -102,21 +99,21 @@ namespace fostlib {
             const model_base::attribute_binding_base &binding
         ) const = 0;
     };
-    struct model_base::model_base::primary_tag : public model_base::tag_base {
+    struct FOST_SCHEMA_DECLSPEC model_base::primary_tag : public model_base::tag_base {
         model_base::attribute_meta stereotype() const;
         meta_instance &describe(
             meta_instance &meta,
             const model_base::attribute_binding_base &binding
         ) const;
     };
-    struct model_base::nullable_tag : public model_base::tag_base {
+    struct FOST_SCHEMA_DECLSPEC model_base::nullable_tag : public model_base::tag_base {
         model_base::attribute_meta stereotype() const;
         meta_instance &describe(
             meta_instance &meta,
             const model_base::attribute_binding_base &binding
         ) const;
     };
-    struct model_base::required_tag : public model_base::tag_base {
+    struct FOST_SCHEMA_DECLSPEC model_base::required_tag : public model_base::tag_base {
         model_base::attribute_meta stereotype() const;
         meta_instance &describe(
             meta_instance &meta,
@@ -144,7 +141,6 @@ namespace fostlib {
             template< typename E >
             factory( const E &enc, const string &name ) : factory_base( enc, name ) {}
 
-            using model_base::factory_base::operator ();
             boost::shared_ptr< model_type > operator () ( dbconnection &dbc, const json &j ) const {
                 return boost::shared_ptr< model_type >(
                     new model_type( dynamic_cast< const typename model_type::factory& >( *this ), dbc, j )
@@ -178,7 +174,6 @@ namespace fostlib {
             template< typename E >
             factory( const E &enc, const string &name ) : superclass_type::factory( enc, name ) {}
 
-            using model_base::factory_base::operator ();
             boost::shared_ptr< model_type > operator () ( dbconnection &dbc, const json &j ) const {
                 return boost::shared_ptr< model_type >(
                     new model_type( dynamic_cast< const typename model_type::factory& >( *this ), dbc, j )
