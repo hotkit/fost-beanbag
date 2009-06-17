@@ -18,22 +18,22 @@ FSL_TEST_SUITE( basic_attributes );
 
 class SimpleModel : public model< SimpleModel > {
 public:
-    FSL_CONSTRUCTOR( SimpleModel );
+    FSL_MODEL_CONSTRUCTOR( SimpleModel );
     FSL_ATTRIBUTE_PK( pk, int64_t );
     FSL_ATTRIBUTE_NULL( display_name, string );
 };
-FSL_MODEL( SimpleModel )( L"SimpleModel" );
-FSL_ATTRIBUTE( SimpleModel, pk );
-FSL_ATTRIBUTE( SimpleModel, display_name );
+FSL_MODEL_DEFINITION( SimpleModel )( L"SimpleModel" );
+FSL_ATTRIBUTE_DEFINITION( SimpleModel, pk );
+FSL_ATTRIBUTE_DEFINITION( SimpleModel, display_name );
 
 
 class SubModel : public model< SubModel, SimpleModel > {
 public:
-    FSL_CONSTRUCTOR( SubModel );
+    FSL_MODEL_CONSTRUCTOR( SubModel );
     FSL_ATTRIBUTE_NOT_NULL( name, string );
 };
-FSL_MODEL( SubModel )( L"SubModel" );
-FSL_ATTRIBUTE( SubModel, name );
+FSL_MODEL_DEFINITION( SubModel )( L"SubModel" );
+FSL_ATTRIBUTE_DEFINITION( SubModel, name );
 
 
 FSL_TEST_FUNCTION( base_attribute ) {

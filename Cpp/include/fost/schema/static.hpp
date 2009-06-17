@@ -202,27 +202,42 @@ namespace fostlib {
 
 
 // Used to define the constructors
-#define FSL_CONSTRUCTOR( model ) \
-    typedef model this_model_type; \
+#define FSL_MODEL_TYPEDEFS( model ) \
+    typedef model this_model_type;
+#define FSL_MODEL_CONSTRUCTOR( model ) \
+    FSL_MODEL_TYPEDEFS( model ) \
     model( const factory &f, fostlib::dbconnection &d, const fostlib::json &j ) \
     : superclass( f, d, j ) {}
 
 // Used to declare attributes in the models
 #define FSL_ATTRIBUTE_PK( name, type ) \
-    struct name##_tag { typedef this_model_type model_type; typedef model_base::primary_tag stereotype_tag; }; \
+    struct name##_tag { \
+        typedef this_model_type model_type; \
+        typedef model_base::primary_tag stereotype_tag; \
+    }; \
     attribute< name##_tag, type, fostlib::model_base::a_primary > name;
 #define FSL_ATTRIBUTE_NOT_NULL( name, type ) \
-    struct name##_tag { typedef this_model_type model_type; typedef model_base::required_tag stereotype_tag; }; \
+    struct name##_tag { \
+        typedef this_model_type model_type; \
+        typedef model_base::required_tag stereotype_tag; \
+    }; \
     attribute< name##_tag, type, fostlib::model_base::a_required > name;
 #define FSL_ATTRIBUTE_NULL( name, type ) \
-    struct name##_tag { typedef this_model_type model_type; typedef model_base::nullable_tag stereotype_tag; }; \
+    struct name##_tag { \
+        typedef this_model_type model_type; \
+        typedef model_base::nullable_tag stereotype_tag; \
+    }; \
     attribute< name##_tag, type, fostlib::model_base::a_nullable > name;
 
 // Static creation of the model binding
-#define FSL_MODEL( name ) template<> const name::factory name::superclass::s_factory
-#define FSL_ATTRIBUTE( model, name ) template <> const \
-    fostlib::model_base::attribute_base< model::name##_tag >::attribute_binding \
-        fostlib::model_base::attribute_base< model::name##_tag >::binding( model::s_factory, fostlib::string( #name ) )
+#define FSL_MODEL_DEFINITION( name ) \
+    template<> const name::factory name::superclass::s_factory
+#define FSL_ATTRIBUTE_DEFINITION( model, name ) \
+    template <> const \
+        fostlib::model_base::attribute_base< model::name##_tag >::attribute_binding \
+            fostlib::model_base::attribute_base< model::name##_tag >::binding( \
+                model::s_factory, fostlib::string( #name ) \
+            )
 
 
 #endif // FOST_SCHEMA_STATIC_HPP

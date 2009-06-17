@@ -22,7 +22,7 @@ public:
     : superclass( f, dbc, j ) {
     }
 };
-FSL_MODEL( BasicModel )( L"BasicModel" );
+FSL_MODEL_DEFINITION( BasicModel )( L"BasicModel" );
 
 
 class BasicSubModel : public model< BasicSubModel, BasicModel > {
@@ -31,7 +31,7 @@ public:
     : superclass( f, dbc, j ) {
     }
 };
-FSL_MODEL( BasicSubModel )( L"BasicSubModel" );
+FSL_MODEL_DEFINITION( BasicSubModel )( L"BasicSubModel" );
 
 
 class HostModel : public model< HostModel > {
@@ -47,8 +47,8 @@ public:
         }
     };
 };
-FSL_MODEL( HostModel )( L"HostModel" );
-FSL_MODEL( HostModel::NestedModel )( HostModel::s_factory, L"NestedModel" );
+FSL_MODEL_DEFINITION( HostModel )( L"HostModel" );
+FSL_MODEL_DEFINITION( HostModel::NestedModel )( HostModel::s_factory, L"NestedModel" );
 
 class SubHostModel : public model< SubHostModel, HostModel > {
 public:
@@ -56,7 +56,7 @@ public:
     : superclass( f, dbc, j ) {
     }
 };
-FSL_MODEL( SubHostModel )( L"SubHostModel" );
+FSL_MODEL_DEFINITION( SubHostModel )( L"SubHostModel" );
 
 
 #define FSL_TEST_HAS_SUPERCLASS( i, S ) FSL_CHECK( \
