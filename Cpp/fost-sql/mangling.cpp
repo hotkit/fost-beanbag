@@ -13,6 +13,17 @@
 using namespace fostlib;
 
 
+sql::statement fostlib::sql_driver::mangle( const int64_t field_value ) const {
+    return sql::statement( coerce< string >( field_value ) );
+}
+
+
+sql::statement fostlib::sql_driver::mangle( const string &field_value ) const {
+    sql::statement quote( L"'" );
+    return quote + sql::statement( replaceAll( field_value, L"'", L"''" ) ) + quote;
+}
+
+
 fostlib::sql::table_name fostlib::sql_driver::table_name( const meta_instance &mi ) const {
     return sql::table_name( mi.fq_name( L"_" ) );
 }

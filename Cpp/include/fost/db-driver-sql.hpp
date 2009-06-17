@@ -40,6 +40,8 @@ namespace fostlib {
         virtual sql::table_name table_name( const meta_instance & ) const;
         virtual sql::column_name column_name( const meta_attribute & ) const;
 
+        virtual sql::statement mangle( const int64_t field_value ) const;
+        virtual sql::statement mangle( const string &field_value ) const;
         virtual sql::statement mangle( const sql::table_name &name ) const = 0;
         virtual sql::statement mangle( const sql::column_name &name ) const = 0;
 
