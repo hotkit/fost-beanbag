@@ -60,3 +60,15 @@ fostcache &fostlib::fostcache::instance() {
         throw exceptions::null( L"There is no fostcache in this thread" );
     return *s_instance;
 }
+
+
+const fostlib::meta_instance &fostlib::fostcache::operator [] ( const string &n ) const {
+    type_registry_collection::const_iterator p( m_types.find( n ) );
+    if ( p == m_types.end() && m_master )
+        return (*m_master)[ n ];
+    else if ( p != m_types.end() )
+        return *p->second;
+    else
+        throw exceptions::null( L"Type not found in the cache type registry", n );
+}
+

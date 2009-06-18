@@ -52,11 +52,14 @@ namespace fostlib {
         virtual ~mastercache();
 
         mastercache &type( boost::shared_ptr< fostlib::meta_instance > type );
+        virtual const fostlib::meta_instance &operator [] ( const string & ) const;
 
         dbconnection &connection() {
             return m_dbc;
         }
     protected:
+        typedef std::map< string, boost::shared_ptr< fostlib::meta_instance > > type_registry_collection;
+        type_registry_collection m_types;
         dbconnection &m_dbc;
     };
 
@@ -82,6 +85,8 @@ namespace fostlib {
         // Check the existence of a cache and return the instance associated with the current thread
         static bool exists();
         static fostcache &instance();
+
+        const fostlib::meta_instance &operator [] ( const string & ) const;
 
     private:
         mastercache *m_master;
