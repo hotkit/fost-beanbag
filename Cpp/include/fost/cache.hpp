@@ -33,9 +33,20 @@ namespace fostlib {
     };
 
 
-    class FOST_CACHE_DECLSPEC fostcache : boost::noncopyable {
+    class FOST_CACHE_DECLSPEC mastercache : boost::noncopyable {
+        std::map<
+            boost::shared_ptr< meta_instance >,
+            boost::shared_ptr< objectcache< meta_instance > >
+        > m_caches;
+    public:
+        virtual ~mastercache();
+
+        mastercache &type( boost::shared_ptr< fostlib::meta_instance > type );
+    };
+
+
+    class FOST_CACHE_DECLSPEC fostcache : public mastercache {
         static boost::thread_specific_ptr< fostcache > s_instance;
-        std::map< boost::shared_ptr< meta_instance >, boost::shared_ptr< objectcache< meta_instance > > > m_caches;
     public:
         fostcache();
         ~fostcache();
@@ -44,7 +55,8 @@ namespace fostlib {
         static bool exists();
         static fostcache &instance();
 
-        fostcache &type( boost::shared_ptr< fostlib::meta_instance > type );
+    private:
+        mastercache *m_master;
     };
 
 

@@ -6,7 +6,9 @@ lib fost-cache
         ../../../Boost//boost-regex-dll
         ../../../fost-base/Cpp/fost-core/
         ../fost-schema/
-        cache.cpp
+        fost-cache.cpp
+        master-cache.cpp
+        object-cache.cpp
     :
         <include>../include
     :
