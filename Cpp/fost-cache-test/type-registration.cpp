@@ -54,6 +54,6 @@ FSL_TEST_FUNCTION( master_slave ) {
     FSL_CHECK_EQ( &master[ L"master_type" ], master_type.get() );
     FSL_CHECK_EQ( &cache[ L"master_type" ], master_type.get() );
 
-    FSL_CHECK_EXCEPTION( &master[ L"slave_type" ], fostlib::exceptions::null& );
+    FSL_CHECK_EXCEPTION( master[ L"slave_type" ], fostlib::exceptions::null& );
     FSL_CHECK_EQ( &cache[ L"slave_type" ], slave_type.get() );
 }
