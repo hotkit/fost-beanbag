@@ -18,6 +18,10 @@
 namespace fostlib {
 
 
+    /*
+        The object cache provides a protocol that can be used to store object
+        instances inside a mastercache or fostcache
+    */
     template< typename object_type >
     class objectcache;
 
@@ -33,6 +37,11 @@ namespace fostlib {
     };
 
 
+    /*
+        A mastercache allows for objects to be stored for long periods. A mastercache
+        is shared between many threads and there must only be a single mastercache
+        per database connection in any given process.
+    */
     class FOST_CACHE_DECLSPEC mastercache : boost::noncopyable {
         std::map<
             boost::shared_ptr< meta_instance >,
@@ -44,14 +53,29 @@ namespace fostlib {
 
         mastercache &type( boost::shared_ptr< fostlib::meta_instance > type );
 
+        dbconnection &connection() {
+            return m_dbc;
+        }
     protected:
         dbconnection &m_dbc;
     };
 
 
-    class FOST_CACHE_DECLSPEC fostcache : public mastercache {
+    namespace detail {
+        class FOST_CACHE_DECLSPEC fostcache_dbc : boost::noncopyable {
+        protected:
+            fostcache_dbc();
+            fostcache_dbc( dbconnection &dbc );
+            boost::scoped_ptr< dbconnection > m_dbc_ptr;
+        };
+    }
+    /*
+        The fostcaches are used in a thread to manage the objects that the thread may change.
+    */
+    class FOST_CACHE_DECLSPEC fostcache : private detail::fostcache_dbc, public mastercache {
         static boost::thread_specific_ptr< fostcache > s_instance;
     public:
+        explicit fostcache( mastercache &master );
         explicit fostcache( dbconnection &dbc );
         ~fostcache();
 

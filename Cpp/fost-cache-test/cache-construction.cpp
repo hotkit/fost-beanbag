@@ -35,6 +35,16 @@ FSL_TEST_FUNCTION( fostcache ) {
 }
 
 
+FSL_TEST_FUNCTION( mastercache ) {
+    fostlib::dbconnection dbc( L"master" );
+    fostlib::mastercache master( dbc );
+    fostlib::fostcache cache( master );
+
+    FSL_CHECK_NEQ( &master.connection(), &cache.connection() );
+    FSL_CHECK_EQ( master.connection().configuration(), cache.connection().configuration() );
+}
+
+
 FSL_TEST_FUNCTION( type_registration ) {
     fostlib::dbconnection dbc( L"master" );
     fostlib::fostcache cache( dbc );
