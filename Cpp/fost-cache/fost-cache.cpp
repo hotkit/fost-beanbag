@@ -23,8 +23,8 @@ namespace {
 boost::thread_specific_ptr< fostcache > fostlib::fostcache::s_instance( do_nothing );
 
 
-fostlib::fostcache::fostcache()
-: m_master( NULL ) {
+fostlib::fostcache::fostcache( dbconnection &dbc )
+: mastercache( dbc ), m_master( NULL ) {
     if ( s_instance.get() )
         throw exceptions::not_null( L"There is already a fostcache in this thread" );
     else

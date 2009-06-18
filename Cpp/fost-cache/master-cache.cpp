@@ -17,6 +17,10 @@
 using namespace fostlib;
 
 
+fostlib::mastercache::mastercache( dbconnection &dbc )
+: m_dbc( dbc ) {
+}
+
 fostlib::mastercache::~mastercache() {
 }
 

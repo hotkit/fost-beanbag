@@ -39,16 +39,20 @@ namespace fostlib {
             boost::shared_ptr< objectcache< meta_instance > >
         > m_caches;
     public:
+        explicit mastercache( dbconnection &dbc );
         virtual ~mastercache();
 
         mastercache &type( boost::shared_ptr< fostlib::meta_instance > type );
+
+    protected:
+        dbconnection &m_dbc;
     };
 
 
     class FOST_CACHE_DECLSPEC fostcache : public mastercache {
         static boost::thread_specific_ptr< fostcache > s_instance;
     public:
-        fostcache();
+        explicit fostcache( dbconnection &dbc );
         ~fostcache();
 
         // Check the existence of a cache and return the instance associated with the current thread
