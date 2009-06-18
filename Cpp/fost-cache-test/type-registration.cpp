@@ -34,6 +34,8 @@ FSL_TEST_FUNCTION( master ) {
 
     boost::shared_ptr< fostlib::meta_instance > type( new fostlib::meta_instance( L"simple" ) );
     master.type( type );
+
+    FSL_CHECK_EQ( &master[ L"simple" ], type.get() );
 }
 
 
@@ -42,6 +44,16 @@ FSL_TEST_FUNCTION( master_slave ) {
     fostlib::mastercache master( dbc );
     fostlib::fostcache cache( master );
 
-    boost::shared_ptr< fostlib::meta_instance > type( new fostlib::meta_instance( L"simple" ) );
-    master.type( type );
+    boost::shared_ptr< fostlib::meta_instance >
+        master_type( new fostlib::meta_instance( L"master_type" ) ),
+        slave_type( new fostlib::meta_instance( L"slave_type" ) )
+    ;
+    master.type( master_type );
+    cache.type( slave_type );
+
+    FSL_CHECK_EQ( &master[ L"master_type" ], master_type.get() );
+    FSL_CHECK_EQ( &cache[ L"master_type" ], master_type.get() );
+
+    FSL_CHECK_EXCEPTION( &master[ L"slave_type" ], fostlib::exceptions::null& );
+    FSL_CHECK_EQ( &cache[ L"slave_type" ], slave_type.get() );
 }
