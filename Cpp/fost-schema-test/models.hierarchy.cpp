@@ -58,3 +58,9 @@ FSL_TEST_FUNCTION( factories ) {
     FSL_CHECK_EXCEPTION( find_factory( L"No model factory" ), fostlib::exceptions::out_of_range< std::size_t >& );
     FSL_CHECK_EXCEPTION( find_factory( s_BasicModel1.name() ), fostlib::exceptions::out_of_range< std::size_t >& );
 }
+
+
+FSL_TEST_FUNCTION( construction ) {
+    std::auto_ptr< BasicModel > bm = s_BasicModel2( fostlib::json() );
+    FSL_CHECK( bm.get() );
+}

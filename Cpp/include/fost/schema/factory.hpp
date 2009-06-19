@@ -59,6 +59,10 @@ namespace fostlib {
         factory( const string &name )
         : factory_base( typeid( instance_type ), name ) {
         }
+
+        std::auto_ptr< instance_type > operator () ( const json &j ) {
+            return std::auto_ptr< instance_type >( new instance_type( j ) );
+        }
     };
 
 
