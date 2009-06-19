@@ -107,7 +107,7 @@ boost::shared_ptr< instance > fostlib::meta_instance::create( dbconnection &dbc 
 }
 boost::shared_ptr< instance > fostlib::meta_instance::create( dbconnection &dbc, const json &j ) const {
     const json empty, &v( j.isobject() ? j : empty );
-    boost::shared_ptr< instance > object( new instance( dbc, *this ) );
+    boost::shared_ptr< instance > object( new instance( *this, j ) );
     for ( columns_type::const_iterator col( m_columns.begin() ); col != m_columns.end(); ++col )
         if ( v.has_key( (*col)->name() ) )
             object->attribute( (*col)->construct( v[ (*col)->name() ] ) );
@@ -125,8 +125,8 @@ string fostlib::meta_instance::table( const instance & ) const {
     fostlib::instance
 */
 
-fostlib::instance::instance( dbconnection &dbc, const meta_instance &meta )
-: m_in_database( false ), m_to_die( false ), m_meta( meta ), m_dbc( &dbc ) {
+fostlib::instance::instance( const meta_instance &meta, const json &j )
+: m_in_database( false ), m_to_die( false ), m_meta( meta ) {
 }
 
 void fostlib::instance::attribute( boost::shared_ptr< attribute_base > attr ) {
@@ -144,10 +144,10 @@ attribute_base &fostlib::instance::operator [] ( const string &name ) {
         return *p->second;
 }
 
-void fostlib::instance::save() {
+void fostlib::instance::save( dbconnection &dbc ) {
     if ( m_in_database )
         throw exceptions::not_implemented( L"fostlib::instance::save() -- when already in database" );
     else
-        m_dbc->transaction().insert( *this, boost::lambda::var( m_in_database ) = true );
+        dbc.transaction().insert( *this, boost::lambda::var( m_in_database ) = true );
 }
 

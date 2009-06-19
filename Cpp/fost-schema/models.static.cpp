@@ -7,8 +7,10 @@
 
 
 #include "fost-schema.hpp"
-#include <fost/schema.hpp>
 #include <fost/db.hpp>
+#include <fost/schema.hpp>
+#include <fost/schema/factory.hpp>
+
 #include <fost/exception/null.hpp>
 
 
@@ -19,7 +21,8 @@ using namespace fostlib;
     fostlib::model_base
 */
 
-fostlib::model_base::model_base( const json & ) {
+fostlib::model_base::model_base( const json &j )
+: m_instance( new instance( *find_factory( coerce< string >(  j[ L"_meta" ][ L"type_info" ] ) ).meta(), j ) ) {
 }
 
 fostlib::model_base::~model_base() {

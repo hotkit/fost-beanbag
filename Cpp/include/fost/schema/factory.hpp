@@ -31,6 +31,8 @@ namespace fostlib {
 
             virtual ~factory_base();
 
+            const std::type_info &m_type;
+
         public:
             const enclosure &ns() const;
             string name() const;
@@ -41,7 +43,6 @@ namespace fostlib {
             typedef boost::variant< const enclosure *, const factory_base * > container_type;
             container_type m_container;
             nullable< string > m_name;
-            const std::type_info &m_type;
             mutable boost::shared_ptr< meta_instance > m_meta;
         };
 
@@ -71,7 +72,9 @@ namespace fostlib {
         }
 
         std::auto_ptr< instance_type > operator () ( const json &j ) const {
-            return std::auto_ptr< instance_type >( new instance_type( j ) );
+            json js( j );
+            ( jcursor() / L"_meta" / L"type_info" ).insert( js, string( m_type.name() ) );
+            return std::auto_ptr< instance_type >( new instance_type( js ) );
         }
     };
 

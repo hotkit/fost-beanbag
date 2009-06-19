@@ -127,9 +127,9 @@ namespace fostlib {
     */
     class FOST_SCHEMA_DECLSPEC instance : boost::noncopyable {
         friend class meta_instance;
-    protected:
-        instance( dbconnection &, const meta_instance & );
     public:
+        instance( const meta_instance &, const json &j );
+
         typedef std::vector< boost::shared_ptr< attribute_base > > key_type;
 
         void attribute( boost::shared_ptr< attribute_base > attr );
@@ -144,12 +144,11 @@ namespace fostlib {
         }
 
         bool in_database() const { return m_in_database; }
-        void save();
+        void save( dbconnection &dbc );
 
     private:
         bool m_in_database, m_to_die;
         const meta_instance &m_meta;
-        dbconnection *m_dbc;
         typedef std::map< string, boost::shared_ptr< attribute_base > > attributes_type;
         attributes_type m_attributes;
     };

@@ -64,6 +64,9 @@ namespace {
     const fostlib::factory< BasicModel > s_BasicModel1( s_anon );
     const fostlib::factory< BasicModel > s_BasicModel2( s_anon, L"BasicModel" );
     const fostlib::factory< BasicSubModel > s_BasicSubModel( s_anon, L"BasicSubModel" );
+    const fostlib::factory< HostModel > s_HostModel( s_anon, L"HostModel" );
+    const fostlib::factory< HostModel::NestedModel > s_NestedModel( s_HostModel, L"NestedModel" );
+    const fostlib::factory< SubHostModel > s_SubHostModel( s_anon, L"SubHostModel" );
 
 }
 
@@ -79,6 +82,8 @@ FSL_TEST_FUNCTION( factories ) {
 
 
 FSL_TEST_FUNCTION( construction ) {
-    std::auto_ptr< BasicModel > bm = s_BasicModel2( fostlib::json() );
+    std::auto_ptr< BasicSubModel > bm = s_BasicSubModel( fostlib::json() );
     FSL_CHECK( bm.get() );
+
+    FSL_CHECK_EQ( &bm->_instance()._meta(), s_BasicSubModel.meta().get() );
 }

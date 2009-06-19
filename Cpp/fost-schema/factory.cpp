@@ -31,11 +31,11 @@ namespace {
 
 
 fostlib::detail::factory_base::factory_base( const enclosure &enc, const std::type_info &t, const nullable< string > &name )
-: m_container( &enc ), m_name( name ), m_type( t ) {
+: m_type( t ), m_container( &enc ), m_name( name ) {
     add_register( this, t, name );
 }
 fostlib::detail::factory_base::factory_base( const factory_base &enc, const std::type_info &t, const nullable< string > &name )
-: m_container( &enc ), m_type( t ) {
+: m_type( t ), m_container( &enc ) {
     add_register( this, t, name );
 }
 
@@ -70,8 +70,13 @@ boost::shared_ptr< meta_instance > fostlib::detail::factory_base::meta() const {
 }
 
 const detail::factory_base &fostlib::find_factory( const string &name ) {
-    factory_registry_type::found_t factories( g_registry().find( name ) );
-    if ( factories.size() != 1 )
-        throw exceptions::out_of_range< std::size_t >( L"Factory could not be found for name", 1, 1, factories.size() );
-    return **factories.begin();
+    try {
+        factory_registry_type::found_t factories( g_registry().find( name ) );
+        if ( factories.size() != 1 )
+            throw exceptions::out_of_range< std::size_t >( L"Factory could not be found for name", 1, 1, factories.size() );
+        return **factories.begin();
+    } catch ( exceptions::exception &e ) {
+        e.info() << L"Whilst searching for factory with name " << name << std::endl;
+        throw;
+    }
 }

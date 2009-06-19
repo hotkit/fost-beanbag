@@ -203,7 +203,7 @@ void jsonInterface::create_database( dbconnection &dbc, const string &name ) con
             jcursor( L"name" )( init ) = name;
             boost::shared_ptr< instance > dbrep( master_schema->database.create( dbc, init ) );
             dbtransaction trans( dbc );
-            dbrep->save();
+            dbrep->save( dbc );
             trans.commit();
         } else
             throw exceptions::query_failure(
