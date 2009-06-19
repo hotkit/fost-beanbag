@@ -18,38 +18,52 @@ using namespace fostlib;
 FSL_TEST_SUITE( basic_hierarchy );
 
 
-class BasicModel : public model< BasicModel > {
-public:
-    FSL_MODEL_CONSTRUCTOR( BasicModel );
-};
+namespace {
 
-
-class BasicSubModel : public model< BasicSubModel, BasicModel > {
-public:
-    FSL_MODEL_CONSTRUCTOR( BasicSubModel );
-};
-
-
-class HostModel : public model< HostModel > {
-public:
-    FSL_MODEL_CONSTRUCTOR( HostModel );
-
-    class NestedModel : public model< NestedModel > {
+    class BasicModel : public model< BasicModel > {
     public:
-        FSL_MODEL_CONSTRUCTOR( NestedModel );
+        BasicModel( const fostlib::json &j )
+        : model_type( j ) {
+        }
     };
-};
 
 
-class SubHostModel : public model< SubHostModel, HostModel > {
-public:
-    FSL_MODEL_CONSTRUCTOR( SubHostModel );
-};
+    class BasicSubModel : public model< BasicSubModel, BasicModel > {
+    public:
+        BasicSubModel( const fostlib::json &j )
+        : model_type( j ) {
+        }
+    };
 
 
-const fostlib::factory< BasicModel > s_BasicModel1;
-const fostlib::factory< BasicModel > s_BasicModel2( L"BasicModel" );
-const fostlib::factory< BasicSubModel > s_BasicSubModel( L"BasicSubModel" );
+    class HostModel : public model< HostModel > {
+    public:
+        HostModel( const fostlib::json &j )
+        : model_type( j ) {
+        }
+
+        class NestedModel : public model< NestedModel > {
+        public:
+            NestedModel( const fostlib::json &j )
+            : model_type( j ) {
+            }
+        };
+    };
+
+
+    class SubHostModel : public model< SubHostModel, HostModel > {
+    public:
+        SubHostModel( const fostlib::json &j )
+        : model_type( j ) {
+        }
+    };
+
+
+    const fostlib::factory< BasicModel > s_BasicModel1;
+    const fostlib::factory< BasicModel > s_BasicModel2( L"BasicModel" );
+    const fostlib::factory< BasicSubModel > s_BasicSubModel( L"BasicSubModel" );
+
+}
 
 
 FSL_TEST_FUNCTION( factories ) {
