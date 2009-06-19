@@ -25,13 +25,25 @@ namespace {
 }
 
 
-fostlib::detail::factory_base::factory_base( const string &name )
-: name( name ) {
+fostlib::detail::factory_base::factory_base( const std::type_info &t )
+: m_type( t ) {
+    g_registry().add( string( t.name() ), this );
+}
+
+fostlib::detail::factory_base::factory_base( const std::type_info &t, const string &name )
+: m_name( name ), m_type( t ) {
+    g_registry().add( string( t.name() ), this );
     g_registry().add( name, this );
 }
 
 fostlib::detail::factory_base::~factory_base() {
-    g_registry().remove( name(), this );
+    g_registry().remove( string( m_type.name() ), this );
+    if ( !m_name.isnull() )
+        g_registry().remove( m_name.value(), this );
+}
+
+string fostlib::detail::factory_base::name() const {
+    return m_name.value( string( m_type.name() ) );
 }
 
 

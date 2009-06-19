@@ -12,6 +12,7 @@
 
 
 #include <fost/schema.hpp>
+#include <typeinfo>
 
 
 namespace fostlib {
@@ -22,11 +23,16 @@ namespace fostlib {
 
         class FOST_SCHEMA_DECLSPEC FSL_ABSTRACT factory_base {
         protected:
-            factory_base( const string &name );
+            factory_base( const std::type_info & );
+            factory_base( const std::type_info &, const string &name );
             virtual ~factory_base();
 
         public:
-            accessors< string > name;
+            string name() const;
+
+        private:
+            nullable< string > m_name;
+            const std::type_info &m_type;
         };
 
 
@@ -39,10 +45,10 @@ namespace fostlib {
         typedef I instance_type;
 
         factory()
-        : factory_base( string( typeid( instance_type ).name() ) ) {
+        : factory_base( typeid( instance_type ) ) {
         }
         factory( const string &name )
-        : factory_base( name ) {
+        : factory_base( typeid( instance_type ), name ) {
         }
     };
 
