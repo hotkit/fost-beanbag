@@ -16,7 +16,7 @@ FSL_TEST_SUITE( construction );
 
 
 FSL_TEST_FUNCTION( objectcache ) {
-    fostlib::objectcache< fostlib::meta_instance > cache;
+    fostlib::objectcache< fostlib::instance > cache;
 }
 
 

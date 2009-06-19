@@ -23,12 +23,12 @@ fostlib::mastercache::~mastercache() {
 }
 
 
-mastercache &fostlib::mastercache::type( boost::shared_ptr< fostlib::meta_instance > type ) {
+mastercache &fostlib::mastercache::type( boost::shared_ptr< meta_instance > type ) {
     if ( !type.get() )
         throw fostlib::exceptions::null( L"Cannot add a null fostlib::meta_instance pointer to a cache's type list" );
     if ( m_caches.find( type ) == m_caches.end() ) {
-        m_caches[ type ] = boost::shared_ptr< fostlib::objectcache< meta_instance > >(
-            new fostlib::objectcache< meta_instance >
+        m_caches[ type ] = boost::shared_ptr< fostlib::objectcache< instance > >(
+            new fostlib::objectcache< instance >
         );
         m_types[ type->fq_name() ] = type;
     }

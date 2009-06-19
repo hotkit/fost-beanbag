@@ -1,5 +1,5 @@
 /*
-    Copyright 2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1998-2009, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -13,6 +13,7 @@
 
 #include <fost/db>
 #include <boost/thread.hpp>
+#include <fost/detail/cache-d.hpp>
 
 
 namespace fostlib {
@@ -22,18 +23,14 @@ namespace fostlib {
         The object cache provides a protocol that can be used to store object
         instances inside a mastercache or fostcache
     */
-    template< typename object_type >
-    class objectcache;
-
-    template<>
-    class FOST_CACHE_DECLSPEC objectcache< meta_instance > : boost::noncopyable {
-        std::map< instance::key_type, boost::shared_ptr< instance > > m_objects;
+    template< typename O, typename K = typename O::key_type >
+    class objectcache : public detail::objectcache_base {
     public:
-        virtual ~objectcache();
-    };
+        typedef O instance_type;
+        typedef K key_type;
 
-    template< typename object_type >
-    class objectcache : objectcache< meta_instance > {
+    private:
+        std::map< key_type, boost::shared_ptr< instance_type > > m_objects;
     };
 
 
@@ -45,7 +42,7 @@ namespace fostlib {
     class FOST_CACHE_DECLSPEC mastercache : boost::noncopyable {
         std::map<
             boost::shared_ptr< meta_instance >,
-            boost::shared_ptr< objectcache< meta_instance > >
+            boost::shared_ptr< detail::objectcache_base >
         > m_caches;
     public:
         explicit mastercache( dbconnection &dbc );
@@ -64,18 +61,13 @@ namespace fostlib {
     };
 
 
-    namespace detail {
-        class FOST_CACHE_DECLSPEC fostcache_dbc : boost::noncopyable {
-        protected:
-            fostcache_dbc();
-            fostcache_dbc( dbconnection &dbc );
-            boost::scoped_ptr< dbconnection > m_dbc_ptr;
-        };
-    }
     /*
         The fostcaches are used in a thread to manage the objects that the thread may change.
     */
-    class FOST_CACHE_DECLSPEC fostcache : private detail::fostcache_dbc, public mastercache {
+    class FOST_CACHE_DECLSPEC fostcache :
+        private detail::fostcache_dbc,
+        public mastercache
+    {
         static boost::thread_specific_ptr< fostcache > s_instance;
     public:
         explicit fostcache( mastercache &master );
@@ -93,7 +85,28 @@ namespace fostlib {
     };
 
 
+    /*
+        This smart pointer type will allow objects to be fetched from an underlying
+        data store via the fostcache.
+    */
+    template< typename O, typename K = typename O::key_type >
+    class object_ptr {
+    public:
+        typedef O instance_type;
+        typedef K key_type;
+
+        object_ptr();
+
+    private:
+        key_type m_key;
+        boost::weak_ptr< instance_type > m_pointer;
+    };
+
+
 }
+
+
+#include <fost/detail/cache-i.hpp>
 
 
 #endif // FOST_CACHE_HPP

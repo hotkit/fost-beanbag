@@ -6,12 +6,7 @@
 */
 
 
-#include "fost-cache.hpp"
-#include <fost/cache.hpp>
-
-
-using namespace fostlib;
-
-
-fostlib::detail::objectcache_base::~objectcache_base() {
+template< typename O, typename K >
+fostlib::object_ptr< O, K >::object_ptr() {
 }
+

@@ -9,6 +9,7 @@ lib fost-cache-test-smoke
         ../fost-schema/
         ../fost-cache/
         cache-construction.cpp
+        object-ptr.cpp
         type-registration.cpp
     :
         <include>../include
