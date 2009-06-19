@@ -9,6 +9,8 @@
 #include "fost-schema-test.hpp"
 #include <fost/factory>
 
+#include <fost/exception/out_of_range.hpp>
+
 
 using namespace fostlib;
 
@@ -47,3 +49,11 @@ public:
 
 fostlib::factory< BasicModel > s_BasicModel;
 fostlib::factory< BasicModel > s_BasicSubModel( L"BasicSubModel" );
+
+
+FSL_TEST_FUNCTION( factories ) {
+    FSL_CHECK_EQ( s_BasicSubModel.name(), L"BasicSubModel" );
+    FSL_CHECK_EQ( &s_BasicSubModel, &find_factory( L"BasicSubModel" ) );
+    FSL_CHECK_EXCEPTION( find_factory( L"No model factory" ), fostlib::exceptions::out_of_range< std::size_t >& );
+}
+
