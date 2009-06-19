@@ -55,7 +55,7 @@ namespace {
             return *enc;
         }
         const enclosure &operator () ( const detail::factory_base * const enc ) const {
-            throw exceptions::not_implemented( L"Cannot fetch the enclosure for a factory which uses another factory" );
+            return *enc->meta();
         }
     } c_container_dereferencer;
 }
@@ -63,6 +63,11 @@ const enclosure &fostlib::detail::factory_base::ns() const {
     return boost::apply_visitor( c_container_dereferencer, m_container );
 }
 
+boost::shared_ptr< meta_instance > fostlib::detail::factory_base::meta() const {
+    if ( !m_meta )
+        m_meta = boost::shared_ptr< meta_instance >( new meta_instance( ns(), name() ) );
+    return m_meta;
+}
 
 const detail::factory_base &fostlib::find_factory( const string &name ) {
     factory_registry_type::found_t factories( g_registry().find( name ) );

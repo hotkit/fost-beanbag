@@ -35,11 +35,14 @@ namespace fostlib {
             const enclosure &ns() const;
             string name() const;
 
+            boost::shared_ptr< meta_instance > meta() const;
+
         private:
             typedef boost::variant< const enclosure *, const factory_base * > container_type;
             container_type m_container;
             nullable< string > m_name;
             const std::type_info &m_type;
+            mutable boost::shared_ptr< meta_instance > m_meta;
         };
 
 
