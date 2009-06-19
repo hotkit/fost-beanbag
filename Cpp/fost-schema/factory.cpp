@@ -22,18 +22,21 @@ namespace {
         static factory_registry_type registry;
         return registry;
     }
+    void add_register( detail::factory_base *factory, const std::type_info &t, const nullable< string > &name ) {
+        g_registry().add( string( t.name() ), factory );
+        if ( !name.isnull() )
+            g_registry().add( name.value(), factory );
+    }
 }
 
 
-fostlib::detail::factory_base::factory_base( const std::type_info &t )
-: m_type( t ) {
-    g_registry().add( string( t.name() ), this );
+fostlib::detail::factory_base::factory_base( const enclosure &enc, const std::type_info &t, const nullable< string > &name )
+: m_container( &enc ), m_name( name ), m_type( t ) {
+    add_register( this, t, name );
 }
-
-fostlib::detail::factory_base::factory_base( const std::type_info &t, const string &name )
-: m_name( name ), m_type( t ) {
-    g_registry().add( string( t.name() ), this );
-    g_registry().add( name, this );
+fostlib::detail::factory_base::factory_base( const factory_base &enc, const std::type_info &t, const nullable< string > &name )
+: m_container( &enc ), m_type( t ) {
+    add_register( this, t, name );
 }
 
 fostlib::detail::factory_base::~factory_base() {
@@ -44,6 +47,20 @@ fostlib::detail::factory_base::~factory_base() {
 
 string fostlib::detail::factory_base::name() const {
     return m_name.value( string( m_type.name() ) );
+}
+
+namespace {
+    const struct container_content : public boost::static_visitor< const enclosure & >{
+        const enclosure &operator () ( const enclosure * const enc ) const {
+            return *enc;
+        }
+        const enclosure &operator () ( const detail::factory_base * const enc ) const {
+            throw exceptions::not_implemented( L"Cannot fetch the enclosure for a factory which uses another factory" );
+        }
+    } c_container_dereferencer;
+}
+const enclosure &fostlib::detail::factory_base::ns() const {
+    return boost::apply_visitor( c_container_dereferencer, m_container );
 }
 
 

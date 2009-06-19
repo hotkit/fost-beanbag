@@ -26,14 +26,18 @@ namespace fostlib {
 
         class FOST_SCHEMA_DECLSPEC FSL_ABSTRACT factory_base {
         protected:
-            factory_base( const std::type_info & );
-            factory_base( const std::type_info &, const string &name );
+            factory_base( const enclosure &enc, const std::type_info &, const nullable< string > &name );
+            factory_base( const factory_base &enc, const std::type_info &, const nullable< string > &name );
+
             virtual ~factory_base();
 
         public:
+            const enclosure &ns() const;
             string name() const;
 
         private:
+            typedef boost::variant< const enclosure *, const factory_base * > container_type;
+            container_type m_container;
             nullable< string > m_name;
             const std::type_info &m_type;
         };
@@ -53,11 +57,14 @@ namespace fostlib {
             instance_type, typename instance_type::instance_type
         >::value ) );
 
-        factory()
-        : factory_base( typeid( instance_type ) ) {
+        factory( const nullable< string > &name = null )
+        : factory_base( enclosure::global, typeid( instance_type ), name ) {
         }
-        factory( const string &name )
-        : factory_base( typeid( instance_type ), name ) {
+        factory( const enclosure &enc, const nullable< string > &name = null )
+        : factory_base( enc, typeid( instance_type ), name ) {
+        }
+        factory( const factory_base &enc, const nullable< string > &name = null )
+        : factory_base( enc, typeid( instance_type ), name ) {
         }
 
         std::auto_ptr< instance_type > operator () ( const json &j ) const {
