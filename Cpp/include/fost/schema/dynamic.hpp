@@ -17,8 +17,10 @@
 namespace fostlib {
 
 
+    /*
+        mata_attributes describe the type of a field in a fairly generic way.
+    */
     class attribute_base;
-
     class FOST_SCHEMA_DECLSPEC meta_attribute : boost::noncopyable {
     public:
         meta_attribute( const string &name, const field_base &type, bool key, bool not_null,
@@ -40,6 +42,9 @@ namespace fostlib {
     };
 
 
+    /*
+        An enclosure is a representation of a namespace.
+    */
     class FOST_SCHEMA_DECLSPEC enclosure : boost::noncopyable {
     public:
         explicit enclosure( const string &name );
@@ -59,6 +64,10 @@ namespace fostlib {
     };
 
 
+    /*
+        The meta_instance is a type descriptor which describes what the layout
+        of the instances will look like.
+    */
     class instance;
     class dbconnection;
     class FOST_SCHEMA_DECLSPEC meta_instance : public enclosure {
@@ -95,6 +104,9 @@ namespace fostlib {
     };
 
 
+    /*
+        attribute_base is the base class for the attributes that the O/RM knows about
+    */
     class FOST_SCHEMA_DECLSPEC attribute_base : boost::noncopyable {
     protected:
         attribute_base( const meta_attribute & );
@@ -110,6 +122,9 @@ namespace fostlib {
     };
 
 
+    /*
+        An instance is the representation of the backed object in memory
+    */
     class FOST_SCHEMA_DECLSPEC instance : boost::noncopyable {
         friend class meta_instance;
     protected:
