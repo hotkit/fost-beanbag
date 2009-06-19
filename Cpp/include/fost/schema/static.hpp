@@ -63,9 +63,10 @@ namespace fostlib {
     class model;
 
     // Where there is no model superclass
-    template< typename instance_type >
-    class model< instance_type, t_null > : public model_base {
+    template< typename I >
+    class model< I, t_null > : public model_base {
     public:
+        typedef I instance_type;
         typedef model< instance_type > model_type;
 
         model( const json &j )
@@ -79,9 +80,10 @@ namespace fostlib {
     };
 
     // Where there is a model superclass
-    template< typename instance_type, typename superclass_type >
+    template< typename I, typename superclass_type >
     class model : public superclass_type {
     public:
+        typedef I instance_type;
         typedef model< instance_type, superclass_type > model_type;
 
         model( const json &j )
@@ -91,38 +93,6 @@ namespace fostlib {
 
 
 }
-
-
-// Used to define the constructors
-#define FSL_MODEL_TYPEDEFS( model ) \
-    typedef model this_model_type;
-#define FSL_MODEL_CONSTRUCTOR( model ) \
-    FSL_MODEL_TYPEDEFS( model ) \
-    model( const fostlib::json &j ) \
-    : model_type( j ) {}
-
-// Used to declare attributes in the models
-#define FSL_ATTRIBUTE_PK( name, type ) \
-    struct name##_tag { \
-        typedef this_model_type model_type; \
-        typedef model_base::primary_tag stereotype_tag; \
-    }; \
-    attribute< name##_tag, type, fostlib::model_base::a_primary > name;
-#define FSL_ATTRIBUTE_NOT_NULL( name, type ) \
-    struct name##_tag { \
-        typedef this_model_type model_type; \
-        typedef model_base::required_tag stereotype_tag; \
-    }; \
-    attribute< name##_tag, type, fostlib::model_base::a_required > name;
-#define FSL_ATTRIBUTE_NULL( name, type ) \
-    struct name##_tag { \
-        typedef this_model_type model_type; \
-        typedef model_base::nullable_tag stereotype_tag; \
-    }; \
-    attribute< name##_tag, type, fostlib::model_base::a_nullable > name;
-
-// Static creation of the model binding
-#define FSL_ATTRIBUTE_DEFINITION( model, name )
 
 
 #endif // FOST_SCHEMA_STATIC_HPP

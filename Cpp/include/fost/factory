@@ -1,0 +1,42 @@
+/*
+    Copyright 2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Distributed under the Boost Software License, Version 1.0.
+    See accompanying file LICENSE_1_0.txt or copy at
+        http://www.boost.org/LICENSE_1_0.txt
+*/
+
+
+#ifndef FOST_FACTORY
+#define FOST_FACTORY
+#pragma once
+
+
+#include <fost/db>
+
+
+// Used to define the constructors
+#define FSL_MODEL_CONSTRUCTOR( model ) \
+    model( const fostlib::json &j ) \
+    : model_type( j ) {}
+
+// Used to declare attributes in the models
+#define FSL_ATTRIBUTE_TAG_TYPE( name, stereotype ) \
+    struct name##_tag { \
+        typedef instance_type model_type; \
+        typedef stereotype stereotype_tag; \
+    };
+#define FSL_ATTRIBUTE_PK( name, type ) \
+    FSL_ATTRIBUTE_TAG_TYPE( name, model_base::primary_tag ) \
+    attribute< name##_tag, type, fostlib::model_base::a_primary > name;
+#define FSL_ATTRIBUTE_NOT_NULL( name, type ) \
+    FSL_ATTRIBUTE_TAG_TYPE( name,  model_base::required_tag ) \
+    attribute< name##_tag, type, fostlib::model_base::a_required > name;
+#define FSL_ATTRIBUTE_NULL( name, type ) \
+    FSL_ATTRIBUTE_TAG_TYPE( name, model_base::nullable_tag ) \
+    attribute< name##_tag, type, fostlib::model_base::a_nullable > name;
+
+// Static creation of the model binding
+#define FSL_ATTRIBUTE_DEFINITION( model, name )
+
+
+#endif // FOST_FACTORY

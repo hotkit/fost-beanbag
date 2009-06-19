@@ -7,7 +7,7 @@
 
 
 #include "fost-schema-test.hpp"
-#include <fost/db>
+#include <fost/factory>
 
 
 using namespace fostlib;
