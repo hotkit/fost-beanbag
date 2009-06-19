@@ -74,13 +74,13 @@ void do_insert_test( dbconnection &dbc ) {
     // Save, but don't commit
     {
         dbtransaction trans( dbc );
-        first->save( dbc );
+        first->save( trans );
     }
     FSL_CHECK( !first->in_database() );
     // This time commit it
     {
         dbtransaction trans( dbc );
-        first->save( dbc );
+        first->save( trans );
         trans.commit();
     }
     FSL_CHECK( first->in_database() );
@@ -92,7 +92,7 @@ void do_insert_test( dbconnection &dbc ) {
     boost::shared_ptr< instance > first_alias = simple.create( dbc, first_init );
     {
         dbtransaction trans( dbc );
-        FSL_CHECK_EXCEPTION( first_alias->save( dbc ), exceptions::not_null& );
+        FSL_CHECK_EXCEPTION( first_alias->save( trans ), exceptions::not_null& );
     }
     FSL_CHECK( !first_alias->in_database() );
 }
@@ -146,7 +146,7 @@ FSL_TEST_FUNCTION( transactions ) {
     boost::shared_ptr< instance > second = simple.create( dbc1, second_init );
     {
         dbtransaction trans( dbc1 );
-        second->save( dbc1 );
+        second->save( trans );
         trans.commit();
     }
 
@@ -170,7 +170,7 @@ FSL_TEST_FUNCTION( transactions ) {
     boost::shared_ptr< instance > third = simple.create( dbc2, third_init );
     {
         dbtransaction trans( dbc2 );
-        FSL_CHECK_NOTHROW( third->save( dbc2 ) );
+        FSL_CHECK_NOTHROW( third->save( trans ) );
         FSL_CHECK_NOTHROW( trans.commit() );
     }
     // dbc2 will now see 'first' due to its new read transaction
@@ -198,7 +198,7 @@ FSL_TEST_FUNCTION( transactions ) {
     // until the commit
     {
         dbtransaction trans( dbc2 );
-        FSL_CHECK_NOTHROW( fourth->save( dbc2 ) );
+        FSL_CHECK_NOTHROW( fourth->save( trans ) );
     }
     FSL_CHECK( dbc2.query( simple, json( 3 ) ).eof() );
 
@@ -206,8 +206,8 @@ FSL_TEST_FUNCTION( transactions ) {
     boost::shared_ptr< instance > fifth = simple.create( dbc2, fourth_init );
     {
         dbtransaction trans( dbc2 );
-        FSL_CHECK_NOTHROW( fourth->save( dbc2 ) );
-        FSL_CHECK_EXCEPTION( FSL_CHECK_NOTHROW( fifth->save( dbc2 ) ), exceptions::not_null& );
+        FSL_CHECK_NOTHROW( fourth->save( trans ) );
+        FSL_CHECK_EXCEPTION( FSL_CHECK_NOTHROW( fifth->save( trans ) ), exceptions::not_null& );
     }
     FSL_CHECK( dbc2.query( simple, json( 3 ) ).eof() );
 }

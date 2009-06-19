@@ -144,10 +144,10 @@ attribute_base &fostlib::instance::operator [] ( const string &name ) {
         return *p->second;
 }
 
-void fostlib::instance::save( dbconnection &dbc ) {
+void fostlib::instance::save( fostlib::dbtransaction &t ) {
     if ( m_in_database )
         throw exceptions::not_implemented( L"fostlib::instance::save() -- when already in database" );
     else
-        dbc.transaction().insert( *this, boost::lambda::var( m_in_database ) = true );
+        t.insert( *this, boost::lambda::var( m_in_database ) = true );
 }
 

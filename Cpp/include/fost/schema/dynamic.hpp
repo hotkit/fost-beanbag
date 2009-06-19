@@ -70,6 +70,7 @@ namespace fostlib {
     */
     class instance;
     class dbconnection;
+    class dbtransaction;
     class FOST_SCHEMA_DECLSPEC meta_instance : public enclosure {
         typedef std::vector< boost::shared_ptr< meta_attribute > > columns_type;
         typedef std::vector< boost::shared_ptr< meta_instance > > typelist_type;
@@ -144,7 +145,7 @@ namespace fostlib {
         }
 
         bool in_database() const { return m_in_database; }
-        void save( dbconnection &dbc );
+        void save( dbtransaction & );
 
     private:
         bool m_in_database, m_to_die;
