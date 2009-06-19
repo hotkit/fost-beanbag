@@ -47,9 +47,9 @@ public:
 };
 
 
-fostlib::factory< BasicModel > s_BasicModel1;
-fostlib::factory< BasicModel > s_BasicModel2( L"BasicModel" );
-fostlib::factory< BasicSubModel > s_BasicSubModel( L"BasicSubModel" );
+const fostlib::factory< BasicModel > s_BasicModel1;
+const fostlib::factory< BasicModel > s_BasicModel2( L"BasicModel" );
+const fostlib::factory< BasicSubModel > s_BasicSubModel( L"BasicSubModel" );
 
 
 FSL_TEST_FUNCTION( factories ) {
