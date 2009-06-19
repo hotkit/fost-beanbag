@@ -12,12 +12,14 @@
 
 
 #include <fost/db>
+#include <fost/schema/factory.hpp>
 
 
 // Used to define the constructors
 #define FSL_MODEL_CONSTRUCTOR( model ) \
     model( const fostlib::json &j ) \
-    : model_type( j ) {}
+    : model_type( j ) { \
+    }
 
 // Used to declare attributes in the models
 #define FSL_ATTRIBUTE_TAG_TYPE( name, stereotype ) \

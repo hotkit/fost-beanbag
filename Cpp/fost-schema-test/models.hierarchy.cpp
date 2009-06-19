@@ -43,3 +43,7 @@ class SubHostModel : public model< SubHostModel, HostModel > {
 public:
     FSL_MODEL_CONSTRUCTOR( SubHostModel );
 };
+
+
+fostlib::factory< BasicModel > s_BasicModel;
+fostlib::factory< BasicModel > s_BasicSubModel( L"BasicSubModel" );

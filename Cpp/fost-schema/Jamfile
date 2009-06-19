@@ -6,6 +6,7 @@ lib fost-schema
         ../../../fost-base/Cpp/fost-core/
         db.cpp
         exception.cpp
+        factory.cpp
         field.cpp
         mangling.cpp
         models.cpp
