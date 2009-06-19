@@ -58,4 +58,3 @@ FSL_TEST_FUNCTION( factories ) {
     FSL_CHECK_EXCEPTION( find_factory( L"No model factory" ), fostlib::exceptions::out_of_range< std::size_t >& );
     FSL_CHECK_EXCEPTION( find_factory( s_BasicModel1.name() ), fostlib::exceptions::out_of_range< std::size_t >& );
 }
-

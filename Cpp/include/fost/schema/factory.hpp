@@ -14,6 +14,9 @@
 #include <fost/schema.hpp>
 #include <typeinfo>
 
+#include <boost/static_assert.hpp>
+#include <boost/type_traits/is_same.hpp>
+
 
 namespace fostlib {
 
@@ -43,6 +46,12 @@ namespace fostlib {
     class factory : public detail::factory_base {
     public:
         typedef I instance_type;
+
+        // This will fail if we try to create a factory for a sub-class of a model type_info
+        // which does not itself inherit from model properly.
+        BOOST_STATIC_ASSERT( ( boost::is_same<
+            instance_type, typename instance_type::instance_type
+        >::value ) );
 
         factory()
         : factory_base( typeid( instance_type ) ) {
