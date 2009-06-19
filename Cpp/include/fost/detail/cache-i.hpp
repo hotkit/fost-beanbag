@@ -7,8 +7,7 @@
 
 
 template< typename O, typename K > inline
-fostlib::object_ptr< O, K >::object_ptr()
-: m_key() {
+fostlib::object_ptr< O, K >::object_ptr() {
 }
 
 template< typename O, typename K > inline
@@ -18,4 +17,33 @@ bool fostlib::object_ptr< O, K >::operator == ( const object_ptr &r ) const {
 template< typename O, typename K > inline
 bool fostlib::object_ptr< O, K >::operator != ( const object_ptr &r ) const {
     return m_key != r.m_key;
+}
+
+template< typename O, typename K > inline
+bool fostlib::object_ptr< O, K >::isnull() const {
+    return m_key.isnull();
+}
+template< typename O, typename K > inline
+bool fostlib::object_ptr< O, K >::operator == ( fostlib::t_null ) const {
+    return isnull();
+}
+template< typename O, typename K > inline
+bool fostlib::object_ptr< O, K >::operator != ( fostlib::t_null ) const {
+    return !isnull();
+}
+
+template< typename O, typename K > inline
+const typename fostlib::object_ptr< O, K >::key_type &fostlib::object_ptr< O, K >::value() const {
+    return m_key.value();
+}
+
+namespace fostlib {
+    template< typename O, typename K > inline
+    bool operator == ( t_null, const object_ptr< O, K > &o ) {
+        return o.isnull();
+    }
+    template< typename O, typename K > inline
+    bool operator != ( t_null, const object_ptr< O, K > &o ) {
+        return !o.isnull();
+    }
 }

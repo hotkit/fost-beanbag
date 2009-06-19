@@ -100,8 +100,14 @@ namespace fostlib {
         bool operator == ( const object_ptr &r ) const;
         bool operator != ( const object_ptr &r ) const;
 
+        bool isnull() const;
+        bool operator == ( t_null ) const;
+        bool operator != ( t_null ) const;
+
+        const key_type &value() const;
+
     private:
-        key_type m_key;
+        nullable< key_type > m_key;
         boost::weak_ptr< instance_type > m_pointer;
     };
 
