@@ -24,10 +24,6 @@ namespace fostlib {
     class FOST_SCHEMA_DECLSPEC model_base {
         boost::shared_ptr< instance > m_instance;
     public:
-        // Stores the basic meta data
-        struct factory_base;
-        struct attribute_binding_base;
-
         // Base type for the attributes
         typedef enum { a_primary, a_nullable, a_required } attribute_meta;
         template< typename tag >
@@ -36,89 +32,25 @@ namespace fostlib {
         // Tag types used to build meta data for attributes
         struct tag_base; struct primary_tag; struct nullable_tag; struct required_tag;
 
-        model_base( const factory_base &factory, dbconnection &dbc, const json &j );
+        model_base( const json &j );
         virtual ~model_base();
 
         instance &_instance();
     };
 
 
-    // Stores the binding between an attribute type and it's name
-    struct FOST_SCHEMA_DECLSPEC FSL_ABSTRACT model_base::attribute_binding_base {
-        attribute_binding_base( const factory_base &factory, const string &name );
-
-        virtual const model_base::tag_base &stereotype() const = 0;
-        accessors< string > name;
-    };
-
-
-    // Base types for attributes
-    template< typename tag >
-    class model_base::attribute_base {
-    public:
-        static const struct attribute_binding : public model_base::attribute_binding_base {
-            attribute_binding( const factory_base &factory, const string &name )
-            : attribute_binding_base( factory, name ) {
-            }
-            const model_base::tag_base &stereotype() const {
-                return m_stereotype;
-            }
-        private:
-            typename tag::stereotype_tag m_stereotype;
-        } binding;
-    };
-
-
-    // Factories are used to create instances of models
-    struct FOST_SCHEMA_DECLSPEC model_base::factory_base {
-        factory_base( const string &name );
-        factory_base( const enclosure &enc, const string &name );
-        factory_base( const factory_base &enc, const string &name );
-
-        const enclosure &ns() const;
-        accessors< string > name;
-
-        virtual boost::shared_ptr< meta_instance > _meta() const;
-
-    private:
-        typedef boost::variant< const enclosure *, const factory_base * > container_type;
-        container_type m_container;
-        mutable boost::shared_ptr< meta_instance > m_meta;
-
-        friend struct attribute_binding_base;
-        typedef library< const attribute_binding_base* > attributes_type;
-        mutable attributes_type m_attributes;
-    };
-
-
     // Tag types
     struct FSL_ABSTRACT model_base::tag_base {
         virtual model_base::attribute_meta stereotype() const = 0;
-        virtual meta_instance &describe(
-            meta_instance &meta,
-            const model_base::attribute_binding_base &binding
-        ) const = 0;
     };
     struct FOST_SCHEMA_DECLSPEC model_base::primary_tag : public model_base::tag_base {
         model_base::attribute_meta stereotype() const;
-        meta_instance &describe(
-            meta_instance &meta,
-            const model_base::attribute_binding_base &binding
-        ) const;
     };
     struct FOST_SCHEMA_DECLSPEC model_base::nullable_tag : public model_base::tag_base {
         model_base::attribute_meta stereotype() const;
-        meta_instance &describe(
-            meta_instance &meta,
-            const model_base::attribute_binding_base &binding
-        ) const;
     };
     struct FOST_SCHEMA_DECLSPEC model_base::required_tag : public model_base::tag_base {
         model_base::attribute_meta stereotype() const;
-        meta_instance &describe(
-            meta_instance &meta,
-            const model_base::attribute_binding_base &binding
-        ) const;
     };
 
 
@@ -127,73 +59,33 @@ namespace fostlib {
         There are two specialisations -- one where there is no superclass and one where
         there is a superclass model.
     */
-    template< typename model_type, typename superclass_type = t_null >
+    template< typename instance_type, typename superclass_type = t_null >
     class model;
 
     // Where there is no model superclass
-    template< typename model_type >
-    class model< model_type, t_null > : public model_base {
+    template< typename instance_type >
+    class model< instance_type, t_null > : public model_base {
     public:
-        typedef model< model_type > superclass;
+        typedef model< instance_type > model_type;
 
-        struct factory : public model_base::factory_base {
-            factory( const string &name ) : factory_base( name ) {}
-            template< typename E >
-            factory( const E &enc, const string &name ) : factory_base( enc, name ) {}
-
-            boost::shared_ptr< model_type > operator () ( dbconnection &dbc, const json &j ) const {
-                return boost::shared_ptr< model_type >(
-                    new model_type( dynamic_cast< const typename model_type::factory& >( *this ), dbc, j )
-                );
-            }
-        };
-
-        static const factory s_factory;
-        static const meta_instance &_meta() {
-            return *s_factory._meta();
-        }
-
-        model( const factory &f, dbconnection &dbc, const json &j )
-        : model_base( f, dbc, j ) {
+        model( const json &j )
+        : model_base( j ) {
         }
 
         // This describes an attribute. This ensures that every attribute has its own C++ type
         template< typename tag, typename type, model_base::attribute_meta stereotype >
-        class attribute : public attribute_base< tag > {
+        class attribute /*: public attribute_base< tag >*/ {
         };
     };
 
     // Where there is a model superclass
-    template< typename model_type, typename superclass_type >
+    template< typename instance_type, typename superclass_type >
     class model : public superclass_type {
     public:
-        typedef model< model_type, superclass_type > superclass;
+        typedef model< instance_type, superclass_type > model_type;
 
-        struct factory : public superclass_type::factory {
-            factory( const string &name ) : superclass_type::factory( name ) {}
-            template< typename E >
-            factory( const E &enc, const string &name ) : superclass_type::factory( enc, name ) {}
-
-            boost::shared_ptr< model_type > operator () ( dbconnection &dbc, const json &j ) const {
-                return boost::shared_ptr< model_type >(
-                    new model_type( dynamic_cast< const typename model_type::factory& >( *this ), dbc, j )
-                );
-            }
-
-            boost::shared_ptr< meta_instance > _meta() const {
-                boost::shared_ptr< meta_instance > m = superclass_type::factory::_meta();
-                m->superclasses().push_back( superclass_type::s_factory._meta() );
-                return m;
-            }
-        };
-
-        static const factory s_factory;
-        static const meta_instance &_meta() {
-            return *s_factory._meta();
-        }
-
-        model( const factory &f, dbconnection &dbc, const json &j )
-        : superclass_type( f, dbc, j ) {
+        model( const json &j )
+        : superclass_type( j ) {
         }
     };
 
@@ -206,8 +98,8 @@ namespace fostlib {
     typedef model this_model_type;
 #define FSL_MODEL_CONSTRUCTOR( model ) \
     FSL_MODEL_TYPEDEFS( model ) \
-    model( const factory &f, fostlib::dbconnection &d, const fostlib::json &j ) \
-    : superclass( f, d, j ) {}
+    model( const fostlib::json &j ) \
+    : model_type( j ) {}
 
 // Used to declare attributes in the models
 #define FSL_ATTRIBUTE_PK( name, type ) \
@@ -230,14 +122,7 @@ namespace fostlib {
     attribute< name##_tag, type, fostlib::model_base::a_nullable > name;
 
 // Static creation of the model binding
-#define FSL_MODEL_DEFINITION( name ) \
-    template<> const name::factory name::superclass::s_factory
-#define FSL_ATTRIBUTE_DEFINITION( model, name ) \
-    template <> const \
-        fostlib::model_base::attribute_base< model::name##_tag >::attribute_binding \
-            fostlib::model_base::attribute_base< model::name##_tag >::binding( \
-                model::s_factory, fostlib::string( #name ) \
-            )
+#define FSL_ATTRIBUTE_DEFINITION( model, name )
 
 
 #endif // FOST_SCHEMA_STATIC_HPP

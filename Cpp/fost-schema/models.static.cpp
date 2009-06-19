@@ -19,8 +19,7 @@ using namespace fostlib;
     fostlib::model_base
 */
 
-fostlib::model_base::model_base( const factory_base &factory, dbconnection &dbc, const json &j )
-: m_instance( factory._meta()->create( dbc, j ) ) {
+fostlib::model_base::model_base( const json & ) {
 }
 
 fostlib::model_base::~model_base() {
@@ -32,60 +31,6 @@ instance &fostlib::model_base::_instance() {
 
 
 /*
-    fostlib::model_base::factory_base
-*/
-
-fostlib::model_base::factory_base::factory_base( const string &name )
-: name( name ), m_container( &enclosure::global ) {
-}
-fostlib::model_base::factory_base::factory_base( const enclosure &ns, const string &name )
-: name( name ), m_container( &ns ) {
-}
-fostlib::model_base::factory_base::factory_base( const factory_base &ns, const string &name )
-: name( name ), m_container( &ns ) {
-}
-
-namespace {
-    const struct container_content : public boost::static_visitor< const enclosure & >{
-        const enclosure &operator () ( const enclosure * const enc ) const {
-            return *enc;
-        }
-        const enclosure &operator () ( const model_base::factory_base * const enc ) const {
-            return *enc->_meta();
-        }
-    } c_container_dereferencer;
-}
-const enclosure &fostlib::model_base::factory_base::ns() const {
-    return boost::apply_visitor( c_container_dereferencer, m_container );
-}
-
-boost::shared_ptr< meta_instance > fostlib::model_base::factory_base::_meta() const {
-    if ( !m_meta.get() ) {
-        m_meta = boost::shared_ptr< meta_instance >(
-            new meta_instance( ns(), name() )
-        );
-        attributes_type::keys_t keys = m_attributes.keys();
-        for ( attributes_type::keys_t::const_iterator k( keys.begin() ); k != keys.end(); ++k ) {
-            attributes_type::found_t values = m_attributes.find( *k );
-            for ( attributes_type::found_t::const_iterator a( values.begin() ); a != values.end(); ++a )
-                (*a)->stereotype().describe( *m_meta, **a );
-        }
-    }
-    return m_meta;
-}
-
-
-/*
-    fostlib::model_base::attribute_binding_base
-*/
-
-fostlib::model_base::attribute_binding_base::attribute_binding_base( const factory_base &factory, const string &name )
-: name( name ) {
-    factory.m_attributes.add( name, this );
-}
-
-
-/*
     fostlib::model_base::tag_base
 */
 
@@ -93,24 +38,12 @@ fostlib::model_base::attribute_binding_base::attribute_binding_base( const facto
 model_base::attribute_meta fostlib::model_base::primary_tag::stereotype() const {
     return model_base::a_primary;
 }
-meta_instance &fostlib::model_base::primary_tag::describe( meta_instance &meta, const model_base::attribute_binding_base &binding ) const {
-    meta.primary_key( binding.name(), L"integer" );
-    return meta;
-}
 
 model_base::attribute_meta fostlib::model_base::nullable_tag::stereotype() const {
     return model_base::a_nullable;
 }
-meta_instance &fostlib::model_base::nullable_tag::describe( meta_instance &meta, const model_base::attribute_binding_base &binding ) const {
-    meta.field( binding.name(), L"integer", false );
-    return meta;
-}
 
 model_base::attribute_meta fostlib::model_base::required_tag::stereotype() const {
     return model_base::a_required;
-}
-meta_instance &fostlib::model_base::required_tag::describe( meta_instance &meta, const model_base::attribute_binding_base &binding ) const {
-    meta.field( binding.name(), L"integer", true );
-    return meta;
 }
 
