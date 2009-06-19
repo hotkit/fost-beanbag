@@ -6,6 +6,7 @@ lib fost-cache-test-smoke
         ../../../Boost//boost-thread-dll
         ../../../fost-base/Cpp/fost-core/
         ../../../fost-base/Cpp/fost-test/
+        ../fost-schema/
         ../fost-cache/
         cache-construction.cpp
         type-registration.cpp
