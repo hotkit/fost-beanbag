@@ -97,6 +97,9 @@ namespace fostlib {
 
         object_ptr();
 
+        bool operator == ( const object_ptr &r ) const;
+        bool operator != ( const object_ptr &r ) const;
+
     private:
         key_type m_key;
         boost::weak_ptr< instance_type > m_pointer;

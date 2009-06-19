@@ -6,7 +6,16 @@
 */
 
 
-template< typename O, typename K >
-fostlib::object_ptr< O, K >::object_ptr() {
+template< typename O, typename K > inline
+fostlib::object_ptr< O, K >::object_ptr()
+: m_key() {
 }
 
+template< typename O, typename K > inline
+bool fostlib::object_ptr< O, K >::operator == ( const object_ptr &r ) const {
+    return m_key == r.m_key;
+}
+template< typename O, typename K > inline
+bool fostlib::object_ptr< O, K >::operator != ( const object_ptr &r ) const {
+    return m_key != r.m_key;
+}

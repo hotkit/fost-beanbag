@@ -19,6 +19,7 @@ namespace {
         }
 
         typedef int key_type;
+        FSL_ATTRIBUTE_PK( pk, int );
     };
     const fostlib::factory< Model > s_Model;
 }
@@ -29,5 +30,5 @@ FSL_TEST_SUITE( object_ptr );
 
 FSL_TEST_FUNCTION( constructors ) {
     fostlib::object_ptr< Model > o1;
-    fostlib::object_ptr< Model > o2;
+    fostlib::test::default_copy_constructable< fostlib::object_ptr< Model > >();
 }
