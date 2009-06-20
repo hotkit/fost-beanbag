@@ -50,8 +50,13 @@ const enclosure &fostlib::enclosure::parent() const {
     fostlib::instance
 */
 
-fostlib::instance::instance( const meta_instance &meta, const json &j )
+fostlib::instance::instance( const meta_instance &meta, const json &v )
 : m_in_database( false ), m_to_die( false ), m_meta( meta ) {
+    for ( meta_instance::const_iterator col( meta.begin() ); col != meta.end(); ++col )
+        if ( v.has_key( (*col)->name() ) )
+            attribute( (*col)->construct( v[ (*col)->name() ] ) );
+        else
+            attribute( (*col)->construct() );
 }
 
 void fostlib::instance::attribute( boost::shared_ptr< attribute_base > attr ) {

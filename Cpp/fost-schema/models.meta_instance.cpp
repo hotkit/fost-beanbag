@@ -16,13 +16,6 @@
 using namespace fostlib;
 
 
-fostlib::meta_instance::meta_instance( const string &n )
-: enclosure( n ) {
-}
-fostlib::meta_instance::meta_instance( const enclosure &e, const string &n )
-: enclosure( e, n ) {
-}
-
 namespace {
     boost::shared_ptr< meta_attribute > make_attribute(
         const string &name, const string &type, bool key, bool not_null,
@@ -41,6 +34,15 @@ namespace {
         return end;
     }
 }
+
+fostlib::meta_instance::meta_instance( const string &n )
+: enclosure( n ) {
+}
+fostlib::meta_instance::meta_instance( const enclosure &e, const string &n )
+: enclosure( e, n ) {
+}
+
+
 meta_instance &fostlib::meta_instance::primary_key(
     const string &name, const string &type,
     const nullable< std::size_t > &size, const nullable< std::size_t > &precision
@@ -60,6 +62,7 @@ meta_instance &fostlib::meta_instance::field(
     return *this;
 }
 
+
 const meta_attribute &fostlib::meta_instance::operator[] ( const string &n ) const {
     columns_type::const_iterator p( find_attr( m_columns.begin(), m_columns.end(), n ) );
     if ( p != m_columns.end() )
@@ -68,17 +71,13 @@ const meta_attribute &fostlib::meta_instance::operator[] ( const string &n ) con
         throw exceptions::null( L"Could not find attribute definition", n );
 }
 
+
 boost::shared_ptr< instance > fostlib::meta_instance::create() const {
     return create( json() );
 }
 boost::shared_ptr< instance > fostlib::meta_instance::create( const json &j ) const {
     const json empty, &v( j.isobject() ? j : empty );
     boost::shared_ptr< instance > object( new instance( *this, j ) );
-    for ( columns_type::const_iterator col( m_columns.begin() ); col != m_columns.end(); ++col )
-        if ( v.has_key( (*col)->name() ) )
-            object->attribute( (*col)->construct( v[ (*col)->name() ] ) );
-        else
-            object->attribute( (*col)->construct() );
     return object;
 }
 
