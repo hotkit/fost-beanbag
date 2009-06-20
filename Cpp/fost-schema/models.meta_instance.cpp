@@ -68,10 +68,10 @@ const meta_attribute &fostlib::meta_instance::operator[] ( const string &n ) con
         throw exceptions::null( L"Could not find attribute definition", n );
 }
 
-boost::shared_ptr< instance > fostlib::meta_instance::create( dbconnection &dbc ) const {
-    return create( dbc, json() );
+boost::shared_ptr< instance > fostlib::meta_instance::create() const {
+    return create( json() );
 }
-boost::shared_ptr< instance > fostlib::meta_instance::create( dbconnection &dbc, const json &j ) const {
+boost::shared_ptr< instance > fostlib::meta_instance::create( const json &j ) const {
     const json empty, &v( j.isobject() ? j : empty );
     boost::shared_ptr< instance > object( new instance( *this, j ) );
     for ( columns_type::const_iterator col( m_columns.begin() ); col != m_columns.end(); ++col )

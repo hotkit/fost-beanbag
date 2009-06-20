@@ -93,8 +93,8 @@ namespace fostlib {
 
         virtual string table( const instance & ) const;
 
-        boost::shared_ptr< instance > create( dbconnection &dbc ) const;
-        boost::shared_ptr< instance > create( dbconnection &dbc, const json & ) const;
+        boost::shared_ptr< instance > create() const;
+        boost::shared_ptr< instance > create( const json & ) const;
 
         typedef columns_type::const_iterator const_iterator;
         const_iterator begin() const { return m_columns.begin(); }

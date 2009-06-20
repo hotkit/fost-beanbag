@@ -41,7 +41,7 @@ FSL_TEST_FUNCTION( dynamic_construct_blank ) {
     simple
         .primary_key( L"id", L"integer" )
         .field( L"name", L"varchar", true, 10 );
-    boost::shared_ptr< instance > i = simple.create( dbc );
+    boost::shared_ptr< instance > i = simple.create();
     FSL_CHECK( !i->in_database() );
     FSL_CHECK_EQ( (*i)[ L"id" ]._meta().type().type_name(), L"integer" );
     FSL_CHECK_EQ( (*i)[ L"name" ]._meta().type().type_name(), L"varchar" );
@@ -58,7 +58,7 @@ FSL_TEST_FUNCTION( dynamic_construct_json ) {
     simple
         .primary_key( L"id", L"integer" )
         .field( L"name", L"varchar", true, 10 );
-    boost::shared_ptr< instance > i = simple.create( dbc, json::parse(
+    boost::shared_ptr< instance > i = simple.create( json::parse(
         L"{ \"id\": 123, \"name\": \"A simple name\" }"
     ) );
     FSL_CHECK_EQ( (*i)[ L"id" ].to_json(), json( 123 ) );
