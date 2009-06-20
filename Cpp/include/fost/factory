@@ -16,20 +16,21 @@
 
 
 // Used to declare attributes in the models
-#define FSL_ATTRIBUTE_TAG_TYPE( name, stereotype ) \
-    struct name##_tag { \
+#define FSL_ATTRIBUTE_TAG_TYPE( name, type, stereotype ) \
+    struct _##name##_tag { \
         typedef instance_type model_type; \
+        typedef type logical_attribute_type; \
         typedef stereotype stereotype_tag; \
     };
 #define FSL_ATTRIBUTE_PK( name, type ) \
-    FSL_ATTRIBUTE_TAG_TYPE( name, model_base::primary_tag ) \
-    attribute< name##_tag, type, fostlib::model_base::a_primary > name;
+    FSL_ATTRIBUTE_TAG_TYPE( name, type, fostlib::model_base::primary_tag ) \
+    _attribute< _##name##_tag > name;
 #define FSL_ATTRIBUTE_NOT_NULL( name, type ) \
-    FSL_ATTRIBUTE_TAG_TYPE( name,  model_base::required_tag ) \
-    attribute< name##_tag, type, fostlib::model_base::a_required > name;
+    FSL_ATTRIBUTE_TAG_TYPE( name,  type, fostlib::model_base::required_tag ) \
+    _attribute< _##name##_tag > name;
 #define FSL_ATTRIBUTE_NULL( name, type ) \
-    FSL_ATTRIBUTE_TAG_TYPE( name, model_base::nullable_tag ) \
-    attribute< name##_tag, type, fostlib::model_base::a_nullable > name;
+    FSL_ATTRIBUTE_TAG_TYPE( name, type, fostlib::model_base::nullable_tag ) \
+    _attribute< _##name##_tag > name;
 
 
 #endif // FOST_FACTORY

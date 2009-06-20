@@ -108,16 +108,14 @@ namespace fostlib {
     */
     class FOST_SCHEMA_DECLSPEC attribute_base : boost::noncopyable {
     protected:
-        attribute_base( const meta_attribute & );
+        attribute_base();
     public:
         virtual ~attribute_base() {}
 
         virtual json to_json() const = 0;
         virtual void from_json( const json & ) = 0;
 
-        const meta_attribute &_meta() const;
-    private:
-        const meta_attribute &m_meta;
+        virtual const meta_attribute &_meta() const = 0;
     };
 
 

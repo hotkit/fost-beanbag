@@ -14,6 +14,8 @@
 #include <fost/schema/dynamic.hpp>
 #include <fost/thread.hpp>
 
+#include <fost/exception/not_implemented.hpp>
+
 
 namespace fostlib {
 
@@ -26,8 +28,6 @@ namespace fostlib {
     public:
         // Base type for the attributes
         typedef enum { a_primary, a_nullable, a_required } attribute_meta;
-        template< typename tag >
-        class attribute_base;
 
         // Tag types used to build meta data for attributes
         struct tag_base; struct primary_tag; struct nullable_tag; struct required_tag;
@@ -73,9 +73,61 @@ namespace fostlib {
         : model_base( j ) {
         }
 
-        // This describes an attribute. This ensures that every attribute has its own C++ type
-        template< typename tag, typename type, model_base::attribute_meta stereotype >
-        class attribute /*: public attribute_base< tag >*/ {
+        /*
+            The model attributes are built up in several layers each handling a different
+            aspect of the storage and management.
+        */
+        // This stores an instance of the underlying data type.
+        template< typename actual_type >
+        struct _attribute_storage : public attribute_base {
+            actual_type m_value;
+        public:
+            _attribute_storage( model_base *instance, const json &init )
+            : attribute_base(), m_value() {
+            }
+
+            json to_json() const {
+                return coerce< json >( m_value );
+            }
+            void from_json( const json &j ) {
+                m_value = coerce< actual_type >( j );
+            }
+        };
+
+        // This works out the correct actual storage type based on the logical type and
+        // the stereotype. Both PK and required use the logical type, nullable wraps it in a
+        // nullable
+        template< typename logical_type, typename stereotype >
+        struct _attribute_storage_specifier :
+            public _attribute_storage< logical_type >
+        {
+            _attribute_storage_specifier( model_base *i, const json &j )
+            : _attribute_storage< logical_type >( i, j ) {
+            }
+        };
+        template< typename logical_type >
+        struct _attribute_storage_specifier< logical_type, model_base::nullable_tag > :
+            public _attribute_storage< nullable< logical_type > >
+        {
+            _attribute_storage_specifier( model_base *i, const json &j )
+            : _attribute_storage< nullable< logical_type > >( i, j ) {
+            }
+        };
+
+        // This fetches the required meta-data from the attribute's tag type
+        template< typename tag >
+        struct _attribute : public _attribute_storage_specifier<
+            typename tag::logical_attribute_type, typename tag::stereotype_tag
+        > {
+            _attribute( model_base *instance, const json &init )
+            : _attribute_storage_specifier<
+                typename tag::logical_attribute_type, typename tag::stereotype_tag
+            >( instance, init ) {
+            }
+
+            const meta_attribute &_meta() const {
+                throw exceptions::not_implemented( "_attribute::_meta() const" );
+            }
         };
     };
 

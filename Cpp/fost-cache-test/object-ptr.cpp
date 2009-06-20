@@ -15,7 +15,8 @@ namespace {
     class Model : public fostlib::model< Model > {
     public:
         Model( const fostlib::json &j )
-        : model_type( j ) {
+        : model_type( j ),
+            pk( this, j ) {
         }
 
         typedef int key_type;

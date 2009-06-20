@@ -20,7 +20,9 @@ namespace {
     class SimpleModel : public model< SimpleModel > {
     public:
         SimpleModel( const fostlib::json &j )
-        : model_type( j ) {
+        : model_type( j ),
+            pk( this, j ),
+            display_name( this, j ) {
         }
         FSL_ATTRIBUTE_PK( pk, int64_t );
         FSL_ATTRIBUTE_NULL( display_name, string );
@@ -31,7 +33,8 @@ namespace {
     class SubModel : public model< SubModel, SimpleModel > {
     public:
         SubModel( const fostlib::json &j )
-        : model_type( j ) {
+        : model_type( j ),
+            name( this, j ) {
         }
         FSL_ATTRIBUTE_NOT_NULL( name, string );
     };

@@ -11,5 +11,6 @@
 
 
 fostlib::type_descriptor::type_descriptor( const json &j )
-: model_type( j ) {
+: model_type( j ),
+    name( this, j ) {
 }

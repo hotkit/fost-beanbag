@@ -23,43 +23,28 @@ namespace fostlib {
     template< typename value_type >
     class field_wrapper : public field_base {
     public:
+        template< typename storage_type >
         class value : public attribute_base {
         public:
             value( const meta_attribute &m )
-            : attribute_base( m ), m_value( value_type() ) {
+            : attribute_base(), m_meta( m ), m_value( storage_type() ) {
             }
             value( const meta_attribute &m, const json &j )
-            : attribute_base( m ), m_value( coerce< value_type >( j ) ) {
+            : attribute_base(), m_meta( m ), m_value( coerce< storage_type >( j ) ) {
             }
 
             json to_json() const {
                 return coerce< json >( m_value );
             }
             void from_json( const json &j ) {
-                m_value = coerce< value_type >( j );
+                m_value = coerce< storage_type >( j );
             }
+
+            const meta_attribute &_meta() const { return m_meta; }
 
         private:
-            value_type m_value;
-        };
-        class nullable : public attribute_base {
-        public:
-            nullable( const meta_attribute &m )
-            : attribute_base( m ) {
-            }
-            nullable( const meta_attribute &m, const json &j )
-            : attribute_base( m ), m_value( coerce< value_type >( j ) ) {
-            }
-
-            json to_json() const {
-                return coerce< json >( m_value.value() );
-            }
-            void from_json( const json &j ) {
-                m_value = coerce< value_type >( j );
-            }
-
-        private:
-            fostlib::nullable< value_type > m_value;
+            const meta_attribute &m_meta;
+            storage_type m_value;
         };
     private:
         struct factory : public meta_attribute {
@@ -71,15 +56,15 @@ namespace fostlib {
 
             boost::shared_ptr< attribute_base > construct() const {
                 if ( not_null() )
-                    return boost::shared_ptr< attribute_base >( new value( *this ) );
+                    return boost::shared_ptr< attribute_base >( new value< value_type >( *this ) );
                 else
-                    return boost::shared_ptr< attribute_base >( new nullable( *this ) );
+                    return boost::shared_ptr< attribute_base >( new value< nullable< value_type > >( *this ) );
             }
             boost::shared_ptr< attribute_base > construct( const json &j ) const {
                 if ( not_null() )
-                    return boost::shared_ptr< attribute_base >( new value( *this, j ) );
+                    return boost::shared_ptr< attribute_base >( new value< value_type >( *this, j ) );
                 else
-                    return boost::shared_ptr< attribute_base >( new nullable( *this, j ) );
+                    return boost::shared_ptr< attribute_base >( new value< nullable< value_type > >( *this, j ) );
             }
         };
     public:
