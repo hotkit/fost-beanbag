@@ -91,8 +91,6 @@ namespace fostlib {
             const nullable< std::size_t > & size = null, const nullable< std::size_t > &precision = null
         );
 
-        virtual string table( const instance & ) const;
-
         boost::shared_ptr< instance > create() const;
         boost::shared_ptr< instance > create( const json & ) const;
 

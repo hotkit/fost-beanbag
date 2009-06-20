@@ -76,11 +76,5 @@ boost::shared_ptr< instance > fostlib::meta_instance::create() const {
     return create( json() );
 }
 boost::shared_ptr< instance > fostlib::meta_instance::create( const json &j ) const {
-    const json empty, &v( j.isobject() ? j : empty );
-    boost::shared_ptr< instance > object( new instance( *this, j ) );
-    return object;
-}
-
-string fostlib::meta_instance::table( const instance & ) const {
-    return name();
+    return boost::shared_ptr< instance >( new instance( *this, j ) );
 }
