@@ -201,9 +201,9 @@ void jsonInterface::create_database( dbconnection &dbc, const string &name ) con
             g_database( name, dbpath( dbc.configuration(), name ), true );
             json init;
             jcursor( L"name" )( init ) = name;
-            boost::shared_ptr< instance > dbrep( master_schema->database.create( dbc, init ) );
+            boost::shared_ptr< instance > dbrep( master_schema->database.create( init ) );
             dbtransaction trans( dbc );
-            dbrep->save();
+            dbrep->save( trans );
             trans.commit();
         } else
             throw exceptions::query_failure(

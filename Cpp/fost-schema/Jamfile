@@ -6,10 +6,12 @@ lib fost-schema
         ../../../fost-base/Cpp/fost-core/
         db.cpp
         exception.cpp
+        factory.cpp
         field.cpp
         mangling.cpp
         models.cpp
         models.attribute.cpp
+        models.meta_instance.cpp
         models.static.cpp
     :
         <include>../include
