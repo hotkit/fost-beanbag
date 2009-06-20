@@ -11,6 +11,7 @@ lib fost-schema
         mangling.cpp
         models.cpp
         models.attribute.cpp
+        models.meta_instance.cpp
         models.static.cpp
     :
         <include>../include
