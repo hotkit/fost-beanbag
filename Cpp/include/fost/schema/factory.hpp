@@ -79,6 +79,7 @@ namespace fostlib {
     };
 
 
+    FOST_SCHEMA_DECLSPEC const detail::factory_base &find_factory( const std::type_info &type );
     FOST_SCHEMA_DECLSPEC const detail::factory_base &find_factory( const string &name );
 
 

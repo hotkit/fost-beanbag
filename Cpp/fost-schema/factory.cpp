@@ -69,6 +69,9 @@ boost::shared_ptr< meta_instance > fostlib::detail::factory_base::meta() const {
     return m_meta;
 }
 
+const detail::factory_base &fostlib::find_factory( const std::type_info &type ) {
+    return find_factory( string( type.name() ) );
+}
 const detail::factory_base &fostlib::find_factory( const string &name ) {
     try {
         factory_registry_type::found_t factories( g_registry().find( name ) );
