@@ -46,6 +46,9 @@ namespace fostlib {
             mutable boost::shared_ptr< meta_instance > m_meta;
         };
 
+        FOST_SCHEMA_DECLSPEC const factory_base &find_factory( const std::type_info &type );
+        FOST_SCHEMA_DECLSPEC const factory_base &find_factory( const string &name );
+
 
     }
 
@@ -78,9 +81,10 @@ namespace fostlib {
         }
     };
 
-
-    FOST_SCHEMA_DECLSPEC const detail::factory_base &find_factory( const std::type_info &type );
-    FOST_SCHEMA_DECLSPEC const detail::factory_base &find_factory( const string &name );
+    template< typename T >
+    const factory< T > &find_factory() {
+        return dynamic_cast< const factory< T > >( detail::find_factory( typeid( T ) ) );
+    }
 
 
 }
