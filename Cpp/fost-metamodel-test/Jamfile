@@ -1,22 +1,21 @@
 
-lib fost-cache-test-smoke
+lib fost-metamodel-test-smoke
     :
         ../../../fost-base/External//uuid
         ../../../Boost//boost-date_time-dll
+        ../../../Boost//boost-filesystem-dll
+        ../../../Boost//boost-system-dll
         ../../../Boost//boost-thread-dll
         ../../../fost-base/Cpp/fost-core/
         ../../../fost-base/Cpp/fost-test/
+        ../fost-metamodel/
         ../fost-schema/
-        ../fost-cache/
-        cache-construction.cpp
-        object-ptr.cpp
-        type-registration.cpp
-    :
-        <include>../include
+        bootstrap.cpp
     ;
 
-install ../../../dist/lib :
-        fost-cache-test-smoke
+install ../../../dist/lib
+    :
+        fost-metamodel-test-smoke
     :
         <target-os>linux:<install-dependencies>on
         <target-os>linux:<install-type>LIB
@@ -25,9 +24,11 @@ install ../../../dist/lib :
         <target-os>windows:<install-type>XXX
     ;
 
-install ../../../dist/bin :
-        fost-cache-test-smoke
+install ../../../dist/bin
     :
-        <target-os>windows:<install-dependencies>on
+        fost-metamodel-test-smoke
+    :
+        <install-dependencies>on
+        <install-type>EXE
         <target-os>windows:<install-type>LIB
     ;

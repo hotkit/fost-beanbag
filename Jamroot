@@ -4,9 +4,12 @@ include $(TOP)/../boost-version.jam ;
 project
     :
         requirements
+
+        <include>Cpp/include
         <include>$(BOOST_HEADERS)
         <include>../fost-base/Cpp/include
         <target-os>windows:<include>../OpenSSL/install/include/
+
         <threading>multi
         <runtime-link>shared
 
@@ -30,5 +33,6 @@ project
 
 build-project Cpp/fost-cache-test/ ;
 build-project Cpp/fost-jsondb-test/ ;
+build-project Cpp/fost-metamodel-test/ ;
 build-project Cpp/fost-schema-test/ ;
 build-project Cpp/fost-sql-test/ ;

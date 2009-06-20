@@ -47,86 +47,16 @@ const enclosure &fostlib::enclosure::parent() const {
 
 
 /*
-    fostlib::meta_instance
-*/
-
-fostlib::meta_instance::meta_instance( const string &n )
-: enclosure( n ) {
-}
-fostlib::meta_instance::meta_instance( const enclosure &e, const string &n )
-: enclosure( e, n ) {
-}
-
-namespace {
-    boost::shared_ptr< meta_attribute > make_attribute(
-        const string &name, const string &type, bool key, bool not_null,
-        const nullable< std::size_t > &size, const nullable< std::size_t > &precision
-    ) {
-        boost::shared_ptr< meta_attribute > attr(  field_base::fetch( type ).meta_maker(
-            name, key, not_null, size, precision
-        ) );
-        return attr;
-    }
-    template< typename const_iterator >
-    const_iterator find_attr( const_iterator p, const const_iterator end, const string &n ) {
-        for( ; p != end; ++p )
-            if ( (*p)->name() == n )
-                return p;
-        return end;
-    }
-}
-meta_instance &fostlib::meta_instance::primary_key(
-    const string &name, const string &type,
-    const nullable< std::size_t > &size, const nullable< std::size_t > &precision
-) {
-    if ( find_attr( m_columns.begin(), m_columns.end(), name ) != m_columns.end() )
-        throw exceptions::null( L"Cannot have two attributes with the same name" );
-    m_columns.push_back( make_attribute( name, type, true, true, size, precision ) );
-    return *this;
-}
-meta_instance &fostlib::meta_instance::field(
-    const string &name, const string &type, bool not_null,
-    const nullable< std::size_t > &size, const nullable< std::size_t > &precision
-) {
-    if ( find_attr( m_columns.begin(), m_columns.end(), name ) != m_columns.end() )
-        throw exceptions::null( L"Cannot have two attributes with the same name" );
-    m_columns.push_back( make_attribute( name, type, false, not_null, size, precision ) );
-    return *this;
-}
-
-const meta_attribute &fostlib::meta_instance::operator[] ( const string &n ) const {
-    columns_type::const_iterator p( find_attr( m_columns.begin(), m_columns.end(), n ) );
-    if ( p != m_columns.end() )
-        return **p;
-    else
-        throw exceptions::null( L"Could not find attribute definition", n );
-}
-
-boost::shared_ptr< instance > fostlib::meta_instance::create( dbconnection &dbc ) const {
-    return create( dbc, json() );
-}
-boost::shared_ptr< instance > fostlib::meta_instance::create( dbconnection &dbc, const json &j ) const {
-    const json empty, &v( j.isobject() ? j : empty );
-    boost::shared_ptr< instance > object( new instance( dbc, *this ) );
-    for ( columns_type::const_iterator col( m_columns.begin() ); col != m_columns.end(); ++col )
-        if ( v.has_key( (*col)->name() ) )
-            object->attribute( (*col)->construct( v[ (*col)->name() ] ) );
-        else
-            object->attribute( (*col)->construct() );
-    return object;
-}
-
-string fostlib::meta_instance::table( const instance & ) const {
-    return name();
-}
-
-
-/*
     fostlib::instance
 */
 
-fostlib::instance::instance( dbconnection &dbc, const meta_instance &meta )
-: m_in_database( false ), m_to_die( false ), m_meta( meta ), m_dbc( &dbc ) {
+fostlib::instance::instance( const meta_instance &meta, const json &v )
+: m_in_database( false ), m_to_die( false ), m_meta( meta ) {
+    for ( meta_instance::const_iterator col( meta.begin() ); col != meta.end(); ++col )
+        if ( v.has_key( (*col)->name() ) )
+            attribute( (*col)->construct( v[ (*col)->name() ] ) );
+        else
+            attribute( (*col)->construct() );
 }
 
 void fostlib::instance::attribute( boost::shared_ptr< attribute_base > attr ) {
@@ -144,10 +74,10 @@ attribute_base &fostlib::instance::operator [] ( const string &name ) {
         return *p->second;
 }
 
-void fostlib::instance::save() {
+void fostlib::instance::save( fostlib::dbtransaction &t ) {
     if ( m_in_database )
         throw exceptions::not_implemented( L"fostlib::instance::save() -- when already in database" );
     else
-        m_dbc->transaction().insert( *this, boost::lambda::var( m_in_database ) = true );
+        t.insert( *this, boost::lambda::var( m_in_database ) = true );
 }
 

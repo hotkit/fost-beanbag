@@ -8,8 +8,6 @@
 
 #include "fost-schema.hpp"
 #include <fost/schema.hpp>
-#include <fost/db.hpp>
-#include <fost/exception/null.hpp>
 
 
 using namespace fostlib;
@@ -34,11 +32,6 @@ const field_base &meta_attribute::type() const {
     fostlib::attribute_base
 */
 
-fostlib::attribute_base::attribute_base( const meta_attribute &m )
-: m_meta( m ) {
-}
-
-const meta_attribute &fostlib::attribute_base::_meta() const {
-    return m_meta;
+fostlib::attribute_base::attribute_base() {
 }
 
