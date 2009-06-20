@@ -16,6 +16,7 @@ then {
     if ../dist/bin/ftest -b false \
         libfost-cache-test-smoke.so \
         libfost-jsondb-test-smoke.so \
+        libfost-metamodel-test-smoke.so \
         libfost-schema-test-smoke.so \
         libfost-sql-test-smoke.so
     then {
