@@ -83,7 +83,7 @@ namespace fostlib {
 
     template< typename T >
     const factory< T > &find_factory() {
-        return dynamic_cast< const factory< T > >( detail::find_factory( typeid( T ) ) );
+        return dynamic_cast< const factory< T > & >( detail::find_factory( typeid( T ) ) );
     }
 
 

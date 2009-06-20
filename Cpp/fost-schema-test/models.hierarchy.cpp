@@ -78,8 +78,8 @@ FSL_TEST_FUNCTION( factories ) {
     FSL_CHECK_EQ( &s_BasicSubModel, &detail::find_factory( typeid( BasicSubModel ) ) );
     FSL_CHECK_EQ( &s_BasicSubModel, &find_factory< BasicSubModel >() );
 
-    FSL_CHECK_EXCEPTION( find_factory( L"No model factory" ), fostlib::exceptions::out_of_range< std::size_t >& );
-    FSL_CHECK_EXCEPTION( find_factory( s_BasicModel1.name() ), fostlib::exceptions::out_of_range< std::size_t >& );
+    FSL_CHECK_EXCEPTION( detail::find_factory( L"No model factory" ), fostlib::exceptions::out_of_range< std::size_t >& );
+    FSL_CHECK_EXCEPTION( detail::find_factory( s_BasicModel1.name() ), fostlib::exceptions::out_of_range< std::size_t >& );
 
     FSL_CHECK_EQ( s_BasicModel1.ns().name(), s_anon.name() );
 }
