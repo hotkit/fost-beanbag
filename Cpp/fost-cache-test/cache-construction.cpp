@@ -42,4 +42,5 @@ FSL_TEST_FUNCTION( mastercache ) {
 
     FSL_CHECK_NEQ( &master.connection(), &cache.connection() );
     FSL_CHECK_EQ( master.connection().configuration(), cache.connection().configuration() );
+    FSL_CHECK_EQ( cache.connection().configuration()[ L"read" ], fostlib::json( L"master" ) );
 }
