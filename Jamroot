@@ -4,35 +4,7 @@ include $(TOP)/../boost-version.jam ;
 use-project fost-base : ../fost-base/ ;
 include ../fost-base/fost.jam ;
 
-project
-    :
-        requirements
-
-        <include>Cpp/include
-        <include>../fost-base/Cpp/include
-        <include>$(BOOST_HEADERS)
-        <target-os>windows:<include>../OpenSSL/install/include/
-
-        <threading>multi
-        <runtime-link>shared
-
-        <target-os>linux:<cxxflags>-Wl,-E
-
-        <target-os>windows:<exception-handling>on
-        <target-os>windows:<asynch-exceptions>on
-        <target-os>windows:<extern-c-nothrow>off
-        <target-os>windows:<debug-symbols>on
-        <target-os>windows:<debug-store>database
-
-        <target-os>windows:<define>WIN32
-        <target-os>windows:<define>_AFXDLL
-        <target-os>windows:<define>UNICODE
-        <target-os>windows:<define>_UNICODE
-    :
-        default-build debug
-    :
-        build-dir $(BUILD_DIRECTORY)
-    ;
+fost-project fost-orm ;
 
 build-project Cpp/fost-cache-test/ ;
 build-project Cpp/fost-jsondb-test/ ;
