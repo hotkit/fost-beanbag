@@ -1,5 +1,5 @@
 
-smoke-test fost-metamodel-test-smoke
+fost-smoke-test fost-metamodel-test-smoke
     :
         ../../../fost-base/External//uuid
         ../../../Boost//boost-date_time-dll

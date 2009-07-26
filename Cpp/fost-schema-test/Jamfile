@@ -1,6 +1,6 @@
 import testing ;
 
-smoke-test fost-schema-test-smoke
+fost-smoke-test fost-schema-test-smoke
     :
         ../../../fost-base/External//uuid
         ../../../Boost//boost-date_time-dll

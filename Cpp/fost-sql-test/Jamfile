@@ -1,5 +1,5 @@
 
-smoke-test fost-sql-test-smoke
+fost-smoke-test fost-sql-test-smoke
     :
         ../../../fost-base/External//uuid
         ../../../Boost//boost-date_time-dll
