@@ -13,18 +13,7 @@ fi
 
 if ../bjam -j`grep -c ^processor /proc/cpuinfo` toolset=gcc $VARIANTS
 then {
-    if ../dist/bin/ftest -b false \
-        libfost-cache-test-smoke.so \
-        libfost-jsondb-test-smoke.so \
-        libfost-metamodel-test-smoke.so \
-        libfost-schema-test-smoke.so \
-        libfost-sql-test-smoke.so
-    then {
-        echo fost-orm smoke tests passed
-    } else {
-        exit 1
-    }
-    fi
+    echo fost-orm tests passed
 } else {
     exit 1
 }
