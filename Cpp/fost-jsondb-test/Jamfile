@@ -1,6 +1,6 @@
 using testing ;
 
-smoke-test fost-jsondb-test-smoke
+fost-smoke-test fost-jsondb-test-smoke
     :
         ../../../fost-base/External//uuid
         ../../../Boost//boost-date_time-dll
