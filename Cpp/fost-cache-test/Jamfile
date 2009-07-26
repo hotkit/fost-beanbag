@@ -1,5 +1,5 @@
 
-lib fost-cache-test-smoke
+smoke-test fost-cache-test-smoke
     :
         ../../../fost-base/External//uuid
         ../../../Boost//boost-date_time-dll
@@ -11,23 +11,4 @@ lib fost-cache-test-smoke
         cache-construction.cpp
         object-ptr.cpp
         type-registration.cpp
-    :
-        <include>../include
-    ;
-
-install ../../../dist/lib :
-        fost-cache-test-smoke
-    :
-        <target-os>linux:<install-dependencies>on
-        <target-os>linux:<install-type>LIB
-        <target-os>darwin:<install-dependencies>on
-        <target-os>darwin:<install-type>LIB
-        <target-os>windows:<install-type>XXX
-    ;
-
-install ../../../dist/bin :
-        fost-cache-test-smoke
-    :
-        <target-os>windows:<install-dependencies>on
-        <target-os>windows:<install-type>LIB
     ;

@@ -1,5 +1,6 @@
+using testing ;
 
-lib fost-jsondb-test-smoke
+smoke-test fost-jsondb-test-smoke
     :
         ../../../fost-base/External//uuid
         ../../../Boost//boost-date_time-dll
@@ -10,11 +11,9 @@ lib fost-jsondb-test-smoke
         ../../../fost-base/Cpp/fost-test/
         ../fost-jsondb/
         blobdb.cpp
-    :
-        <include>../include
     ;
 
-exe fost-jsondb-test-file
+unit-test fost-jsondb-test-file
     :
         ../../../Boost//boost-date_time-dll
         ../../../Boost//boost-filesystem-dll
@@ -25,26 +24,4 @@ exe fost-jsondb-test-file
         ../../../fost-base/Cpp/fost-test/
         ../fost-jsondb/
         filetest.cpp
-    :
-        <include>../include
-    ;
-
-install ../../../dist/lib :
-        fost-jsondb-test-file
-        fost-jsondb-test-smoke
-    :
-        <target-os>linux:<install-dependencies>on
-        <target-os>linux:<install-type>LIB
-        <target-os>darwin:<install-dependencies>on
-        <target-os>darwin:<install-type>LIB
-        <target-os>windows:<install-type>XXX
-    ;
-
-install ../../../dist/bin :
-        fost-jsondb-test-file
-        fost-jsondb-test-smoke
-    :
-        <install-dependencies>on
-        <install-type>EXE
-        <target-os>windows:<install-type>LIB
     ;

@@ -14,3 +14,7 @@ using namespace fostlib;
 
 
 FSL_TEST_SUITE( bootstrap );
+
+
+FSL_TEST_FUNCTION( load ) {
+}
