@@ -18,6 +18,18 @@ fost-smoke-test fost-schema-test-smoke
         simple.cpp
     ;
 
+exe fost-schema-test-dyndriver
+    :
+        ../../../Boost//boost-date_time-dll
+        ../../../Boost//boost-thread-dll
+       ../../../fost-base/Cpp/fost-cli/
+        ../../../fost-base/Cpp/fost-core/
+       ../fost-schema/
+       dyndriver.cpp
+    ;
+fost-install fost-schema-test-dyndriver ;
+
+
 compile-fail factory-incorrect-model.cpp ;
 
 run
@@ -48,9 +60,11 @@ run
        ../fost-schema/
        dyndriver.cpp
     :
-        json libfost-jsondb.so
+        json
+        <target-os>linux:libfost-jsondb.so
+        <target-os>windows:libfost-jsondb.dll
     :
     :
     :
-        fost-schema-test-dyndriver
+        fost-schema-test-dyndriver-jsondb
     ;
