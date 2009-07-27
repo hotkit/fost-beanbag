@@ -6,8 +6,9 @@ fost-smoke-test fost-cache-test-smoke
         ../../../Boost//boost-thread-dll
         ../../../fost-base/Cpp/fost-core/
         ../../../fost-base/Cpp/fost-test/
-        ../fost-schema/
         ../fost-cache/
+        ../fost-jsondb/
+        ../fost-schema/
         cache-construction.cpp
         object-ptr.cpp
         type-registration.cpp
