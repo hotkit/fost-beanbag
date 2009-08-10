@@ -27,7 +27,6 @@ exe fost-schema-test-dyndriver
        ../fost-schema/
        dyndriver.cpp
     ;
-fost-install fost-schema-test-dyndriver ;
 
 
 compile-fail factory-incorrect-model.cpp ;
@@ -42,7 +41,7 @@ run
         ../../../fost-base/Cpp/fost-core/
         ../../../fost-base/Cpp/fost-test/
         ../fost-schema/
-        fost-schema-test-smoke
+        database.cpp
         jsondb-file.cpp
     :
     :
@@ -61,9 +60,8 @@ run
        dyndriver.cpp
     :
         json
-        <target-os>linux:libfost-jsondb.so
-        <target-os>windows:libfost-jsondb.dll
     :
+        ../fost-jsondb//fost-jsondb
     :
     :
         fost-schema-test-dyndriver-jsondb
