@@ -8,7 +8,8 @@
 
 #include "fost-schema-test.hpp"
 #include <fost/string>
-#include <fost/cli>
+#include <fost/unicode.hpp>
+#include <fost/main>
 #include <fost/test>
 
 #include <fost/db>
@@ -18,9 +19,6 @@ using namespace fostlib;
 
 
 // This function is in database.cpp
-#ifdef WIN32
-__declspec( dllimport )
-#endif
 void do_insert_test( dbconnection &dbc );
 
 
