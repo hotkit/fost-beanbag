@@ -11,9 +11,8 @@
 #pragma once
 
 
-#include <fost/core>
+#include <fost/string>
 #include <fost/dynlib.hpp>
-#include <fost/string/tagged-string.hpp>
 
 
 namespace fostlib {
