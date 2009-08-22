@@ -7,5 +7,5 @@
 
 
 #include <fost/db>
-#include <fost/db-driver.hpp>
+#include <fost/detail/db-driver.hpp>
 

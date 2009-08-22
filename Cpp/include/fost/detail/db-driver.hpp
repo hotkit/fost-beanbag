@@ -12,7 +12,7 @@
 
 
 #include <fost/core>
-#include <fost/db.hpp>
+#include <fost/detail/db.hpp>
 
 
 namespace fostlib {

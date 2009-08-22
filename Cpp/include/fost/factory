@@ -12,7 +12,7 @@
 
 
 #include <fost/db>
-#include <fost/schema/factory.hpp>
+#include <fost/detail/schema/factory.hpp>
 
 
 // Used to declare attributes in the models
