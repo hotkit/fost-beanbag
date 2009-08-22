@@ -7,7 +7,7 @@
 
 
 #include "fost-cache.hpp"
-#include <fost/cache.hpp>
+#include <fost/detail/cache.hpp>
 
 #include <fost/exception/not_implemented.hpp>
 #include <fost/exception/not_null.hpp>
