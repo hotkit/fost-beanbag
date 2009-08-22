@@ -8,7 +8,7 @@
 
 #include "fost-schema-test.hpp"
 #include <fost/string>
-#include <fost/unicode.hpp>
+#include <fost/unicode>
 #include <fost/main>
 #include <fost/test>
 
