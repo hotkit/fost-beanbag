@@ -8,10 +8,9 @@
 
 #include "fost-jsondb.hpp"
 #include <fost/db>
-#include <fost/jsondb.hpp>
+#include <fost/detail/jsondb.hpp>
 #include <fost/unicode.hpp>
 
-#include <fost/exception/not_implemented.hpp>
 #include <fost/exception/not_null.hpp>
 #include <fost/exception/out_of_range.hpp>
 #include <fost/exception/transaction_fault.hpp>

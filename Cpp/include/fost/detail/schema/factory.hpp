@@ -11,7 +11,7 @@
 #pragma once
 
 
-#include <fost/schema.hpp>
+#include <fost/detail/schema.hpp>
 #include <typeinfo>
 
 #include <boost/static_assert.hpp>

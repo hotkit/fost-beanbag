@@ -13,4 +13,4 @@
 #endif
 
 
-#include <fost/jsondb.hpp>
+#include <fost/detail/jsondb.hpp>
