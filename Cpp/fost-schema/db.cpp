@@ -92,6 +92,10 @@ fostlib::dbinterface::~dbinterface() {
 }
 
 
+std::auto_ptr< dbinterface::connection_data > fostlib::dbinterface::connect( dbconnection &d ) const {
+    return std::auto_ptr< connection_data >();
+}
+
 fostlib::dbinterface::read::read( dbconnection &d )
 : m_connection( d ) {
 }
@@ -173,18 +177,29 @@ namespace {
             jcursor( L"write" )( conf ) = dsn( w.value() );
         return conf;
     }
+    void establish(
+        dbconnection &dbc,
+        std::pair< const dbinterface *, boost::shared_ptr< dynlib > > interface,
+        boost::scoped_ptr< dbinterface::connection_data > &cnx_data,
+        boost::shared_ptr< dbinterface::read > &connection
+    ) {
+        std::auto_ptr< dbinterface::connection_data > data = interface.first->connect( dbc );
+        if ( data.get() )
+            cnx_data.reset( data.release() );
+        connection = interface.first->reader( dbc );
+    }
 }
 fostlib::dbconnection::dbconnection( const json &j )
 : configuration( j ), m_interface( ::connection( j ) ), m_transaction( NULL ) {
-    m_connection = m_interface.first->reader( *this );
+    establish( *this, m_interface, m_cnx_data, m_connection );
 }
 fostlib::dbconnection::dbconnection( const fostlib::string &r )
 : configuration( cnx_conf( r, null ) ), m_interface( ::connection( r, null ) ), m_transaction( NULL ) {
-    m_connection = m_interface.first->reader( *this );
+    establish( *this, m_interface, m_cnx_data, m_connection );
 }
 fostlib::dbconnection::dbconnection( const fostlib::string &r, const fostlib::string &w )
 : configuration( cnx_conf( r, w ) ), m_interface( ::connection( r, w ) ), m_transaction( NULL ) {
-    m_connection = m_interface.first->reader( *this );
+    establish( *this, m_interface, m_cnx_data, m_connection );
 }
 
 
@@ -250,6 +265,14 @@ dbtransaction &fostlib::dbconnection::transaction() {
     if ( !m_transaction )
         throw exceptions::transaction_fault( L"No transaction is active" );
     return *m_transaction;
+}
+
+
+dbinterface::connection_data &fostlib::dbconnection::connection_data() {
+    if ( m_cnx_data.get() )
+        return *m_cnx_data;
+    else
+        throw exceptions::null("This connection driver does not make use of connection data");
 }
 
 

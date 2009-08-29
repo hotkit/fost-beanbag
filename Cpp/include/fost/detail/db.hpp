@@ -94,6 +94,13 @@ namespace fostlib {
         virtual int64_t next_id( dbconnection &dbc, const string &counter ) const = 0;
         virtual int64_t current_id( dbconnection &dbc, const string &counter ) const = 0;
         virtual void used_id( dbconnection &dbc, const string &counter, int64_t value ) const = 0;
+
+        /*
+            If the connection needs to store any specific data it should derive from this struct
+            to store it and return the data from the connect function.
+        */
+        struct connection_data : boost::noncopyable {};
+        virtual std::auto_ptr< connection_data > connect( dbconnection &dbc ) const;
     };
 
 
@@ -170,10 +177,12 @@ namespace fostlib {
         dbtransaction &transaction();
 
         accessors< const json > configuration;
+        dbinterface::connection_data &connection_data();
 
     private:
         std::pair< const dbinterface *, boost::shared_ptr< dynlib > > m_interface;
         boost::shared_ptr< dbinterface::read > m_connection;
+        boost::scoped_ptr< dbinterface::connection_data > m_cnx_data;
         dbtransaction *m_transaction;
     };
 
