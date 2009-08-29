@@ -99,7 +99,9 @@ namespace fostlib {
             If the connection needs to store any specific data it should derive from this struct
             to store it and return the data from the connect function.
         */
-        struct connection_data : boost::noncopyable {};
+        struct connection_data : boost::noncopyable {
+            virtual ~connection_data() {}
+        };
         virtual std::auto_ptr< connection_data > connect( dbconnection &dbc ) const;
     };
 
