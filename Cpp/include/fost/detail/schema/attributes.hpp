@@ -14,8 +14,6 @@
 #include "fields.hpp"
 #include "dynamic.hpp"
 
-#include <fost/exception/not_implemented.hpp>
-
 
 namespace fostlib {
 
