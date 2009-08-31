@@ -179,14 +179,14 @@ namespace {
     }
     void establish(
         dbconnection &dbc,
-        std::pair< const dbinterface *, boost::shared_ptr< dynlib > > interface,
+        const std::pair< const dbinterface *, boost::shared_ptr< fostlib::dynlib > > &iface,
         boost::scoped_ptr< dbinterface::connection_data > &cnx_data,
         boost::shared_ptr< dbinterface::read > &connection
     ) {
-        std::auto_ptr< dbinterface::connection_data > data = interface.first->connect( dbc );
+        std::auto_ptr< dbinterface::connection_data > data = iface.first->connect( dbc );
         if ( data.get() )
             cnx_data.reset( data.release() );
-        connection = interface.first->reader( dbc );
+        connection = iface.first->reader( dbc );
     }
 }
 fostlib::dbconnection::dbconnection( const json &j )
