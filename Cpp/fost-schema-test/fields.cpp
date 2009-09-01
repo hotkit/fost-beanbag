@@ -34,4 +34,14 @@ FSL_TEST_FUNCTION( registry ) {
     }
     // Once the new instance goes out of scope then the type becomes usable again
     FSL_CHECK_EQ( field_base::fetch( L"integer" ).type_name(), L"integer" );
+
+    // Check the other types that exist
+    FSL_CHECK_EQ( field_base::fetch( L"boolean" ).type_name(), L"boolean" );
+
+    FSL_CHECK_EQ( field_base::fetch( L"real" ).type_name(), L"real" );
+
+    FSL_CHECK_EQ( field_base::fetch( L"varchar" ).type_name(), L"varchar" );
+    FSL_CHECK_EQ( field_base::fetch( L"text" ).type_name(), L"text" );
+
+    FSL_CHECK_EQ( field_base::fetch( L"date" ).type_name(), L"date" );
 }

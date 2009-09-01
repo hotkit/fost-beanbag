@@ -4,7 +4,10 @@ include $(TOP)/../boost-version.jam ;
 use-project fost-base : ../fost-base/ ;
 include ../fost-base/fost.jam ;
 
-fost-project fost-orm ;
+fost-project fost-orm
+    :
+        <library>../fost-base/Cpp/fost-datetime/
+    ;
 
 build-project Cpp/fost-cache-test/ ;
 build-project Cpp/fost-jsondb-test/ ;
