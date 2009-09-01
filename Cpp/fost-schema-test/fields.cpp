@@ -38,7 +38,7 @@ FSL_TEST_FUNCTION( registry ) {
     // Check the other types that exist
     FSL_CHECK_EQ( field_base::fetch( L"boolean" ).type_name(), L"boolean" );
 
-    FSL_CHECK_EQ( field_base::fetch( L"real" ).type_name(), L"real" );
+    FSL_CHECK_EQ( field_base::fetch( L"double" ).type_name(), L"double" );
 
     FSL_CHECK_EQ( field_base::fetch( L"varchar" ).type_name(), L"varchar" );
     FSL_CHECK_EQ( field_base::fetch( L"text" ).type_name(), L"text" );
