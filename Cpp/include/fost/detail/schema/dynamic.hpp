@@ -81,6 +81,7 @@ namespace fostlib {
         const meta_attribute &operator[]( const string &name ) const;
 
         accessors< typelist_type, lvalue > superclasses;
+        const field_base &type() const;
 
         meta_instance &primary_key(
             const string &name, const string &type,
@@ -89,6 +90,9 @@ namespace fostlib {
         meta_instance &field(
             const string &name, const string &type, bool not_null,
             const nullable< std::size_t > & size = null, const nullable< std::size_t > &precision = null
+        );
+        meta_instance &field(
+            const string &name, const meta_instance &object, bool not_null
         );
 
         boost::shared_ptr< instance > create() const;
@@ -100,6 +104,7 @@ namespace fostlib {
 
     private:
         columns_type m_columns;
+        mutable boost::scoped_ptr< field_base > m_type;
     };
 
 
