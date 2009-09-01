@@ -8,9 +8,11 @@
 
 #include "fost-schema.hpp"
 #include <fost/detail/schema/attributes.hpp>
+#include <fost/thread.hpp>
+#include <fost/datetime>
+
 #include <fost/exception/null.hpp>
 #include <fost/exception/out_of_range.hpp>
-#include <fost/thread.hpp>
 
 
 using namespace fostlib;
@@ -25,8 +27,16 @@ namespace {
 }
 
 
+const field_wrapper< bool > boolean( "boolean" );
+
+const field_wrapper< double > real( L"real" );
 const field_wrapper< int64_t > integer( L"integer" );
+
 const field_wrapper< string > varchar( L"varchar" ), text( L"text" );
+
+const field_wrapper< date > datefield( L"date" );
+//const field_wrapper< time > timefield( L"time" );
+//const field_wrapper< timestamp > timestampfield( L"timestamp" );
 
 
 fostlib::field_base::field_base( const string &n )
