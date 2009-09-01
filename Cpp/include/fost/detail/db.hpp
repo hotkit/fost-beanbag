@@ -136,9 +136,9 @@ namespace fostlib {
         dbtransaction( dbconnection &dbc );
         ~dbtransaction();
 
-        void create_table( const meta_instance &meta );
-        void drop_table( const meta_instance &meta );
-        void drop_table( const string &table );
+        dbtransaction &create_table( const meta_instance &meta );
+        dbtransaction &drop_table( const meta_instance &meta );
+        dbtransaction &drop_table( const string &table );
 
         dbtransaction &insert( const instance &object, boost::function< void( void ) > oncommit );
         dbtransaction &execute( const sql::statement &cmd );
