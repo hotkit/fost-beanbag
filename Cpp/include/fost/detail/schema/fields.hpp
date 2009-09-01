@@ -20,18 +20,24 @@ namespace fostlib {
     class meta_attribute;
 
     class FOST_SCHEMA_DECLSPEC field_base : boost::noncopyable {
-    public:
-        field_base( const string &type_name );
-        virtual ~field_base();
+        protected:
+            typedef std::vector< boost::shared_ptr< meta_attribute > > columns_type;
+            field_base( const string &type_name );
+        public:
+            virtual ~field_base();
 
-        accessors< const string > type_name;
+            accessors< const string > type_name;
 
-        virtual boost::shared_ptr< meta_attribute > meta_maker(
-            const string &name, bool key, bool not_null,
-            const nullable< std::size_t > &size, const nullable< std::size_t > &precision
-        ) const = 0;
+            virtual boost::shared_ptr< meta_attribute > meta_maker(
+                const string &name, bool key, bool not_null,
+                const nullable< std::size_t > &size, const nullable< std::size_t > &precision
+            ) const = 0;
 
-        static const field_base &fetch( const string &type_name );
+            typedef columns_type::const_iterator const_iterator;
+            virtual const_iterator begin() const = 0;
+            virtual const_iterator end() const = 0;
+
+            static const field_base &fetch( const string &type_name );
     };
 
 
