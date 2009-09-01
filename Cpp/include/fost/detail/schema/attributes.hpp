@@ -76,11 +76,14 @@ namespace fostlib {
         ) const {
             return boost::shared_ptr< meta_attribute >( new factory( name, *this, key, not_null, size, precision ) );
         }
+
+        const_iterator begin() const {
+            return const_iterator();
+        }
+        const_iterator end() const {
+            return const_iterator();
+        }
     };
-
-
-    extern const field_wrapper< int64_t > integer;
-    extern const field_wrapper< string > varchar, text;
 
 
 }

@@ -77,8 +77,12 @@ namespace {
         }
     };
     struct object_reference_field : public field_base {
-        object_reference_field(const string &type_name)
+        columns_type sub_structure;
+        object_reference_field(const string &type_name, const meta_instance &mi)
         : field_base(type_name) {
+            for ( meta_instance::const_iterator i(mi.begin()); i != mi.end(); ++i )
+                if ( (*i)->key() )
+                    sub_structure.push_back(*i);
         }
         boost::shared_ptr< meta_attribute > meta_maker(
             const string &name, bool key, bool not_null,
@@ -88,11 +92,17 @@ namespace {
                 name, *this, key, not_null
             ) );
         }
+        const_iterator begin() const {
+            return sub_structure.begin();
+        }
+        const_iterator end() const {
+            return sub_structure.end();
+        }
     };
 }
 const field_base &fostlib::meta_instance::type() const {
     if ( !m_type.get() )
-        m_type.reset( new object_reference_field( fq_name() ) );
+        m_type.reset( new object_reference_field( fq_name(), *this ) );
     return *m_type;
 }
 meta_instance &fostlib::meta_instance::field(
