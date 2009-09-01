@@ -27,10 +27,10 @@ namespace {
 }
 
 
-const field_wrapper< bool > boolean( "boolean" );
+const field_wrapper< bool > booleanfield( "boolean" );
 
-const field_wrapper< double > real( L"real" );
-const field_wrapper< int64_t > integer( L"integer" );
+const field_wrapper< double > doublefield( L"float" );
+const field_wrapper< int64_t > integerfield( L"integer" );
 
 const field_wrapper< string > varchar( L"varchar" ), text( L"text" );
 
