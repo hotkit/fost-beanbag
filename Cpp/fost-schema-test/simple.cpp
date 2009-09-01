@@ -77,3 +77,20 @@ FSL_TEST_FUNCTION( dynamic_enclosure ) {
     FSL_CHECK( !simple.in_global() );
     FSL_CHECK( simple.parent().in_global() );
 }
+
+
+FSL_TEST_FUNCTION( model_as_attribute ) {
+    meta_instance simple( L"simple" ), ref1("ref1");
+    /*
+        Create a simple object definition
+    */
+    simple
+        .primary_key(L"id", L"integer")
+        .field(L"name", L"varchar", true, 10)
+    ;
+    // Add a non-nullable reference to a simple object
+    ref1
+        .primary_key(L"id", L"integer")
+        .field(L"simple", simple, false)
+    ;
+}
