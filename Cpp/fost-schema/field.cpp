@@ -36,7 +36,7 @@ const field_wrapper< string > varchar( L"varchar" ), text( L"text" );
 
 const field_wrapper< date > datefield( L"date" );
 //const field_wrapper< time > timefield( L"time" );
-//const field_wrapper< timestamp > timestampfield( L"timestamp" );
+const field_wrapper< timestamp > timestampfield( L"timestamp" );
 
 
 fostlib::field_base::field_base( const string &n )
