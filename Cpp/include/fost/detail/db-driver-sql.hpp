@@ -59,12 +59,18 @@ namespace fostlib {
             /*
                 These hooks allow database tables to be built from a set of standard building blocks
             */
+            // Given SQL statements for the actual columns that make up a table this
+            // executes the code that builds the table in the database. It should not do
+            // foreign keys.
             virtual void create_table(
                 const sql::table_name &table,
                 const std::list< std::pair< sql::column_name, sql::statement > > &key,
                 const std::list< std::pair< sql::column_name, sql::statement > > &columns
             );
-            virtual sql::statement column_type( const meta_attribute & );
+            // Returns one or more SQL blocks for a logical column
+            virtual std::map< sql::column_name, sql::statement > column_type(
+                const sql::column_name &name, const meta_attribute &field
+            );
         };
     };
 
