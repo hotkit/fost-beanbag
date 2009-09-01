@@ -44,4 +44,5 @@ FSL_TEST_FUNCTION( registry ) {
     FSL_CHECK_EQ( field_base::fetch( L"text" ).type_name(), L"text" );
 
     FSL_CHECK_EQ( field_base::fetch( L"date" ).type_name(), L"date" );
+    FSL_CHECK_EQ( field_base::fetch( L"timestamp" ).type_name(), L"timestamp" );
 }
