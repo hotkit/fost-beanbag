@@ -306,22 +306,25 @@ fostlib::dbtransaction::~dbtransaction() {
 }
 
 
-void fostlib::dbtransaction::create_table( const meta_instance &meta ) {
+dbtransaction &fostlib::dbtransaction::create_table( const meta_instance &meta ) {
     if ( !m_transaction )
         throw exceptions::transaction_fault( L"This transaction has already been used" );
     m_transaction->create_table( meta );
+    return *this;
 }
 
 
-void fostlib::dbtransaction::drop_table( const meta_instance &meta ) {
+dbtransaction &fostlib::dbtransaction::drop_table( const meta_instance &meta ) {
     if ( !m_transaction )
         throw exceptions::transaction_fault( L"This transaction has already been used" );
     m_transaction->drop_table( meta );
+    return *this;
 }
-void fostlib::dbtransaction::drop_table( const fostlib::string &table ) {
+dbtransaction &fostlib::dbtransaction::drop_table( const fostlib::string &table ) {
     if ( !m_transaction )
         throw exceptions::transaction_fault( L"This transaction has already been used" );
     m_transaction->drop_table( table );
+    return *this;
 }
 
 
