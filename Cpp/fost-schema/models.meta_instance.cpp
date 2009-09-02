@@ -105,6 +105,14 @@ const field_base &fostlib::meta_instance::type() const {
         m_type.reset( new object_reference_field( fq_name(), *this ) );
     return *m_type;
 }
+meta_instance &fostlib::meta_instance::primary_key(
+    const string &name, const meta_instance &mi
+) {
+    if ( find_attr( m_columns.begin(), m_columns.end(), name ) != m_columns.end() )
+        throw exceptions::null( L"Cannot have two attributes with the same name" );
+    m_columns.push_back( mi.type().meta_maker(name, true, true, null, null) );
+    return *this;
+}
 meta_instance &fostlib::meta_instance::field(
     const string &name, const meta_instance &mi, bool not_null
 ) {
