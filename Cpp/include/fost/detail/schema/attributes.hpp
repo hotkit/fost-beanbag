@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2008, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2009, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -11,10 +11,8 @@
 #pragma once
 
 
-#include <fost/schema/fields.hpp>
-#include <fost/schema/dynamic.hpp>
-
-#include <fost/exception/not_implemented.hpp>
+#include "fields.hpp"
+#include "dynamic.hpp"
 
 
 namespace fostlib {
@@ -78,11 +76,14 @@ namespace fostlib {
         ) const {
             return boost::shared_ptr< meta_attribute >( new factory( name, *this, key, not_null, size, precision ) );
         }
+
+        const_iterator begin() const {
+            return detail::s_empty_substructure.begin();
+        }
+        const_iterator end() const {
+            return detail::s_empty_substructure.end();
+        }
     };
-
-
-    extern const field_wrapper< int64_t > integer;
-    extern const field_wrapper< string > varchar, text;
 
 
 }

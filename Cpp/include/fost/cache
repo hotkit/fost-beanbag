@@ -13,4 +13,4 @@
 #endif
 
 
-#include <fost/cache.hpp>
+#include <fost/detail/cache.hpp>

@@ -7,7 +7,7 @@
 
 
 #include "fost-schema.hpp"
-#include <fost/schema.hpp>
+#include <fost/detail/schema.hpp>
 
 
 using namespace fostlib;
@@ -16,6 +16,7 @@ using namespace fostlib;
 /*
     fostlib::meta_attribute
 */
+
 
 fostlib::meta_attribute::meta_attribute(
     const string &name, const field_base &type, bool key, bool not_null,

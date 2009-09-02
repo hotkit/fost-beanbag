@@ -11,9 +11,8 @@
 #pragma once
 
 
-#include <fost/core>
+#include <fost/string>
 #include <fost/dynlib.hpp>
-#include <fost/string/tagged-string.hpp>
 
 
 namespace fostlib {
@@ -95,6 +94,15 @@ namespace fostlib {
         virtual int64_t next_id( dbconnection &dbc, const string &counter ) const = 0;
         virtual int64_t current_id( dbconnection &dbc, const string &counter ) const = 0;
         virtual void used_id( dbconnection &dbc, const string &counter, int64_t value ) const = 0;
+
+        /*
+            If the connection needs to store any specific data it should derive from this struct
+            to store it and return the data from the connect function.
+        */
+        struct connection_data : boost::noncopyable {
+            virtual ~connection_data() {}
+        };
+        virtual std::auto_ptr< connection_data > connect( dbconnection &dbc ) const;
     };
 
 
@@ -128,9 +136,9 @@ namespace fostlib {
         dbtransaction( dbconnection &dbc );
         ~dbtransaction();
 
-        void create_table( const meta_instance &meta );
-        void drop_table( const meta_instance &meta );
-        void drop_table( const string &table );
+        dbtransaction &create_table( const meta_instance &meta );
+        dbtransaction &drop_table( const meta_instance &meta );
+        dbtransaction &drop_table( const string &table );
 
         dbtransaction &insert( const instance &object, boost::function< void( void ) > oncommit );
         dbtransaction &execute( const sql::statement &cmd );
@@ -171,10 +179,12 @@ namespace fostlib {
         dbtransaction &transaction();
 
         accessors< const json > configuration;
+        dbinterface::connection_data &connection_data();
 
     private:
         std::pair< const dbinterface *, boost::shared_ptr< dynlib > > m_interface;
         boost::shared_ptr< dbinterface::read > m_connection;
+        boost::scoped_ptr< dbinterface::connection_data > m_cnx_data;
         dbtransaction *m_transaction;
     };
 

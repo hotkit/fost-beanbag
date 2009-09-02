@@ -20,7 +20,7 @@ FSL_MAIN(
     L"fost-schema-test-dyndriver",
     L"fost-schema-test-dyndriver\nTest the dynamic loading of database driver files\nCopyright (c) 2009, Felspar Co. Ltd."
 )( fostlib::ostream &out, fostlib::arguments &args ) {
-    if ( args.size() != 3 ) {
+    if ( args.size() < 3 ) {
         out << L"Usage\n    fost-schema-test-dyndriver driver-name driver-file [-d dsn]" << std::endl;
         return 1;
     }

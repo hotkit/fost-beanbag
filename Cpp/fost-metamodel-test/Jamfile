@@ -1,5 +1,5 @@
 
-lib fost-metamodel-test-smoke
+fost-smoke-test fost-metamodel-test-smoke
     :
         ../../../fost-base/External//uuid
         ../../../Boost//boost-date_time-dll
@@ -11,24 +11,4 @@ lib fost-metamodel-test-smoke
         ../fost-metamodel/
         ../fost-schema/
         bootstrap.cpp
-    ;
-
-install ../../../dist/lib
-    :
-        fost-metamodel-test-smoke
-    :
-        <target-os>linux:<install-dependencies>on
-        <target-os>linux:<install-type>LIB
-        <target-os>darwin:<install-dependencies>on
-        <target-os>darwin:<install-type>LIB
-        <target-os>windows:<install-type>XXX
-    ;
-
-install ../../../dist/bin
-    :
-        fost-metamodel-test-smoke
-    :
-        <install-dependencies>on
-        <install-type>EXE
-        <target-os>windows:<install-type>LIB
     ;

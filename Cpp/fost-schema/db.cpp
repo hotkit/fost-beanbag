@@ -7,7 +7,7 @@
 
 
 #include "fost-schema.hpp"
-#include <fost/db-driver.hpp>
+#include <fost/detail/db-driver.hpp>
 #include <fost/thread.hpp>
 
 #include <fost/exception/transaction_fault.hpp>
@@ -92,6 +92,10 @@ fostlib::dbinterface::~dbinterface() {
 }
 
 
+std::auto_ptr< dbinterface::connection_data > fostlib::dbinterface::connect( dbconnection &d ) const {
+    return std::auto_ptr< connection_data >();
+}
+
 fostlib::dbinterface::read::read( dbconnection &d )
 : m_connection( d ) {
 }
@@ -144,7 +148,14 @@ namespace {
                     if ( g_interfaces().find( driver ).empty() )
                         throw exceptions::data_driver( L"No driver found even after loading driver file", driver );
                 } catch ( exceptions::exception &e ) {
-                    e.info() << L"Whilst loading database driver file " << dll.value() << std::endl;
+                    e.info() << L"Database driver file " << dll.value() << L"\nDrivers available: ";
+                    library< const dbinterface * >::keys_t k(g_interfaces().keys());
+                    if ( k.size() )
+                        for ( library< const dbinterface * >::keys_t::const_iterator i(k.begin()); i != k.end(); ++i )
+                            e.info() << *i << L" ";
+                    else
+                        e.info() << L"[no drivers are available]";
+                    e.info() << std::endl;
                     throw;
                 }
         }
@@ -173,18 +184,29 @@ namespace {
             jcursor( L"write" )( conf ) = dsn( w.value() );
         return conf;
     }
+    void establish(
+        dbconnection &dbc,
+        const std::pair< const dbinterface *, boost::shared_ptr< fostlib::dynlib > > &iface,
+        boost::scoped_ptr< dbinterface::connection_data > &cnx_data,
+        boost::shared_ptr< dbinterface::read > &connection
+    ) {
+        std::auto_ptr< dbinterface::connection_data > data = iface.first->connect( dbc );
+        if ( data.get() )
+            cnx_data.reset( data.release() );
+        connection = iface.first->reader( dbc );
+    }
 }
 fostlib::dbconnection::dbconnection( const json &j )
 : configuration( j ), m_interface( ::connection( j ) ), m_transaction( NULL ) {
-    m_connection = m_interface.first->reader( *this );
+    establish( *this, m_interface, m_cnx_data, m_connection );
 }
 fostlib::dbconnection::dbconnection( const fostlib::string &r )
 : configuration( cnx_conf( r, null ) ), m_interface( ::connection( r, null ) ), m_transaction( NULL ) {
-    m_connection = m_interface.first->reader( *this );
+    establish( *this, m_interface, m_cnx_data, m_connection );
 }
 fostlib::dbconnection::dbconnection( const fostlib::string &r, const fostlib::string &w )
 : configuration( cnx_conf( r, w ) ), m_interface( ::connection( r, w ) ), m_transaction( NULL ) {
-    m_connection = m_interface.first->reader( *this );
+    establish( *this, m_interface, m_cnx_data, m_connection );
 }
 
 
@@ -253,6 +275,14 @@ dbtransaction &fostlib::dbconnection::transaction() {
 }
 
 
+dbinterface::connection_data &fostlib::dbconnection::connection_data() {
+    if ( m_cnx_data.get() )
+        return *m_cnx_data;
+    else
+        throw exceptions::null("This connection driver does not make use of connection data");
+}
+
+
 /*
     Transaction
 */
@@ -276,22 +306,25 @@ fostlib::dbtransaction::~dbtransaction() {
 }
 
 
-void fostlib::dbtransaction::create_table( const meta_instance &meta ) {
+dbtransaction &fostlib::dbtransaction::create_table( const meta_instance &meta ) {
     if ( !m_transaction )
         throw exceptions::transaction_fault( L"This transaction has already been used" );
     m_transaction->create_table( meta );
+    return *this;
 }
 
 
-void fostlib::dbtransaction::drop_table( const meta_instance &meta ) {
+dbtransaction &fostlib::dbtransaction::drop_table( const meta_instance &meta ) {
     if ( !m_transaction )
         throw exceptions::transaction_fault( L"This transaction has already been used" );
     m_transaction->drop_table( meta );
+    return *this;
 }
-void fostlib::dbtransaction::drop_table( const fostlib::string &table ) {
+dbtransaction &fostlib::dbtransaction::drop_table( const fostlib::string &table ) {
     if ( !m_transaction )
         throw exceptions::transaction_fault( L"This transaction has already been used" );
     m_transaction->drop_table( table );
+    return *this;
 }
 
 
