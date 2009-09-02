@@ -87,12 +87,15 @@ namespace fostlib {
             const string &name, const string &type,
             const nullable< std::size_t > & size = null, const nullable< std::size_t > &precision = null
         );
+        meta_instance &primary_key(
+            const string &name, const meta_instance &type
+        );
         meta_instance &field(
             const string &name, const string &type, bool not_null,
             const nullable< std::size_t > & size = null, const nullable< std::size_t > &precision = null
         );
         meta_instance &field(
-            const string &name, const meta_instance &object, bool not_null
+            const string &name, const meta_instance &type, bool not_null
         );
 
         boost::shared_ptr< instance > create() const;
