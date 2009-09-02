@@ -69,7 +69,7 @@ namespace fostlib {
             );
             // Returns one or more SQL blocks for a logical column
             virtual std::map< sql::column_name, sql::statement > column_type(
-                const sql::column_name &name, const meta_attribute &field
+                const sql::column_name &name, const meta_attribute &field, bool not_null
             );
         };
     };
