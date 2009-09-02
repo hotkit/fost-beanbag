@@ -78,10 +78,10 @@ namespace fostlib {
         }
 
         const_iterator begin() const {
-            return const_iterator();
+            return detail::s_empty_substructure.begin();
         }
         const_iterator end() const {
-            return const_iterator();
+            return detail::s_empty_substructure.end();
         }
     };
 
