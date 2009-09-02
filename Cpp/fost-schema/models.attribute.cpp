@@ -17,6 +17,7 @@ using namespace fostlib;
     fostlib::meta_attribute
 */
 
+
 fostlib::meta_attribute::meta_attribute(
     const string &name, const field_base &type, bool key, bool not_null,
     const nullable< std::size_t > &size, const nullable< std::size_t > &precision

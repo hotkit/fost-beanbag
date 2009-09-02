@@ -19,9 +19,15 @@ namespace fostlib {
 
     class meta_attribute;
 
+    namespace detail {
+        typedef std::vector< boost::shared_ptr< meta_attribute > > columns_type;
+        FOST_SCHEMA_DECLSPEC extern const columns_type s_empty_substructure;
+    }
+
+
     class FOST_SCHEMA_DECLSPEC field_base : boost::noncopyable {
         protected:
-            typedef std::vector< boost::shared_ptr< meta_attribute > > columns_type;
+            typedef detail::columns_type columns_type;
             field_base( const string &type_name );
         public:
             virtual ~field_base();

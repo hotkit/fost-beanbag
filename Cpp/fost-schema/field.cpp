@@ -27,6 +27,9 @@ namespace {
 }
 
 
+const fostlib::detail::columns_type fostlib::detail::s_empty_substructure;
+
+
 const field_wrapper< bool > booleanfield( "boolean" );
 
 const field_wrapper< double > doublefield( L"float" );
