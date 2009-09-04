@@ -1,14 +1,10 @@
 
 fost-smoke-test fost-cache-test-smoke
     :
-        ../../../fost-base/External//uuid
-        ../../../Boost//boost-date_time-dll
-        ../../../Boost//boost-thread-dll
-        ../../../fost-base/Cpp/fost-core/
-        ../../../fost-base/Cpp/fost-test/
         ../fost-cache/
         ../fost-jsondb/
         ../fost-schema/
+    :
         cache-construction.cpp
         object-ptr.cpp
         type-registration.cpp
