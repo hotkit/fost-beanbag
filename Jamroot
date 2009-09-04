@@ -1,17 +1,21 @@
 path-constant TOP : . ;
 include $(TOP)/../boost-version.jam ;
-
-use-project fost-base : ../fost-base/ ;
 include ../fost-base/fost.jam ;
 
+use-project fost-base : ../fost-base/ ;
 fost-project fost-orm
     :
         <library>../fost-base/Cpp/fost-datetime/
     ;
 
+build-project ../fost-orm/Cpp/fost-schema-test//fost-schema-test-dyndriver ;
+build-project Cpp/fost-cache ;
 build-project Cpp/fost-cache-test/ ;
+build-project Cpp/fost-jsondb ;
 build-project Cpp/fost-jsondb-test/ ;
+build-project Cpp/fost-metamodel ;
 build-project Cpp/fost-metamodel-test/ ;
+build-project Cpp/fost-schema ;
 build-project Cpp/fost-schema-test/ ;
-fost-install-loc .. : ../fost-orm/Cpp/fost-schema-test//fost-schema-test-dyndriver ;
+build-project Cpp/fost-sql ;
 build-project Cpp/fost-sql-test/ ;
