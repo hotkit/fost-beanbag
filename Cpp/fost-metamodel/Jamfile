@@ -1,9 +1,6 @@
 
-lib fost-metamodel
+fost-lib fost-metamodel
     :
-        ../../../Boost//boost-date_time-dll
-        ../../../Boost//boost-thread-dll
-        ../../../fost-base/Cpp/fost-core/
         ../fost-schema/
         type_descriptor.cpp
     ;

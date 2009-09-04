@@ -1,16 +1,9 @@
 
-lib fost-cache
+fost-lib fost-cache
     :
-        ../../../Boost//boost-date_time-dll
-        ../../../Boost//boost-thread-dll
-        ../../../Boost//boost-regex-dll
-        ../../../fost-base/Cpp/fost-core/
         ../fost-schema/
         fost-cache.cpp
         master-cache.cpp
         object-cache.cpp
-    :
-        <include>../include
-    :
     ;
 
