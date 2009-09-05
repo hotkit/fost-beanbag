@@ -2,14 +2,8 @@ import testing ;
 
 fost-smoke-test fost-schema-test-smoke
     :
-        ../../../fost-base/External//uuid
-        ../../../Boost//boost-date_time-dll
-        ../../../Boost//boost-filesystem-dll
-        ../../../Boost//boost-system-dll
-        ../../../Boost//boost-thread-dll
-        ../../../fost-base/Cpp/fost-core/
-        ../../../fost-base/Cpp/fost-test/
         ../fost-schema/
+    :
         database.cpp
         drivers.cpp
         fields.cpp
