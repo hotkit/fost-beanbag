@@ -19,7 +19,7 @@ using namespace fostlib;
 
 
 namespace {
-    typedef library< field_base* > registry_type;
+    typedef threadsafe_store< field_base* > registry_type;
     registry_type &registry() {
         static registry_type lib;
         return lib;
