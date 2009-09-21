@@ -24,7 +24,14 @@ namespace {
 #ifdef WIN32
     const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database drivers", L"json", L"fost-jsondb.dll", true );
 #else
+#ifndef NeXTBSD 
+#ifdef __APPLE__
+    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database drivers", L"json", L"libfost-jsondb.dylib", true );
+#else
+    // linux?
     const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database drivers", L"json", L"libfost-jsondb.so", true );
+#endif
+#endif
 #endif
 
 #ifdef _DEBUG
