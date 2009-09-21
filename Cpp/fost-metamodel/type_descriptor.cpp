@@ -7,7 +7,7 @@
 
 
 #include "fost-metamodel.hpp"
-#include <fost/metamodel.hpp>
+#include <fost/detail/metamodel.hpp>
 
 
 fostlib::type_descriptor::type_descriptor( const json &j )

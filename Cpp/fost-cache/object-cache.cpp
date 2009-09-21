@@ -7,7 +7,7 @@
 
 
 #include "fost-cache.hpp"
-#include <fost/cache.hpp>
+#include <fost/detail/cache.hpp>
 
 
 using namespace fostlib;

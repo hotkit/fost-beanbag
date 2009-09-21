@@ -1,5 +1,5 @@
 /*
-    Copyright 2008, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2008-2009, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -7,17 +7,19 @@
 
 
 #include "fost-schema.hpp"
-#include <fost/schema/attributes.hpp>
+#include <fost/detail/schema/attributes.hpp>
+#include <fost/thread.hpp>
+#include <fost/datetime>
+
 #include <fost/exception/null.hpp>
 #include <fost/exception/out_of_range.hpp>
-#include <fost/thread.hpp>
 
 
 using namespace fostlib;
 
 
 namespace {
-    typedef library< field_base* > registry_type;
+    typedef threadsafe_store< field_base* > registry_type;
     registry_type &registry() {
         static registry_type lib;
         return lib;
@@ -25,8 +27,19 @@ namespace {
 }
 
 
-const field_wrapper< int64_t > integer( L"integer" );
+const fostlib::detail::columns_type fostlib::detail::s_empty_substructure;
+
+
+const field_wrapper< bool > booleanfield( "boolean" );
+
+const field_wrapper< double > doublefield( L"float" );
+const field_wrapper< int64_t > integerfield( L"integer" );
+
 const field_wrapper< string > varchar( L"varchar" ), text( L"text" );
+
+const field_wrapper< date > datefield( L"date" );
+//const field_wrapper< time > timefield( L"time" );
+const field_wrapper< timestamp > timestampfield( L"timestamp" );
 
 
 fostlib::field_base::field_base( const string &n )

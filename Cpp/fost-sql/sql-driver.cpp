@@ -7,7 +7,7 @@
 
 
 #include "fost-sql.hpp"
-#include <fost/db-driver-sql.hpp>
+#include <fost/detail/db-driver-sql.hpp>
 
 
 using namespace fostlib;

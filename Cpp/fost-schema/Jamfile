@@ -1,9 +1,6 @@
 
-lib fost-schema
+fost-lib fost-schema
     :
-        ../../../Boost//boost-date_time-dll
-        ../../../Boost//boost-thread-dll
-        ../../../fost-base/Cpp/fost-core/
         db.cpp
         exception.cpp
         factory.cpp
@@ -13,7 +10,5 @@ lib fost-schema
         models.attribute.cpp
         models.meta_instance.cpp
         models.static.cpp
-    :
-        <include>../include
     ;
 

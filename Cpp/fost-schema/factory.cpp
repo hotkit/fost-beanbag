@@ -7,8 +7,8 @@
 
 
 #include "fost-schema.hpp"
-#include <fost/schema/factory.hpp>
-#include <fost/thread.hpp>
+#include <fost/detail/schema/factory.hpp>
+#include <fost/threading>
 
 #include <fost/exception/out_of_range.hpp>
 
@@ -17,7 +17,7 @@ using namespace fostlib;
 
 
 namespace {
-    typedef library< detail::factory_base * > factory_registry_type;
+    typedef threadsafe_store< detail::factory_base * > factory_registry_type;
     factory_registry_type &g_registry() {
         static factory_registry_type registry;
         return registry;
