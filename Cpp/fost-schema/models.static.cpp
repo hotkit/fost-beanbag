@@ -37,6 +37,8 @@ instance &fostlib::model_base::_instance() {
     fostlib::model_base::tag_base
 */
 
+fostlib::model_base::tag_base::~tag_base() {
+}
 
 model_base::attribute_meta fostlib::model_base::primary_tag::stereotype() const {
     return model_base::a_primary;
