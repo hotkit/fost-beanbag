@@ -24,6 +24,8 @@ fostlib::meta_attribute::meta_attribute(
 ) : name( name ), key( key ), not_null( not_null ), size( size ), precision( precision ), m_type( type ) {
 }
 
+fostlib::meta_attribute::~meta_attribute() {}
+
 const field_base &meta_attribute::type() const {
     return m_type;
 }
