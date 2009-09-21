@@ -8,7 +8,7 @@
 
 #include "fost-schema.hpp"
 #include <fost/detail/db-driver.hpp>
-#include <fost/thread.hpp>
+#include <fost/threading>
 
 #include <fost/exception/transaction_fault.hpp>
 #include <fost/exception/unexpected_eof.hpp>
@@ -43,8 +43,9 @@ namespace {
     const setting< int > c_writeCommandTimeout( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"WriteCommandTimeout", 15, true );
 
 
-    library< const dbinterface * > &g_interfaces() {
-        static library< const dbinterface * > interfaces;
+    typedef threadsafe_store< const dbinterface * > database_driver_store;
+    database_driver_store &g_interfaces() {
+        static database_driver_store interfaces;
         return interfaces;
     }
 
@@ -149,9 +150,9 @@ namespace {
                         throw exceptions::data_driver( L"No driver found even after loading driver file", driver );
                 } catch ( exceptions::exception &e ) {
                     e.info() << L"Database driver file " << dll.value() << L"\nDrivers available: ";
-                    library< const dbinterface * >::keys_t k(g_interfaces().keys());
+                    database_driver_store::keys_t k(g_interfaces().keys());
                     if ( k.size() )
-                        for ( library< const dbinterface * >::keys_t::const_iterator i(k.begin()); i != k.end(); ++i )
+                        for ( database_driver_store::keys_t::const_iterator i(k.begin()); i != k.end(); ++i )
                             e.info() << *i << L" ";
                     else
                         e.info() << L"[no drivers are available]";
