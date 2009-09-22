@@ -40,6 +40,7 @@ namespace fostlib {
     // Tag types
     struct FSL_ABSTRACT model_base::tag_base {
         virtual model_base::attribute_meta stereotype() const = 0;
+        virtual ~tag_base();
     };
     struct FOST_SCHEMA_DECLSPEC model_base::primary_tag : public model_base::tag_base {
         model_base::attribute_meta stereotype() const;

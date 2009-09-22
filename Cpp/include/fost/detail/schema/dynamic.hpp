@@ -26,6 +26,7 @@ namespace fostlib {
         meta_attribute( const string &name, const field_base &type, bool key, bool not_null,
             const nullable< std::size_t > &size, const nullable< std::size_t > &precision
         );
+        virtual ~meta_attribute();
 
         accessors< const string > name;
         const field_base &type() const;
