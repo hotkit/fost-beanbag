@@ -18,9 +18,11 @@
 namespace fostlib {
 
 
+    /// Build an attribute type from a value type
     template< typename value_type >
     class field_wrapper : public field_base {
     public:
+        /// The actual attribute type itself for non-null attributes
         template< typename storage_type >
         class value : public attribute_base {
         public:
@@ -39,6 +41,9 @@ namespace fostlib {
             }
 
             const meta_attribute &_meta() const { return m_meta; }
+
+            /// Return the current value of the attribute
+            storage_type operator () () const { return m_value; }
 
         private:
             const meta_attribute &m_meta;

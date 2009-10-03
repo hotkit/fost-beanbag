@@ -43,4 +43,6 @@ namespace {
 
 
 FSL_TEST_FUNCTION( base_attribute ) {
+    std::auto_ptr< SimpleModel > sm = s_factory_sm( fostlib::json() );
+    // FSL_CHECK_EQ( sm->pk(), 0 );
 }
