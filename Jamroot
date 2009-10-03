@@ -8,14 +8,21 @@ fost-project fost-orm
         <library>../fost-base/Cpp/fost-datetime/
     ;
 
-build-project ../fost-orm/Cpp/fost-schema-test//fost-schema-test-dyndriver ;
-build-project Cpp/fost-cache ;
-build-project Cpp/fost-cache-test/ ;
-build-project Cpp/fost-jsondb ;
-build-project Cpp/fost-jsondb-test/ ;
-build-project Cpp/fost-metamodel ;
-build-project Cpp/fost-metamodel-test/ ;
-build-project Cpp/fost-schema ;
-build-project Cpp/fost-schema-test/ ;
-build-project Cpp/fost-sql ;
-build-project Cpp/fost-sql-test/ ;
+alias fost
+    :
+        Cpp/fost-cache
+        Cpp/fost-jsondb
+        Cpp/fost-metamodel
+        Cpp/fost-schema
+        Cpp/fost-sql
+    ;
+
+alias tests
+    :
+        Cpp/fost-cache-test
+        Cpp/fost-jsondb-test
+        Cpp/fost-metamodel-test
+        Cpp/fost-schema-test
+        Cpp/fost-sql-test
+    ;
+explicit tests ;
