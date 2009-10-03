@@ -71,8 +71,9 @@ namespace fostlib {
             }
         };
     public:
+        /// Construct everything needed to be able to use the type as a model field.
         field_wrapper( const string &type_name )
-        : field_base( type_name ) {
+        : field_base( type_name, typeid(value_type), typeid(nullable< value_type >) ) {
         }
 
         boost::shared_ptr< meta_attribute > meta_maker(

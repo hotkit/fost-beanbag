@@ -12,6 +12,7 @@
 
 
 #include <fost/core>
+#include <typeinfo>
 
 
 namespace fostlib {
@@ -29,6 +30,7 @@ namespace fostlib {
         protected:
             typedef detail::columns_type columns_type;
             field_base( const string &type_name );
+            field_base( const string &type_name, const std::type_info &ti_value, const std::type_info &ti_nullable );
         public:
             virtual ~field_base();
 
@@ -43,7 +45,17 @@ namespace fostlib {
             virtual const_iterator begin() const = 0;
             virtual const_iterator end() const = 0;
 
+            /// Find a field implementation via a logical type name
             static const field_base &fetch( const string &type_name );
+            /// Find a field implementation via a concrete type
+            template< typename F >
+            static const field_base &fetch() {
+                return fetch( typeid(F) );
+            }
+
+        private:
+            const std::type_info * const m_ti_value, * const m_ti_nullable;
+            static const field_base &fetch( const std::type_info &ti );
     };
 
 
