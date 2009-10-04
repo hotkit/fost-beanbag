@@ -76,6 +76,7 @@ namespace fostlib {
         : field_base( type_name, typeid(value_type), typeid(nullable< value_type >) ) {
         }
 
+        /// Returns either a nullable or non-nullable meta_attribute for the underlying type
         boost::shared_ptr< meta_attribute > meta_maker(
             const string &name, bool key, bool not_null,
             const fostlib::nullable< std::size_t > &size, const fostlib::nullable< std::size_t > &precision
@@ -83,11 +84,13 @@ namespace fostlib {
             return boost::shared_ptr< meta_attribute >( new factory( name, *this, key, not_null, size, precision ) );
         }
 
+        /// Returns an iterator to an empty sub-structure
         const_iterator begin() const {
-            return detail::s_empty_substructure.begin();
+            return s_empty_substructure.begin();
         }
+        /// Returns an iterator to an empty sub-structure
         const_iterator end() const {
-            return detail::s_empty_substructure.end();
+            return s_empty_substructure.end();
         }
     };
 

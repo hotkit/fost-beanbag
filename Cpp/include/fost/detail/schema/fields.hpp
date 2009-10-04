@@ -20,15 +20,8 @@ namespace fostlib {
 
     class meta_attribute;
 
-    namespace detail {
-        typedef std::vector< boost::shared_ptr< meta_attribute > > columns_type;
-        FOST_SCHEMA_DECLSPEC extern const columns_type s_empty_substructure;
-    }
-
-
     class FOST_SCHEMA_DECLSPEC field_base : boost::noncopyable {
         protected:
-            typedef detail::columns_type columns_type;
             field_base( const string &type_name );
             field_base( const string &type_name, const std::type_info &ti_value, const std::type_info &ti_nullable );
         public:
@@ -41,6 +34,7 @@ namespace fostlib {
                 const nullable< std::size_t > &size, const nullable< std::size_t > &precision
             ) const = 0;
 
+            typedef std::vector< boost::shared_ptr< meta_attribute > > columns_type;
             typedef columns_type::const_iterator const_iterator;
             virtual const_iterator begin() const = 0;
             virtual const_iterator end() const = 0;
@@ -52,6 +46,10 @@ namespace fostlib {
             static const field_base &fetch() {
                 return fetch( typeid(F) );
             }
+
+        protected:
+            /// An empty field sub structure whose iterators can be used to implement begin() and end()
+            const static columns_type s_empty_substructure;
 
         private:
             const std::type_info * const m_ti_value, * const m_ti_nullable;
