@@ -18,18 +18,6 @@
 using namespace fostlib;
 
 
-namespace {
-    typedef threadsafe_store< field_base* > registry_type;
-    registry_type &registry() {
-        static registry_type lib;
-        return lib;
-    }
-}
-
-
-const fostlib::detail::columns_type fostlib::detail::s_empty_substructure;
-
-
 const field_wrapper< bool > booleanfield( "boolean" );
 
 const field_wrapper< double > doublefield( L"float" );
@@ -40,6 +28,18 @@ const field_wrapper< string > varchar( L"varchar" ), text( L"text" );
 const field_wrapper< date > datefield( L"date" );
 //const field_wrapper< time > timefield( L"time" );
 const field_wrapper< timestamp > timestampfield( L"timestamp" );
+
+
+namespace {
+    typedef threadsafe_store< field_base* > registry_type;
+    registry_type &registry() {
+        static registry_type lib;
+        return lib;
+    }
+}
+
+
+const fostlib::field_base::columns_type fostlib::field_base::s_empty_substructure;
 
 
 fostlib::field_base::field_base( const string &n )
