@@ -18,18 +18,6 @@
 using namespace fostlib;
 
 
-namespace {
-    typedef threadsafe_store< field_base* > registry_type;
-    registry_type &registry() {
-        static registry_type lib;
-        return lib;
-    }
-}
-
-
-const fostlib::detail::columns_type fostlib::detail::s_empty_substructure;
-
-
 const field_wrapper< bool > booleanfield( "boolean" );
 
 const field_wrapper< double > doublefield( L"float" );
@@ -42,12 +30,34 @@ const field_wrapper< date > datefield( L"date" );
 const field_wrapper< timestamp > timestampfield( L"timestamp" );
 
 
+namespace {
+    typedef threadsafe_store< field_base* > registry_type;
+    registry_type &registry() {
+        static registry_type lib;
+        return lib;
+    }
+}
+
+
+const fostlib::field_base::columns_type fostlib::field_base::s_empty_substructure;
+
+
 fostlib::field_base::field_base( const string &n )
-: type_name( n ) {
+: type_name( n), m_ti_value( NULL ), m_ti_nullable( NULL ) {
     registry().add( type_name(), this );
+}
+fostlib::field_base::field_base( const string &n, const std::type_info &ti_value, const std::type_info &ti_nullable )
+: type_name( n ), m_ti_value( &ti_value ), m_ti_nullable( &ti_nullable ) {
+    registry().add( type_name(), this );
+    registry().add( string(m_ti_value->name()), this );
+    registry().add( string(m_ti_nullable->name()), this );
 }
 fostlib::field_base::~field_base() {
     registry().remove( type_name(), this );
+    if ( m_ti_value )
+        registry().remove( string(m_ti_value->name()), this );
+    if ( m_ti_nullable )
+        registry().remove( string(m_ti_nullable->name()), this );
 }
 
 const field_base &fostlib::field_base::fetch( const string &n ) {
@@ -63,3 +73,6 @@ const field_base &fostlib::field_base::fetch( const string &n ) {
     }
 }
 
+const field_base &fostlib::field_base::fetch( const std::type_info &ti ) {
+    return fetch( string(ti.name()) );
+}

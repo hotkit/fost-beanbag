@@ -19,7 +19,7 @@ then {
     EXTENSION="so"
 }
 else {
-    export CPUCOUNT=1
+    export CPUCOUNT=`sysctl -n hw.ncpu`
     export TOOLSET=darwin
     export DYLD_LIBRARY_PATH=../dist/lib
     EXTENSION="dylib"

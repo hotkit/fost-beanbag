@@ -22,12 +22,15 @@
         typedef type logical_attribute_type; \
         typedef stereotype stereotype_tag; \
     };
+/// Define an attribute which is a primary key for the model
 #define FSL_ATTRIBUTE_PK( name, type ) \
     FSL_ATTRIBUTE_TAG_TYPE( name, type, fostlib::model_base::primary_tag ) \
     _attribute< _##name##_tag > name;
+/// Define an attribute which is a required model field
 #define FSL_ATTRIBUTE_NOT_NULL( name, type ) \
     FSL_ATTRIBUTE_TAG_TYPE( name,  type, fostlib::model_base::required_tag ) \
     _attribute< _##name##_tag > name;
+/// Define an attribute whihc is a nullable model field
 #define FSL_ATTRIBUTE_NULL( name, type ) \
     FSL_ATTRIBUTE_TAG_TYPE( name, type, fostlib::model_base::nullable_tag ) \
     _attribute< _##name##_tag > name;

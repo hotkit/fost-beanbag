@@ -36,7 +36,7 @@ FSL_MAIN(
     */
     json configuration( json::parse( utf::load_file( coerce< std::wstring >( args[ 1 ].value() ).c_str() ) ) );
     if ( !configuration.has_key( L"root" ) )
-        jcursor( L"root" )( configuration ) = L"Cpp/fost-schema-test/jsondb-file";
+        jcursor( L"root" )( configuration ) = L"../fost-orm/Cpp/fost-schema-test/jsondb-file";
 
     /*
         Connect to the master and then create the new database

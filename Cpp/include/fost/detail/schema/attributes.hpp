@@ -18,9 +18,11 @@
 namespace fostlib {
 
 
+    /// Build an attribute type from a value type
     template< typename value_type >
     class field_wrapper : public field_base {
     public:
+        /// The actual attribute type itself for non-null attributes
         template< typename storage_type >
         class value : public attribute_base {
         public:
@@ -39,6 +41,9 @@ namespace fostlib {
             }
 
             const meta_attribute &_meta() const { return m_meta; }
+
+            /// Return the current value of the attribute
+            storage_type operator () () const { return m_value; }
 
         private:
             const meta_attribute &m_meta;
@@ -66,10 +71,12 @@ namespace fostlib {
             }
         };
     public:
+        /// Construct everything needed to be able to use the type as a model field.
         field_wrapper( const string &type_name )
-        : field_base( type_name ) {
+        : field_base( type_name, typeid(value_type), typeid(nullable< value_type >) ) {
         }
 
+        /// Returns either a nullable or non-nullable meta_attribute for the underlying type
         boost::shared_ptr< meta_attribute > meta_maker(
             const string &name, bool key, bool not_null,
             const fostlib::nullable< std::size_t > &size, const fostlib::nullable< std::size_t > &precision
@@ -77,11 +84,13 @@ namespace fostlib {
             return boost::shared_ptr< meta_attribute >( new factory( name, *this, key, not_null, size, precision ) );
         }
 
+        /// Returns an iterator to an empty sub-structure
         const_iterator begin() const {
-            return detail::s_empty_substructure.begin();
+            return s_empty_substructure.begin();
         }
+        /// Returns an iterator to an empty sub-structure
         const_iterator end() const {
-            return detail::s_empty_substructure.end();
+            return s_empty_substructure.end();
         }
     };
 
