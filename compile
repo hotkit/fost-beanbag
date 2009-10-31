@@ -29,7 +29,7 @@ fi
 
 if ../bjam toolset=$TOOLSET $VARIANTS  -j$CPUCOUNT `../python.opts.sh` $*
 then {
-    echo fost-orm tests passed
+    echo fost-orm $* OK
     exit 0
 } else {
     exit 1
