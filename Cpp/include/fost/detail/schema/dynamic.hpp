@@ -96,8 +96,8 @@ namespace fostlib {
             const string &name, const meta_instance &type, bool not_null
         );
 
-        boost::shared_ptr< instance > create() const;
-        boost::shared_ptr< instance > create( const json & ) const;
+        std::auto_ptr< instance > create() const;
+        std::auto_ptr< instance > create( const json & ) const;
 
         typedef columns_type::const_iterator const_iterator;
         const_iterator begin() const { return m_columns.begin(); }

@@ -70,7 +70,7 @@ void do_insert_test( dbconnection &dbc ) {
     */
     json first_init;
     (jcursor( L"key" ))( first_init ) = 0;
-    boost::shared_ptr< instance > first = simple.create( first_init );
+    std::auto_ptr< instance > first = simple.create( first_init );
     // Save, but don't commit
     {
         dbtransaction trans( dbc );
@@ -89,7 +89,7 @@ void do_insert_test( dbconnection &dbc ) {
         Create a second instance at the same key position
         As there is no object cache yet this will fail when it tries to commit
     */
-    boost::shared_ptr< instance > first_alias = simple.create( first_init );
+    std::auto_ptr< instance > first_alias = simple.create( first_init );
     {
         dbtransaction trans( dbc );
         FSL_CHECK_EXCEPTION( first_alias->save( trans ), exceptions::not_null& );
@@ -143,7 +143,7 @@ FSL_TEST_FUNCTION( transactions ) {
     */
     json second_init, third_init;
     jcursor( L"key" )( second_init ) = 1;
-    boost::shared_ptr< instance > second = simple.create( second_init );
+    std::auto_ptr< instance > second = simple.create( second_init );
     {
         dbtransaction trans( dbc1 );
         second->save( trans );
@@ -167,7 +167,7 @@ FSL_TEST_FUNCTION( transactions ) {
         started after the last transaciton's commit.
     */
     FSL_CHECK_NOTHROW( jcursor( L"key" )( third_init ) = 2 );
-    boost::shared_ptr< instance > third = simple.create( third_init );
+    std::auto_ptr< instance > third = simple.create( third_init );
     {
         dbtransaction trans( dbc2 );
         FSL_CHECK_NOTHROW( third->save( trans ) );
@@ -192,7 +192,7 @@ FSL_TEST_FUNCTION( transactions ) {
     */
     json fourth_init, fifth_init;
     FSL_CHECK_NOTHROW( jcursor( L"key" )( fourth_init ) = 3 );
-    boost::shared_ptr< instance > fourth = simple.create( fourth_init );
+    std::auto_ptr< instance > fourth = simple.create( fourth_init );
 
     // This should trivially work as the transaction doesn't even try to update anything
     // until the commit
@@ -203,7 +203,7 @@ FSL_TEST_FUNCTION( transactions ) {
     FSL_CHECK( dbc2.query( simple, json( 3 ) ).eof() );
 
     // Now try one where we get an error during the commit part
-    boost::shared_ptr< instance > fifth = simple.create( fourth_init );
+    std::auto_ptr< instance > fifth = simple.create( fourth_init );
     {
         dbtransaction trans( dbc2 );
         FSL_CHECK_NOTHROW( fourth->save( trans ) );
