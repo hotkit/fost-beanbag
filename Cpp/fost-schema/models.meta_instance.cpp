@@ -132,9 +132,9 @@ const meta_attribute &fostlib::meta_instance::operator[] ( const string &n ) con
 }
 
 
-boost::shared_ptr< instance > fostlib::meta_instance::create() const {
+std::auto_ptr< instance > fostlib::meta_instance::create() const {
     return create( json() );
 }
-boost::shared_ptr< instance > fostlib::meta_instance::create( const json &j ) const {
-    return boost::shared_ptr< instance >( new instance( *this, j ) );
+std::auto_ptr< instance > fostlib::meta_instance::create( const json &j ) const {
+    return std::auto_ptr< instance >( new instance( *this, j ) );
 }

@@ -38,12 +38,16 @@ namespace {
         }
         FSL_ATTRIBUTE_NOT_NULL( name, string );
     };
-    fostlib::factory< SubModel > s_factory_sub;
+    fostlib::factory< SubModel > s_factory_sub(L"SubModel");
 }
 
 
 FSL_TEST_FUNCTION( meta ) {
-    //s_factory_sm._meta();
+    boost::shared_ptr< meta_instance > simple = s_factory_sm.meta();
+    FSL_CHECK( simple->name().length() ); // We don't know what the name will be, but there should be one
+
+    boost::shared_ptr< meta_instance > submodel = s_factory_sub.meta();
+    FSL_CHECK_EQ( submodel->name(), "SubModel" );
 }
 
 
