@@ -1,6 +1,0 @@
-
-fost-lib fost-metamodel
-    :
-        ../fost-schema/
-        type_descriptor.cpp
-    ;
