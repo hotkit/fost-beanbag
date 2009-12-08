@@ -9,6 +9,18 @@ fost-project fost-orm
     ;
 
 
+fost-lib fost-metamodel
+    :
+        Cpp/fost-schema/
+        [ path.glob $(TOP)/Cpp/fost-metamodel : *.cpp : *-tests.cpp ]
+    ;
+fost-smoke-test fost-metamodel-test-smoke
+    :
+        Cpp/fost-schema/
+        fost-metamodel
+    :
+        [ path.glob $(TOP)/Cpp/fost-metamodel : *-tests.cpp ]
+    ;
 fost-lib fost-sql
     :
         Cpp/fost-schema
@@ -17,7 +29,7 @@ fost-lib fost-sql
 fost-smoke-test fost-sql-test-smoke
     :
         Cpp/fost-schema/
-        fost-sql/
+        fost-sql
     :
         [ path.glob $(TOP)/Cpp/fost-sql : *-tests.cpp ]
     ;
@@ -28,4 +40,7 @@ alias fost
         Cpp/fost-jsondb
         Cpp/fost-metamodel
         Cpp/fost-schema
+    ;
+alias tests
+    :
     ;
