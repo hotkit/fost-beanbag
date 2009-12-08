@@ -38,7 +38,6 @@ alias fost
     :
         Cpp/fost-cache
         Cpp/fost-jsondb
-        Cpp/fost-metamodel
         Cpp/fost-schema
     ;
 alias tests
