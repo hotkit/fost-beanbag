@@ -1,8 +1,0 @@
-
-fost-lib fost-sql
-    :
-        ../fost-schema
-        mangling.cpp
-        table-builder.cpp
-        sql-driver.cpp
-    ;
