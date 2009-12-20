@@ -1,0 +1,6 @@
+
+fost-lib-autotest fost-sql
+    : Cpp/fost-sql
+    :
+        ../fost-schema
+    ;

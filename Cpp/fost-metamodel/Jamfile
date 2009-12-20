@@ -1,0 +1,6 @@
+
+fost-lib-autotest fost-metamodel
+    : Cpp/fost-metamodel/
+    :
+        ../fost-schema
+    ;
