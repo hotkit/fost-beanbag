@@ -11,10 +11,28 @@ then {
 }
 fi
 
-if ../bjam -j`grep -c ^processor /proc/cpuinfo` toolset=gcc $VARIANTS
+if test -e /proc/
 then {
-    echo fost-orm tests passed
+    export CPUCOUNT=`grep -c ^processor /proc/cpuinfo`
+    export TOOLSET=gcc
+    export LD_LIBRARY_PATH=../dist/lib
+    EXTENSION="so"
+}
+else {
+    export CPUCOUNT=`sysctl -n hw.ncpu`
+    export TOOLSET=darwin
+    export DYLD_LIBRARY_PATH=../dist/lib
+    EXTENSION="dylib"
+    export LANG=C
+}
+fi
+
+if ../bjam toolset=$TOOLSET $VARIANTS  -j$CPUCOUNT `../python.opts.sh` $*
+then {
+    echo fost-orm $* OK
+    exit 0
 } else {
     exit 1
 }
 fi
+

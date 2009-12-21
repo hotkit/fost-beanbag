@@ -1,6 +1,6 @@
 
-fost-lib fost-metamodel
+fost-lib-autotest fost-metamodel
+    : Cpp/fost-metamodel/
     :
-        ../fost-schema/
-        type_descriptor.cpp
+        ../fost-schema
     ;

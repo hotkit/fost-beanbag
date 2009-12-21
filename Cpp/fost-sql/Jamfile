@@ -1,8 +1,6 @@
 
-fost-lib fost-sql
+fost-lib-autotest fost-sql
+    : Cpp/fost-sql
     :
         ../fost-schema
-        mangling.cpp
-        table-builder.cpp
-        sql-driver.cpp
     ;

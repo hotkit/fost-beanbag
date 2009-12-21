@@ -1,8 +1,0 @@
-
-fost-smoke-test fost-sql-test-smoke
-    :
-        ../fost-schema/
-        ../fost-sql/
-    :
-        tables.cpp
-    ;

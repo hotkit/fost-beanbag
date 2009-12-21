@@ -23,7 +23,7 @@ FSL_TEST_FUNCTION( define ) {
 }
 
 
-FSL_TEST_FUNCTION( registry ) {
+FSL_TEST_FUNCTION( registry_byname ) {
     FSL_CHECK_EQ( field_base::fetch( L"integer" ).type_name(), L"integer" );
     // zzzz is not a valid type. Should throw an exception
     FSL_CHECK_EXCEPTION( field_base::fetch( L"zzzz" ), exceptions::out_of_range< std::size_t >& );
@@ -45,4 +45,9 @@ FSL_TEST_FUNCTION( registry ) {
 
     FSL_CHECK_EQ( field_base::fetch( L"date" ).type_name(), L"date" );
     FSL_CHECK_EQ( field_base::fetch( L"timestamp" ).type_name(), L"timestamp" );
+}
+
+
+FSL_TEST_FUNCTION( registry_bytype ) {
+    FSL_CHECK_EQ( field_base::fetch< int64_t >().type_name(), L"integer" );
 }

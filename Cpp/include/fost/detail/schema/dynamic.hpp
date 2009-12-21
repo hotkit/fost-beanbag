@@ -17,15 +17,16 @@
 namespace fostlib {
 
 
-    /*
-        mata_attributes describe the type of a field in a fairly generic way.
-    */
     class attribute_base;
+
+
+    /// mata_attributes describe the type of a field in a fairly generic way.
     class FOST_SCHEMA_DECLSPEC meta_attribute : boost::noncopyable {
     public:
         meta_attribute( const string &name, const field_base &type, bool key, bool not_null,
             const nullable< std::size_t > &size, const nullable< std::size_t > &precision
         );
+        virtual ~meta_attribute();
 
         accessors< const string > name;
         const field_base &type() const;
@@ -42,9 +43,7 @@ namespace fostlib {
     };
 
 
-    /*
-        An enclosure is a representation of a namespace.
-    */
+    /// An enclosure is a representation of a namespace.
     class FOST_SCHEMA_DECLSPEC enclosure : boost::noncopyable {
     public:
         explicit enclosure( const string &name );
@@ -64,13 +63,12 @@ namespace fostlib {
     };
 
 
-    /*
-        The meta_instance is a type descriptor which describes what the layout
-        of the instances will look like.
-    */
     class instance;
     class dbconnection;
     class dbtransaction;
+
+
+    /// The meta_instance is a type descriptor which describes what the layout of the instances will look like.
     class FOST_SCHEMA_DECLSPEC meta_instance : public enclosure {
         typedef std::vector< boost::shared_ptr< meta_attribute > > columns_type;
         typedef std::vector< boost::shared_ptr< meta_instance > > typelist_type;
@@ -98,8 +96,8 @@ namespace fostlib {
             const string &name, const meta_instance &type, bool not_null
         );
 
-        boost::shared_ptr< instance > create() const;
-        boost::shared_ptr< instance > create( const json & ) const;
+        std::auto_ptr< instance > create() const;
+        std::auto_ptr< instance > create( const json & ) const;
 
         typedef columns_type::const_iterator const_iterator;
         const_iterator begin() const { return m_columns.begin(); }
@@ -111,9 +109,7 @@ namespace fostlib {
     };
 
 
-    /*
-        attribute_base is the base class for the attributes that the O/RM knows about
-    */
+    /// attribute_base is the base class for the attributes that the O/RM knows about
     class FOST_SCHEMA_DECLSPEC attribute_base : boost::noncopyable {
     protected:
         attribute_base();
@@ -127,9 +123,7 @@ namespace fostlib {
     };
 
 
-    /*
-        An instance is the representation of the backed object in memory
-    */
+    /// An instance is the representation of the persistent object in memory
     class FOST_SCHEMA_DECLSPEC instance : boost::noncopyable {
         friend class meta_instance;
     public:

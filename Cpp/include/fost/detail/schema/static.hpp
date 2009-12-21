@@ -40,6 +40,7 @@ namespace fostlib {
     // Tag types
     struct FSL_ABSTRACT model_base::tag_base {
         virtual model_base::attribute_meta stereotype() const = 0;
+        virtual ~tag_base();
     };
     struct FOST_SCHEMA_DECLSPEC model_base::primary_tag : public model_base::tag_base {
         model_base::attribute_meta stereotype() const;
@@ -52,15 +53,11 @@ namespace fostlib {
     };
 
 
-    /*
-        This handles the case for model types that inherit from other model type.
-        There are two specialisations -- one where there is no superclass and one where
-        there is a superclass model.
-    */
+    /// This handles the case for model types that inherit from other model type. There are two specialisations -- one where there is no superclass and one where there is a superclass model.
     template< typename instance_type, typename superclass_type = t_null >
     class model;
 
-    // Where there is no model superclass
+    /// Specialisation where there is no model superclass
     template< typename I >
     class model< I, t_null > : public model_base {
     public:
@@ -71,11 +68,7 @@ namespace fostlib {
         : model_base( j ) {
         }
 
-        /*
-            The model attributes are built up in several layers each handling a different
-            aspect of the storage and management.
-        */
-        // This stores an instance of the underlying data type.
+        /// This stores an instance of the underlying data type within a dynamic model
         template< typename actual_type >
         struct _attribute_storage : public attribute_base {
             actual_type m_value;
@@ -92,9 +85,7 @@ namespace fostlib {
             }
         };
 
-        // This works out the correct actual storage type based on the logical type and
-        // the stereotype. Both PK and required use the logical type, nullable wraps it in a
-        // nullable
+        /// This works out the correct actual storage type based on the logical type and the stereotype. Both PK and required use the logical type, nullable wraps it in a nullable
         template< typename logical_type, typename stereotype >
         struct _attribute_storage_specifier :
             public _attribute_storage< logical_type >
@@ -112,7 +103,7 @@ namespace fostlib {
             }
         };
 
-        // This fetches the required meta-data from the attribute's tag type
+        /// This fetches the required meta-data from the attribute's tag type
         template< typename tag >
         struct _attribute : public _attribute_storage_specifier<
             typename tag::logical_attribute_type, typename tag::stereotype_tag
@@ -126,10 +117,14 @@ namespace fostlib {
             const meta_attribute &_meta() const {
                 throw exceptions::not_implemented( "_attribute::_meta() const" );
             }
+
+            typename tag::logical_attribute_type operator () () const {
+                throw exceptions::not_implemented( "_attribute::operator () () const" );
+            }
         };
     };
 
-    // Where there is a model superclass
+    /// Specialisation for where there is a model superclass
     template< typename I, typename superclass_type >
     class model : public superclass_type {
     public:
