@@ -26,7 +26,15 @@ namespace {
 #else
 #ifndef NeXTBSD 
 #ifdef __APPLE__
-    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database drivers", L"json", L"libfost-jsondb.dylib", true );
+    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp",
+        L"Database drivers", L"json",
+            #ifdef _DEBUG
+                L"libfost-jsondb-d.dylib",
+            #else
+                L"libfost-jsondb.dylib",
+            #endif
+         true
+    );
 #else
     // linux?
     const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp",
