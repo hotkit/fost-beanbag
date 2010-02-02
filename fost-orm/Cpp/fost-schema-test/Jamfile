@@ -20,6 +20,8 @@ exe fost-schema-test-dyndriver
         ../../../fost-base/Cpp/fost-core/
        ../fost-schema/
        dyndriver.cpp
+    :
+       <target-os>windows:<source>../../../fost-base/External//ole
     ;
 
 
