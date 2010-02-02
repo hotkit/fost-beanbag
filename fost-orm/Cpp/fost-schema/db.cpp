@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2010, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -22,14 +22,38 @@ namespace {
 
     const setting< string > c_defaultDriver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"Default driver", L"json", true );
 #ifdef WIN32
-    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database drivers", L"json", L"fost-jsondb.dll", true );
+    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp",
+        L"Database drivers", L"json",
+            #ifdef _DEBUG
+                L"fost-jsondb-gd.dll",
+            #else
+                L"fost-jsondb.dll",
+            #endif
+        true
+    );
 #else
 #ifndef NeXTBSD 
 #ifdef __APPLE__
-    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database drivers", L"json", L"libfost-jsondb.dylib", true );
+    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp",
+        L"Database drivers", L"json",
+            #ifdef _DEBUG
+                L"libfost-jsondb-d.dylib",
+            #else
+                L"libfost-jsondb.dylib",
+            #endif
+         true
+    );
 #else
     // linux?
-    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database drivers", L"json", L"libfost-jsondb.so", true );
+    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp",
+        L"Database drivers", L"json",
+            #ifdef _DEBUG
+                L"libfost-jsondb-d.so",
+            #else
+                L"libfost-jsondb.so",
+            #endif
+        true
+    );
 #endif
 #endif
 #endif

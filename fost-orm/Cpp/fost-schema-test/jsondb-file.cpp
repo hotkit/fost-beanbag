@@ -1,5 +1,5 @@
 /*
-    Copyright 2005-2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2005-2010, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -24,7 +24,7 @@ void do_insert_test( dbconnection &dbc );
 
 FSL_MAIN(
     L"fost-schema-test-jsondb-file",
-    L"fost-schema-test-jsondb-file\nTest the file handling for Fost 4 JSON databases\nCopyright (c) 2008, Felspar Co. Ltd."
+    L"fost-schema-test-jsondb-file\nTest the file handling for Fost 4 JSON databases\nCopyright (c) 2008-2010, Felspar Co. Ltd."
 )( fostlib::ostream &out, fostlib::arguments &args ) {
     if ( args[ 1 ].isnull() ) {
         out << L"Supply a JSON file which contains the database configuration as the first parameter" << std::endl;
@@ -63,12 +63,12 @@ FSL_MAIN(
         Now check that the file on disk matches the first test file
     */
     FSL_CHECK_EQ(
-        utf::load_file( coerce< std::wstring >( concat(
+        fostlib::trim( utf::load_file( coerce< std::wstring >( concat(
             new_config[ L"root" ].get< string >().value(), L"/", new_config[ L"filename" ].get< string >().value()
-        ).value() ).c_str() ),
-        utf::load_file( coerce< std::wstring >( concat(
+        ).value() ).c_str() ) ).value(),
+        fostlib::trim( utf::load_file( coerce< std::wstring >( concat(
             new_config[ L"root" ].get< string >().value(), L"/../", L"first-test.json"
-        ).value() ).c_str() )
+        ).value() ).c_str() ) ).value()
     );
 
     return 0;
