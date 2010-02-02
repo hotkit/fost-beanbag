@@ -8,14 +8,17 @@ fost-project fost-orm
         <library>$(TOP)/../fost-base/Cpp/fost-datetime/
     ;
 
-alias fost
-    :
+alias fost :
         Cpp/fost-cache
         Cpp/fost-jsondb
         Cpp/fost-metamodel
         Cpp/fost-schema
         Cpp/fost-sql
     ;
-alias tests
-    :
+
+alias tests :
+        Cpp/fost-cache-test
+        Cpp/fost-jsondb-test
+        Cpp/fost-schema-test
     ;
+explicit tests ;
