@@ -59,6 +59,7 @@ run
     :
         ../fost-jsondb//fost-jsondb
     :
+        <target-os>windows:<source>../../../fost-base/External//ole
     :
         fost-schema-test-dyndriver-jsondb
     ;
