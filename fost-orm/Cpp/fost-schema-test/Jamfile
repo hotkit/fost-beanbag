@@ -1,5 +1,6 @@
 import testing ;
 
+
 fost-smoke-test fost-schema-test-smoke
     :
         ../fost-schema/
@@ -12,6 +13,7 @@ fost-smoke-test fost-schema-test-smoke
         simple.cpp
     ;
 
+
 exe fost-schema-test-dyndriver
     :
         ../../../Boost//boost-date_time-dll
@@ -23,9 +25,11 @@ exe fost-schema-test-dyndriver
     :
        <target-os>windows:<source>../../../fost-base/External//ole
     ;
+fost-install fost-schema-test-dyndriver ;
 
 
 compile-fail factory-incorrect-model.cpp ;
+
 
 run
         ../../../fost-base/External//uuid
@@ -46,6 +50,7 @@ run
     :
         fost-schema-test-jsondb-file
     ;
+
 
 run
         ../../../Boost//boost-date_time-dll
