@@ -18,4 +18,6 @@ unit-test fost-jsondb-test-file
         ../../../fost-base/Cpp/fost-test/
         ../fost-jsondb/
         filetest.cpp
+    :
+       <target-os>windows:<source>../../../fost-base/External//ole
     ;
