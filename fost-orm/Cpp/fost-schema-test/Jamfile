@@ -3,7 +3,8 @@ import testing ;
 
 fost-smoke-test fost-schema-test-smoke
     :
-        ../fost-schema/
+        ../fost-jsondb
+        ../fost-schema
     :
         database.cpp
         drivers.cpp
@@ -55,15 +56,16 @@ run
 run
         ../../../Boost//boost-date_time-dll
         ../../../Boost//boost-thread-dll
-       ../../../fost-base/Cpp/fost-cli/
-        ../../../fost-base/Cpp/fost-core/
-       ../fost-schema/
-       dyndriver.cpp
+        ../../../fost-base/Cpp/fost-cli
+        ../../../fost-base/Cpp/fost-core
+        ../fost-schema
+        dyndriver.cpp
     :
         json
     :
         ../fost-jsondb//fost-jsondb
     :
+        <target-os>windows:<source>../fost-jsondb
         <target-os>windows:<source>../../../fost-base/External//ole
     :
         fost-schema-test-dyndriver-jsondb
