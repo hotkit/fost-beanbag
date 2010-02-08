@@ -48,6 +48,7 @@ run
     :
         jsondb-file.json
     :
+        <target-os>windows:<source>../fost-jsondb
     :
         fost-schema-test-jsondb-file
     ;
