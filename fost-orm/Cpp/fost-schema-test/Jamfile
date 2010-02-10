@@ -15,18 +15,11 @@ fost-smoke-test fost-schema-test-smoke
     ;
 
 
-exe fost-schema-test-dyndriver
+fost-exe fost-schema-test-dyndriver
     :
-        ../../../Boost//boost-date_time-dll
-        ../../../Boost//boost-thread-dll
-       ../../../fost-base/Cpp/fost-cli/
-        ../../../fost-base/Cpp/fost-core/
        ../fost-schema/
        dyndriver.cpp
-    :
-       <target-os>windows:<source>../../../fost-base/External//ole
     ;
-fost-install fost-schema-test-dyndriver ;
 
 
 compile-fail factory-incorrect-model.cpp ;
