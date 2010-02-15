@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2010, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -58,13 +58,13 @@ namespace fostlib {
             }
 
             boost::shared_ptr< attribute_base > construct() const {
-                if ( not_null() )
+                if ( required() )
                     return boost::shared_ptr< attribute_base >( new value< value_type >( *this ) );
                 else
                     return boost::shared_ptr< attribute_base >( new value< nullable< value_type > >( *this ) );
             }
             boost::shared_ptr< attribute_base > construct( const json &j ) const {
-                if ( not_null() )
+                if ( required() )
                     return boost::shared_ptr< attribute_base >( new value< value_type >( *this, j ) );
                 else
                     return boost::shared_ptr< attribute_base >( new value< nullable< value_type > >( *this, j ) );

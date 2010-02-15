@@ -1,9 +1,7 @@
 
-fost-lib fost-cache
+fost-lib-autotest fost-cache
+    :
+        Cpp/fost-cache
     :
         ../fost-schema/
-        fost-cache.cpp
-        master-cache.cpp
-        object-cache.cpp
     ;
-

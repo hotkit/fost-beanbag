@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2010, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -23,19 +23,32 @@ namespace fostlib {
     /// mata_attributes describe the type of a field in a fairly generic way.
     class FOST_SCHEMA_DECLSPEC meta_attribute : boost::noncopyable {
     public:
-        meta_attribute( const string &name, const field_base &type, bool key, bool not_null,
-            const nullable< std::size_t > &size, const nullable< std::size_t > &precision
+        /// Constructs a meta_attribute
+        meta_attribute(
+            const string &name, const field_base &type,
+            bool key, bool required,
+            const nullable< std::size_t > &size,
+            const nullable< std::size_t > &precision
         );
+        /// Enable proper sub-classing support
         virtual ~meta_attribute();
 
+        /// The name of the attribute
         accessors< const string > name;
+        /// The implementation of the logical type
         const field_base &type() const;
+        /// Whether this attribute is part of the primary key
         accessors< const bool > key;
-        accessors< const bool > not_null;
+        /// Whether this attribute is required
+        accessors< const bool > required;
+        /// The size of the value stored in the attribute
         accessors< const nullable< std::size_t > > size;
+        /// The precision of the value stored in the attribute
         accessors< const nullable< std::size_t > > precision;
 
+        /// Construct the attribute that actually holds a value
         virtual boost::shared_ptr< attribute_base > construct() const = 0;
+        /// Construct the attribute that actually holds a value initialising it with a given JSON value
         virtual boost::shared_ptr< attribute_base > construct( const json & ) const = 0;
 
     private:
