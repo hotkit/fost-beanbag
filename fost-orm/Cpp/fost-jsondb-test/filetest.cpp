@@ -1,5 +1,5 @@
 /*
-    Copyright 2005-2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2005-2010, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -12,18 +12,24 @@
 #include <fost/test>
 #include <fost/jsondb>
 
+#include <boost/filesystem.hpp>
+
 
 using namespace fostlib;
 
 
 namespace {
-    const setting< bool > c_keep_file("fost-jsondb-test-file", "fost-jsondb-test-file", "Keep database file", false);
+    const setting< bool > c_keep_file(
+        "fost-jsondb-test-file", "fost-jsondb-test-file", "Keep database file", false
+    );
 }
 
 
 FSL_MAIN(
     L"fost-jsondb-test-file",
-    L"fost-jsondb-test-file\nTest the file handling for Fost 4 JSON blobs\nCopyright (c) 2008, Felspar Co. Ltd."
+    L"fost-jsondb-test-file\n"
+    L"Test the file handling for Fost 4 JSON blobs\n"
+    L"Copyright (c) 2008-2010, Felspar Co. Ltd."
 )( fostlib::ostream &out, fostlib::arguments &args ) {
     string dbname( guid() );
 
@@ -46,6 +52,9 @@ FSL_MAIN(
             .commit()
         ;
     }
+
+    if ( !c_keep_file.value() )
+        boost::filesystem::remove(fostlib::coerce<std::wstring>(dbname));
 
     return 0;
 }
