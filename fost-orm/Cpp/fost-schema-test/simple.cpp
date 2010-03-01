@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2008-2010, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -45,9 +45,9 @@ FSL_TEST_FUNCTION( dynamic_construct_blank ) {
     FSL_CHECK( !i->in_database() );
     FSL_CHECK_EQ( (*i)[ L"id" ]._meta().type().type_name(), L"integer" );
     FSL_CHECK_EQ( (*i)[ L"name" ]._meta().type().type_name(), L"varchar" );
-    FSL_CHECK( (*i)[ L"id" ]._meta().not_null() );
+    FSL_CHECK( (*i)[ L"id" ]._meta().required() );
     FSL_CHECK_EQ( (*i)[ L"id" ].to_json(), json( 0 ) );
-    FSL_CHECK( (*i)[ L"name" ]._meta().not_null() );
+    FSL_CHECK( (*i)[ L"name" ]._meta().required() );
     FSL_CHECK_EQ( (*i)[ L"name" ].to_json(), json( string() ) );
 }
 

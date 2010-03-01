@@ -3,10 +3,14 @@ include $(TOP)/../boost-version.jam ;
 include ../fost-base/fost.jam ;
 
 use-project fost-base : ../fost-base/ ;
-fost-project fost-orm
-    :
+fost-project fost-orm :
         <library>$(TOP)/../fost-base/Cpp/fost-datetime/
     ;
+
+alias examples :
+        ../fost-base//examples
+    ;
+explicit examples ;
 
 alias fost :
         ../fost-base//fost
@@ -24,11 +28,6 @@ alias tests :
         Cpp/fost-schema-test
     ;
 explicit tests ;
-
-alias examples :
-        ../fost-base//examples
-    ;
-explicit examples ;
 
 alias all :
         fost
