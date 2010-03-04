@@ -23,7 +23,6 @@ alias fost :
 
 alias tests :
         ../fost-base//tests
-        Cpp/fost-cache-test
         Cpp/fost-jsondb-test
         Cpp/fost-schema-test
     ;
