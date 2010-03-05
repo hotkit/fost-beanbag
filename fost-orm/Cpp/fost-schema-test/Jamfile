@@ -1,0 +1,66 @@
+import testing ;
+
+
+fost-smoke-test fost-schema-test-smoke
+    :
+        ../fost-jsondb
+        ../fost-schema
+    :
+        database.cpp
+        drivers.cpp
+        fields.cpp
+        models.attributes.cpp
+        models.hierarchy.cpp
+        simple.cpp
+    ;
+
+
+fost-exe fost-schema-test-dyndriver
+    :
+       ../fost-schema/
+       dyndriver.cpp
+    ;
+
+
+compile-fail factory-incorrect-model.cpp ;
+
+
+run
+        ../../../fost-base/External//uuid
+        ../../../Boost//boost-date_time-dll
+        ../../../Boost//boost-filesystem-dll
+        ../../../Boost//boost-system-dll
+        ../../../Boost//boost-thread-dll
+        ../../../fost-base/Cpp/fost-cli/
+        ../../../fost-base/Cpp/fost-core/
+        ../../../fost-base/Cpp/fost-test/
+        ../fost-schema/
+        database.cpp
+        jsondb-file.cpp
+    :
+    :
+        jsondb-file.json
+    :
+        <source>../fost-jsondb
+    :
+        fost-schema-test-jsondb-file
+    ;
+
+
+run
+        ../../../Boost//boost-date_time-dll
+        ../../../Boost//boost-thread-dll
+        ../../../fost-base/Cpp/fost-cli
+        ../../../fost-base/Cpp/fost-core
+        ../fost-schema
+        dyndriver.cpp
+    :
+        json
+    :
+        ../fost-jsondb//fost-jsondb
+    :
+        <target-os>windows:<source>../fost-jsondb
+        <target-os>windows:<source>../../../fost-base/External//ole
+    :
+        fost-schema-test-dyndriver-jsondb
+    ;
