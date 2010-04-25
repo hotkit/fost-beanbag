@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2010, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -11,7 +11,7 @@
 #pragma once
 
 
-#include <fost/detail/schema.hpp>
+#include <fost/schema.hpp>
 #include <typeinfo>
 
 #include <boost/static_assert.hpp>

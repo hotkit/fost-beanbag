@@ -1,3 +1,7 @@
+2010-04-25  Kirit Saelensminde  <kirit@felspar.com>
+ Code layout
+ - Moved a number of headers into much more sensible locations
+
 2010-03-22  Kirit Saelensminde  <kirit@felspar.com>
  ChangeLog
  - Added ChangeLog

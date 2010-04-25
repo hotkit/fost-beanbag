@@ -13,5 +13,5 @@
 #endif
 
 
-#include <fost/detail/db.hpp>
-#include <fost/detail/schema.hpp>
+#include <fost/db.hpp>
+#include <fost/schema.hpp>
