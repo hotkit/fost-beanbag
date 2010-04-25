@@ -7,8 +7,8 @@
 
 
 #include "fost-schema.hpp"
-#include <fost/detail/db.hpp>
-#include <fost/detail/schema.hpp>
+#include <fost/db.hpp>
+#include <fost/schema.hpp>
 #include <fost/factory.hpp>
 
 #include <fost/exception/null.hpp>
