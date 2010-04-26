@@ -7,7 +7,7 @@
 
 
 #include "fost-schema.hpp"
-#include <fost/detail/db-driver.hpp>
+#include <fost/db-driver.hpp>
 #include <fost/threading>
 
 #include <fost/exception/transaction_fault.hpp>
@@ -32,7 +32,7 @@ namespace {
         true
     );
 #else
-#ifndef NeXTBSD 
+#ifndef NeXTBSD
 #ifdef __APPLE__
     const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp",
         L"Database drivers", L"json",
