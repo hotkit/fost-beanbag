@@ -30,12 +30,9 @@ FSL_TEST_SUITE( object_ptr );
 
 
 FSL_TEST_FUNCTION( basic_operations ) {
-    fostlib::test::default_copy_constructable<
-        fostlib::object_ptr< Model >
-    >();
+    fostlib::test::default_copy_constructable
+        < fostlib::object_ptr< Model > >();
     fostlib::test::default_isnull< fostlib::object_ptr< Model > >();
-
-    FSL_CHECK_EQ( fostlib::object_ptr< Model >(), fostlib::null );
 }
 
 
