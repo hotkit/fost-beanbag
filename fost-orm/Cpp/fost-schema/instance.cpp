@@ -10,7 +10,6 @@
 #include <fost/schema.hpp>
 #include <fost/db.hpp>
 
-#include <fost/exception/null.hpp>
 #include <fost/exception/no_attribute.hpp>
 
 #include <boost/lambda/lambda.hpp>
@@ -42,7 +41,7 @@ const meta_instance &fostlib::instance::_meta() const {
 attribute_base &fostlib::instance::operator [] ( const string &name ) {
     attributes_type::iterator p( m_attributes.find( name ) );
     if ( p == m_attributes.end() )
-        throw exceptions::not_implemented( _meta().name() + L"." + name );
+        throw exceptions::no_attribute( _meta().name() + L"." + name );
     else
         return *p->second;
 }
