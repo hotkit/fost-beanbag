@@ -20,35 +20,6 @@ using namespace fostlib;
 
 
 /*
-    fostlib::enclosure
-*/
-
-
-const enclosure enclosure::global( L"" );
-
-fostlib::enclosure::enclosure( const string &n )
-: name( n ), m_parent( global ) {
-}
-fostlib::enclosure::enclosure( const enclosure &e, const string &n )
-: name( n ), m_parent( e ) {
-}
-
-bool fostlib::enclosure::in_global() const {
-    return &m_parent == &global;
-}
-
-string fostlib::enclosure::fq_name( const string &delim ) const {
-    if ( !in_global() )
-        return m_parent.fq_name( delim ) + delim + name();
-    else
-        return name();
-}
-const enclosure &fostlib::enclosure::parent() const {
-    return m_parent;
-}
-
-
-/*
     fostlib::instance
 */
 
@@ -78,7 +49,8 @@ attribute_base &fostlib::instance::operator [] ( const string &name ) {
 
 void fostlib::instance::save( fostlib::dbtransaction &t ) {
     if ( m_in_database )
-        throw exceptions::not_implemented( L"fostlib::instance::save() -- when already in database" );
+        throw exceptions::not_implemented(
+            "fostlib::instance::save() -- when already in database");
     else
         t.insert( *this, boost::lambda::var( m_in_database ) = true );
 }
