@@ -8,12 +8,6 @@
 
 #include "fost-schema.hpp"
 #include <fost/schema.hpp>
-#include <fost/db.hpp>
-
-#include <fost/exception/null.hpp>
-#include <fost/exception/no_attribute.hpp>
-
-#include <boost/lambda/lambda.hpp>
 
 
 using namespace fostlib;
