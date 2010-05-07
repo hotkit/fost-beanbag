@@ -144,8 +144,7 @@ namespace std {
             return o << "NULL";
         else
             throw fostlib::exceptions::not_implemented(
-                "osream << for fostlib::object_ptr"
-            );
+                "osream << for fostlib::object_ptr");
     }
 }
 

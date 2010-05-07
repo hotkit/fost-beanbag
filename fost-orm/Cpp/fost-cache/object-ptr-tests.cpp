@@ -38,5 +38,9 @@ FSL_TEST_FUNCTION( basic_operations ) {
 
 FSL_TEST_FUNCTION( pointer_ops_when_null ) {
     fostlib::object_ptr< Model > ptr;
+    const fostlib::object_ptr< Model > cptr;
     FSL_CHECK_EXCEPTION(ptr->pk(), fostlib::exceptions::null&);
+    FSL_CHECK_EXCEPTION(cptr->pk(), fostlib::exceptions::null&);
+    FSL_CHECK_EXCEPTION(ptr.operator -> (), fostlib::exceptions::null&);
+    FSL_CHECK_EXCEPTION(cptr.operator -> (), fostlib::exceptions::null&);
 }
