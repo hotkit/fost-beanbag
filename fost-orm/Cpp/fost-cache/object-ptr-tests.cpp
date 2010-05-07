@@ -43,4 +43,6 @@ FSL_TEST_FUNCTION( pointer_ops_when_null ) {
     FSL_CHECK_EXCEPTION(cptr->pk(), fostlib::exceptions::null&);
     FSL_CHECK_EXCEPTION(ptr.operator -> (), fostlib::exceptions::null&);
     FSL_CHECK_EXCEPTION(cptr.operator -> (), fostlib::exceptions::null&);
+    FSL_CHECK_EXCEPTION(ptr.operator * (), fostlib::exceptions::null&);
+    FSL_CHECK_EXCEPTION(cptr.operator * (), fostlib::exceptions::null&);
 }

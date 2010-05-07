@@ -123,6 +123,10 @@ namespace fostlib {
         instance_type *operator -> ();
         /// Allow underlying value to be fetched
         instance_type const *operator -> () const;
+        /// Allow underlying value to be fetched
+        instance_type &operator * ();
+        /// Allow underlying value to be fetched
+        const instance_type &operator * () const;
 
     private:
         nullable< key_type > m_key;
