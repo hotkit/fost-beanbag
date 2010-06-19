@@ -7,7 +7,7 @@
 
 
 #include "fost-schema.hpp"
-#include <fost/detail/schema.hpp>
+#include <fost/schema.hpp>
 
 
 using namespace fostlib;

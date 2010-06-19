@@ -106,22 +106,47 @@ namespace fostlib {
 
         /// Allow comparison of pointers
         bool operator == ( const object_ptr &r ) const;
+        /// Allow comparison of pointers for inequality
         bool operator != ( const object_ptr &r ) const;
 
         /// Returns true if the pointer is null
         bool isnull() const;
         /// Allow comparison with null
         bool operator == ( t_null ) const;
+        /// Check for inequality with null
         bool operator != ( t_null ) const;
 
+        /// Return the key that the pointer wraps
         const key_type &value() const;
+
+        /// Allow underlying value to be fetched
+        instance_type *operator -> ();
+        /// Allow underlying value to be fetched
+        instance_type const *operator -> () const;
 
     private:
         nullable< key_type > m_key;
-        boost::weak_ptr< instance_type > m_pointer;
+        mutable boost::weak_ptr< instance_type > m_pointer;
     };
 
 
+}
+
+
+namespace std {
+    /// Allow object_ptr instances to be output to a stream
+    template< typename O, typename K >
+    fostlib::ostream &operator << (
+        fostlib::ostream &o,
+        const fostlib::object_ptr< O, K > &p
+    ) {
+        if ( p.isnull() )
+            return o << "NULL";
+        else
+            throw fostlib::exceptions::not_implemented(
+                "osream << for fostlib::object_ptr"
+            );
+    }
 }
 
 

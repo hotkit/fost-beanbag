@@ -14,4 +14,4 @@
 
 
 #include <fost/db>
-#include <fost/detail/db-driver-sql.hpp>
+#include <fost/db-driver-sql.hpp>
