@@ -1,3 +1,13 @@
+2010-05-07  Kirit Saelensminde  <kirit@felspar.com>
+ Object pointers
+ - Implemented more of the pointer dereferencing operators.
+
+2010-05-01  Kirit Saelensminde  <kirit@felspar.com>
+ Model initialisation
+ - There is now an explicit type for the parameter used to initialise
+   a model instance. This will allow the available information to be
+   extended in a sane manner.
+
 2010-04-25  Kirit Saelensminde  <kirit@felspar.com>
  Code layout
  - Moved a number of headers into much more sensible locations

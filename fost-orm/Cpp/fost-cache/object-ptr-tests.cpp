@@ -14,9 +14,9 @@
 namespace {
     class Model : public fostlib::model< Model > {
     public:
-        Model( const fostlib::json &j )
-        : model_type( j ),
-            pk( this, j ) {
+        Model( const fostlib::initialiser &init )
+        : model_type( init ),
+            pk( this, init.data() ) {
         }
 
         typedef int key_type;
@@ -30,16 +30,19 @@ FSL_TEST_SUITE( object_ptr );
 
 
 FSL_TEST_FUNCTION( basic_operations ) {
-    fostlib::test::default_copy_constructable<
-        fostlib::object_ptr< Model >
-    >();
+    fostlib::test::default_copy_constructable
+        < fostlib::object_ptr< Model > >();
     fostlib::test::default_isnull< fostlib::object_ptr< Model > >();
-
-    FSL_CHECK_EQ( fostlib::object_ptr< Model >(), fostlib::null );
 }
 
 
 FSL_TEST_FUNCTION( pointer_ops_when_null ) {
     fostlib::object_ptr< Model > ptr;
+    const fostlib::object_ptr< Model > cptr;
     FSL_CHECK_EXCEPTION(ptr->pk(), fostlib::exceptions::null&);
+    FSL_CHECK_EXCEPTION(cptr->pk(), fostlib::exceptions::null&);
+    FSL_CHECK_EXCEPTION(ptr.operator -> (), fostlib::exceptions::null&);
+    FSL_CHECK_EXCEPTION(cptr.operator -> (), fostlib::exceptions::null&);
+    FSL_CHECK_EXCEPTION(ptr.operator * (), fostlib::exceptions::null&);
+    FSL_CHECK_EXCEPTION(cptr.operator * (), fostlib::exceptions::null&);
 }

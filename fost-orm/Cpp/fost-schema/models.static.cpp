@@ -18,11 +18,25 @@ using namespace fostlib;
 
 
 /*
+    fostlib::initialiser
+*/
+
+fostlib::initialiser::initialiser() {
+}
+
+fostlib::initialiser::initialiser( const json &j )
+: data( j ) {
+}
+
+
+/*
     fostlib::model_base
 */
 
-fostlib::model_base::model_base( const json &j )
-: m_instance( new instance( *detail::find_factory( coerce< string >(  j[ L"_meta" ][ L"type_info" ] ) ).meta(), j ) ) {
+fostlib::model_base::model_base( const initialiser &init )
+: m_instance( new instance( *detail::find_factory(
+            coerce< string >(  init.data()[ L"_meta" ][ L"type_info" ] )
+        ).meta(), init.data() ) ) {
 }
 
 fostlib::model_base::~model_base() {

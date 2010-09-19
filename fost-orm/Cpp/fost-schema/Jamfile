@@ -1,13 +1,4 @@
 
-fost-lib fost-schema
-    :
-        db.cpp
-        exception.cpp
-        factory.cpp
-        field.cpp
-        mangling.cpp
-        models.cpp
-        models.attribute.cpp
-        models.meta_instance.cpp
-        models.static.cpp
+fost-lib-autotest fost-schema
+    : Cpp/fost-schema
     ;

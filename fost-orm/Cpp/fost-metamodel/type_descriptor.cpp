@@ -10,7 +10,7 @@
 #include <fost/metamodel.hpp>
 
 
-fostlib::type_descriptor::type_descriptor( const json &j )
-: model_type( j ),
-    name( this, j ) {
+fostlib::type_descriptor::type_descriptor( const initialiser &init )
+: model_type( init ),
+        name( this, init.data() ) {
 }
