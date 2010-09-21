@@ -40,12 +40,30 @@ const typename fostlib::object_ptr< O, K >::key_type &fostlib::object_ptr< O, K 
 template< typename O, typename K > inline
 typename fostlib::object_ptr< O, K >::instance_type *
         fostlib::object_ptr< O, K >::operator -> () {
+    const object_ptr< O, K > *cthis = this;
+    return const_cast<
+        typename fostlib::object_ptr< O, K >::instance_type *
+    >( (*cthis).operator -> () );
+}
+template< typename O, typename K > inline
+typename fostlib::object_ptr< O, K >::instance_type &
+        fostlib::object_ptr< O, K >::operator * () {
+    return *((*this).operator -> ());
+}
+
+template< typename O, typename K > inline
+typename fostlib::object_ptr< O, K >::instance_type const *
+        fostlib::object_ptr< O, K >::operator -> () const {
     if ( m_key.isnull() )
         throw exceptions::null("Pointer does not contain a key");
     else
         throw exceptions::not_implemented(
-            "Fetching a pointer when there is a key"
-        );
+            "Fetching a pointer when there is a key");
+}
+template< typename O, typename K > inline
+const typename fostlib::object_ptr< O, K >::instance_type &
+        fostlib::object_ptr< O, K >::operator * () const {
+    return *((*this).operator -> ());
 }
 
 namespace fostlib {
@@ -58,3 +76,4 @@ namespace fostlib {
         return !o.isnull();
     }
 }
+

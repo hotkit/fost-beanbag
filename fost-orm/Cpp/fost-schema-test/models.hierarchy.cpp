@@ -1,5 +1,5 @@
 /*
-    Copyright 2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2009-2010, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -22,7 +22,7 @@ namespace {
 
     class BasicModel : public model< BasicModel > {
     public:
-        BasicModel( const fostlib::json &j )
+        BasicModel( const fostlib::initialiser &j )
         : model_type( j ) {
         }
     };
@@ -30,7 +30,7 @@ namespace {
 
     class BasicSubModel : public model< BasicSubModel, BasicModel > {
     public:
-        BasicSubModel( const fostlib::json &j )
+        BasicSubModel( const fostlib::initialiser &j )
         : model_type( j ) {
         }
     };
@@ -38,13 +38,13 @@ namespace {
 
     class HostModel : public model< HostModel > {
     public:
-        HostModel( const fostlib::json &j )
+        HostModel( const fostlib::initialiser &j )
         : model_type( j ) {
         }
 
         class NestedModel : public model< NestedModel > {
         public:
-            NestedModel( const fostlib::json &j )
+            NestedModel( const fostlib::initialiser &j )
             : model_type( j ) {
             }
         };
@@ -53,7 +53,7 @@ namespace {
 
     class SubHostModel : public model< SubHostModel, HostModel > {
     public:
-        SubHostModel( const fostlib::json &j )
+        SubHostModel( const fostlib::initialiser &j )
         : model_type( j ) {
         }
     };

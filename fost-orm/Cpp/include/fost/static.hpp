@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2010, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -18,9 +18,17 @@
 namespace fostlib {
 
 
-    /*
-        The base class for all model hierarchies
-    */
+    /// Used as the parameter type for the model constructor
+    class FOST_SCHEMA_DECLSPEC initialiser {
+        public:
+            initialiser();
+            explicit initialiser( const json & );
+
+            accessors< const json, rvalue > data;
+    };
+
+
+    ///The base class for all model hierarchies
     class FOST_SCHEMA_DECLSPEC model_base {
         boost::shared_ptr< instance > m_instance;
     public:
@@ -30,25 +38,31 @@ namespace fostlib {
         // Tag types used to build meta data for attributes
         struct tag_base; struct primary_tag; struct nullable_tag; struct required_tag;
 
-        model_base( const json &j );
+        model_base( const initialiser &j );
         virtual ~model_base();
 
         instance &_instance();
     };
 
 
-    // Tag types
+    /// Tags are used to describe attribute meta-data
     struct FSL_ABSTRACT model_base::tag_base {
         virtual model_base::attribute_meta stereotype() const = 0;
         virtual ~tag_base();
     };
-    struct FOST_SCHEMA_DECLSPEC model_base::primary_tag : public model_base::tag_base {
+    /// Used to tag primary keys
+    struct FOST_SCHEMA_DECLSPEC model_base::primary_tag
+            : public model_base::tag_base {
         model_base::attribute_meta stereotype() const;
     };
-    struct FOST_SCHEMA_DECLSPEC model_base::nullable_tag : public model_base::tag_base {
+    /// Used to tag a nullable attribute
+    struct FOST_SCHEMA_DECLSPEC model_base::nullable_tag
+            : public model_base::tag_base {
         model_base::attribute_meta stereotype() const;
     };
-    struct FOST_SCHEMA_DECLSPEC model_base::required_tag : public model_base::tag_base {
+    /// Used to tag a required attribute
+    struct FOST_SCHEMA_DECLSPEC model_base::required_tag
+            : public model_base::tag_base {
         model_base::attribute_meta stereotype() const;
     };
 
@@ -64,7 +78,7 @@ namespace fostlib {
         typedef I instance_type;
         typedef model< instance_type > model_type;
 
-        model( const json &j )
+        model( const initialiser &j )
         : model_base( j ) {
         }
 
@@ -131,7 +145,7 @@ namespace fostlib {
         typedef I instance_type;
         typedef model< instance_type, superclass_type > model_type;
 
-        model( const json &j )
+        model( const initialiser &j )
         : superclass_type( j ) {
         }
     };
