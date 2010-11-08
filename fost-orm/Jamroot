@@ -7,6 +7,11 @@ fost-project fost-orm :
         <library>$(TOP)/../fost-base/Cpp/fost-datetime/
     ;
 
+alias docs :
+        Docs
+    ;
+explicit docs ;
+
 alias examples :
         ../fost-base//examples
     ;
@@ -29,6 +34,7 @@ alias tests :
 explicit tests ;
 
 alias all :
+        docs
         fost
         tests
         examples

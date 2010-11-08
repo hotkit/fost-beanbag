@@ -1,0 +1,7 @@
+import path ;
+
+fost-doxygen usr/share/fost
+    :
+        [ path.glob-tree $(TOP)/Docs : *.hpp *.cpp ]
+        [ path.glob-tree $(TOP)/Cpp/include : *.hpp ]
+    ;
