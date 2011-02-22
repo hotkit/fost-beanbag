@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2010, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2008-2011, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -69,6 +69,9 @@ namespace {
     void do_insert( json &db, const jcursor &k, const json &v ) {
         k.insert( db, v );
     }
+    void do_push_back( json &db, const jcursor &k, const json &v ) {
+        k.push_back( db, v );
+    }
     void do_update( json &db, const jcursor &k, const json &v, const json &old ) {
         if ( db.has_key( k ) && db[ k ] == old )
             k( db ) = v;
@@ -107,6 +110,15 @@ void fostlib::jsondb::local::refresh() {
 jsondb::local &fostlib::jsondb::local::insert( const jcursor &position, const json &item ) {
     do_insert( m_local, position, item );
     m_operations.push_back( boost::lambda::bind( do_insert, boost::lambda::_1, position, item ) );
+    return *this;
+}
+
+jsondb::local &fostlib::jsondb::local::push_back(
+    const jcursor &position, const json &item
+) {
+    do_push_back( m_local, position, item );
+    m_operations.push_back(boost::lambda::bind(
+        do_push_back, boost::lambda::_1, position, item));
     return *this;
 }
 

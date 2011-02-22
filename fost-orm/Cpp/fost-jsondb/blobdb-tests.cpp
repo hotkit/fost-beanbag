@@ -1,13 +1,13 @@
 /*
-    Copyright 2007-2008, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2007-2011, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
 */
 
 
-#include "fost-jsondb-test.hpp"
 #include <fost/jsondb>
+#include <fost/test>
 
 #include <fost/exception/json_error.hpp>
 #include <fost/exception/not_null.hpp>
@@ -45,11 +45,48 @@ FSL_TEST_FUNCTION( insert ) {
         Do some error checking
     */
     // We can't add to loc1 as it already has something at this position
-    FSL_CHECK_EXCEPTION( loc1.insert( jcursor(), json( 10 ) ), exceptions::not_null& );
+    FSL_CHECK_EXCEPTION(
+        loc1.insert( jcursor(), json( 10 ) ), exceptions::not_null& );
     // It looks like it works on loc2
     FSL_CHECK_NOTHROW( loc2.insert( jcursor(), json( 10 ) ) );
     // But it throws when we commit
-    FSL_CHECK_EXCEPTION( loc2.commit(), exceptions::forwarded_exception& );
+    FSL_CHECK_EXCEPTION(
+        loc2.commit(), exceptions::forwarded_exception& );
+}
+
+
+FSL_TEST_FUNCTION( push_back ) {
+    jsondb database;
+
+    /*
+        Add something into the database.
+    */
+    {
+        jsondb::local loc1( database );
+        loc1
+            .push_back( jcursor("list"), json( true ) )
+            .push_back( jcursor("list"), json( false ) )
+            .commit();
+    }
+    /*
+        Adding something to the root should now throw
+    */
+    {
+        jsondb::local loc1( database );
+        FSL_CHECK_EXCEPTION(
+            loc1.push_back( jcursor(), true ), exceptions::json_error&);
+    }
+    /*
+        With 2 transactions we should be able to get something to look like
+        it will work, and then fail.
+    */
+    {
+        jsondb::local loc1( database ), loc2( database );
+        loc1.push_back(jcursor("queued"), true);
+        loc2.insert(jcursor("queued"), true).commit();
+        FSL_CHECK_EXCEPTION(
+            loc1.commit(), exceptions::forwarded_exception&);
+    }
 }
 
 
