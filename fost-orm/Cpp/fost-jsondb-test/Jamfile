@@ -1,12 +1,5 @@
 using testing ;
 
-fost-smoke-test fost-jsondb-test-smoke
-    :
-        ../fost-jsondb/
-    :
-        blobdb.cpp
-    ;
-
 unit-test fost-jsondb-test-file
     :
         ../../../Boost//boost-date_time-dll

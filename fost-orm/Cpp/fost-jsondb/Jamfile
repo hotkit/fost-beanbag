@@ -1,7 +1,7 @@
 
-fost-lib fost-jsondb
+fost-lib-autotest fost-jsondb
+    :
+        Cpp/fost-jsondb
     :
         ../fost-schema/
-        blobdb.cpp
-        jsondb.cpp
     ;
