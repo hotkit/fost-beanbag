@@ -1,4 +1,4 @@
-2010-05-07  Kirit Saelensminde  <kirit@felspar.com>
+2011-02-22  Kirit Saelensminde  <kirit@felspar.com>
  JSON database
  - We now support push_back into the JSON data from the local transaction.
 
