@@ -51,6 +51,7 @@ string fostlib::detail::factory_base::name() const {
 
 namespace {
     const struct container_content : public boost::static_visitor< const enclosure & >{
+        container_content() {}
         const enclosure &operator () ( const enclosure * const enc ) const {
             return *enc;
         }
