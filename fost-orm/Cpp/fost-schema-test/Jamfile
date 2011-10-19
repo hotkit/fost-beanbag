@@ -50,6 +50,7 @@ run
 run
         ../../../Boost//boost-date_time-dll
         ../../../Boost//boost-thread-dll
+        ../../../Boost//boost-system-dll
         ../../../fost-base/Cpp/fost-cli
         ../../../fost-base/Cpp/fost-core
         ../fost-schema
