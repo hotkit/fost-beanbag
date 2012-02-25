@@ -26,6 +26,15 @@ FSL_TEST_FUNCTION( construct ) {
 }
 
 
+FSL_TEST_FUNCTION( data ) {
+    jsondb database;
+    jsondb::local loc( database );
+    FSL_CHECK_EQ(json::unparse(loc[jcursor()], false), "null");
+    loc.insert("key", "value").commit();
+    FSL_CHECK_EQ(json::unparse(loc[jcursor()], false), "{\"key\":\"value\"}");
+}
+
+
 FSL_TEST_FUNCTION( insert ) {
     jsondb database;
     jsondb::local loc1( database ), loc2( database );
