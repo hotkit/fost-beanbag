@@ -14,20 +14,20 @@ fi
 if test -e /proc/
 then {
     export CPUCOUNT=`grep -c ^processor /proc/cpuinfo`
-    export TOOLSET=gcc
+    [ `which clang++` ] || export TOOLSET=toolset=gcc
     export LD_LIBRARY_PATH=../dist/lib
     EXTENSION="so"
 }
 else {
     export CPUCOUNT=`sysctl -n hw.ncpu`
-    export TOOLSET=darwin
+    export TOOLSET=toolset=darwin
     export DYLD_LIBRARY_PATH=../dist/lib
     EXTENSION="dylib"
     export LANG=C
 }
 fi
 
-if ../bjam toolset=$TOOLSET $VARIANTS  -j$CPUCOUNT `../python.opts.sh` $*
+if ../bjam $TOOLSET $VARIANTS  -j$CPUCOUNT `../python.opts.sh` $*
 then {
     echo fost-orm $* OK
     exit 0
