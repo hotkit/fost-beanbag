@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2011, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2008-2012, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -80,8 +80,13 @@ namespace {
         else
             throw exceptions::null( L"This key position is empty so cannot be updated" );
     }
-    void do_remove( json &db, const jcursor &k ) {
-        k.del_key( db );
+    void do_remove( json &db, const jcursor &k, const json &old ) {
+        if ( db.has_key( k ) && db[ k ] == old )
+            k.del_key( db );
+        else if ( db.has_key( k ) && db[ k ] != old )
+            throw exceptions::transaction_fault( L"The value being deleted is not the value that was meant to be deleted" );
+        else
+            throw exceptions::null( L"This key position has already been deleted" );
     }
 
     json &do_commit( json &j, const jsondb::operations_type &ops ) {
@@ -130,8 +135,9 @@ jsondb::local &fostlib::jsondb::local::update( const jcursor &position, const js
 }
 
 jsondb::local &fostlib::jsondb::local::remove( const jcursor &position ) {
+    json oldvalue = m_local[ position ];
     position.del_key( m_local );
-    m_operations.push_back( boost::lambda::bind( do_remove, boost::lambda::_1, position ) );
+    m_operations.push_back( boost::lambda::bind( do_remove, boost::lambda::_1, position, oldvalue ) );
     return *this;
 }
 

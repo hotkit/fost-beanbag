@@ -1,3 +1,6 @@
+2012-03-15  Kirit Saelensminde  <kirit@felspar.com>
+ The JSON database `remove` command now makes sure that the object being removed is the same when it runs against the actual database. This makes the remove much safer as the transaction will fail if another transaction has altered the data.
+
 2011-02-22  Kirit Saelensminde  <kirit@felspar.com>
  JSON database
  - We now support push_back into the JSON data from the local transaction.
