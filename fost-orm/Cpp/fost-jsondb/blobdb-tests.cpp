@@ -1,5 +1,5 @@
 /*
-    Copyright 2007-2011, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2007-2012, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -23,6 +23,15 @@ FSL_TEST_SUITE( blob );
 FSL_TEST_FUNCTION( construct ) {
     FSL_CHECK_NOTHROW( jsondb database );
     FSL_CHECK_NOTHROW( jsondb database; jsondb::local loc( database ) );
+}
+
+
+FSL_TEST_FUNCTION( data ) {
+    jsondb database;
+    jsondb::local loc( database );
+    FSL_CHECK_EQ(json::unparse(loc[jcursor()], false), "null");
+    loc.insert("key", "value").commit();
+    FSL_CHECK_EQ(json::unparse(loc[jcursor()], false), "{\"key\":\"value\"}");
 }
 
 
@@ -109,11 +118,40 @@ FSL_TEST_FUNCTION( update ) {
 
 FSL_TEST_FUNCTION( remove ) {
     jsondb database;
-    jsondb::local loc1( database ), loc2( database );
+    jsondb::local local( database );
 
     /*
         We need something in the object to start with
     */
+    FSL_CHECK_NOTHROW( local
+        .insert( jcursor( L"hello" ), json( L"nightclub" ) )
+        .insert( jcursor( L"goodbye" ), json( L"country" ) )
+        .commit()
+    );
+    FSL_CHECK_EQ( local[ L"hello" ], json( L"nightclub" ) );
+    FSL_CHECK_EQ( local[ L"goodbye" ], json( L"country" ) );
+
+    // We must have at least one level of path in the jcursor
+    FSL_CHECK_EXCEPTION( local.remove( jcursor() ), exceptions::out_of_range< std::size_t >& );
+
+    // Deleting from a non-existent key will fail straight away
+    FSL_CHECK_EXCEPTION( local.remove( jcursor( L"not a key" ) ), exceptions::json_error& );
+
+    // Let's delete and update
+    FSL_CHECK_NOTHROW( local
+        .remove( jcursor( L"goodbye" ) )
+        .update( jcursor( L"hello" ), L"world" )
+        .commit()
+    );
+    FSL_CHECK_EQ( local[ L"hello" ], json( L"world" ) );
+    FSL_CHECK( !local.has_key( L"goodbye"  ) );
+}
+
+
+FSL_TEST_FUNCTION( remove_fails_after_change ) {
+    jsondb database;
+    jsondb::local loc1(database);
+
     FSL_CHECK_NOTHROW( loc1
         .insert( jcursor( L"hello" ), json( L"nightclub" ) )
         .insert( jcursor( L"goodbye" ), json( L"country" ) )
@@ -122,18 +160,23 @@ FSL_TEST_FUNCTION( remove ) {
     FSL_CHECK_EQ( loc1[ L"hello" ], json( L"nightclub" ) );
     FSL_CHECK_EQ( loc1[ L"goodbye" ], json( L"country" ) );
 
-    // We must have at least one level of path in the jcursor
-    FSL_CHECK_EXCEPTION( loc1.remove( jcursor() ), exceptions::out_of_range< std::size_t >& );
-
-    // Deleting from a non-existent key will fail straight away
-    FSL_CHECK_EXCEPTION( loc1.remove( jcursor( L"not a key" ) ), exceptions::json_error& );
-
-    // Let's delete and update
-    FSL_CHECK_NOTHROW( loc1
-        .remove( jcursor( L"goodbye" ) )
-        .update( jcursor( L"hello" ), L"world" )
+    jsondb::local loc2(database), loc3(database);
+    FSL_CHECK_NOTHROW(loc1
+        .update( jcursor("goodbye"), "world" )
         .commit()
     );
-    FSL_CHECK_EQ( loc1[ L"hello" ], json( L"world" ) );
-    FSL_CHECK( !loc1.has_key( L"goodbye"  ) );
+    FSL_CHECK_EXCEPTION(loc2
+        .remove( jcursor("goodbye") )
+        .commit()
+        , exceptions::forwarded_exception&
+    );
+    FSL_CHECK_NOTHROW(loc1
+        .remove( jcursor("goodbye") )
+        .commit()
+    );
+    FSL_CHECK_EXCEPTION(loc3
+        .remove( jcursor("goodbye") )
+        .commit()
+        , exceptions::forwarded_exception&
+    );
 }
