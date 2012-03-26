@@ -1,5 +1,5 @@
 /*
-    Copyright 2007-2011, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2007-2012, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -60,9 +60,9 @@ namespace fostlib {
             local &insert( const jcursor &position, const json &item );
             /// Push back a new item on to the array at the specified position
             local &push_back( const jcursor &position, const json &item );
-            /// Change the JSON data at the position specified
+            /// Change the JSON data at the position specified checking to make sure the same value is being replaced
             local &update( const jcursor &position, const json &item );
-            /// Remove the JSON data at the position specified
+            /// Remove the JSON data at the position specified checking to make sure that the same value is being deleted
             local &remove( const jcursor &position );
 
             /// Insert into the transaction
