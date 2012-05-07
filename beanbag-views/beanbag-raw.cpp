@@ -63,7 +63,7 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
         req.data()->headers().exists("Accept") ?
             req.data()->headers()["Accept"].value() : "*/*");
     fostlib::insert(log, "accept", accept);
-    fostlib::logging::debug(log);
+    fostlib::log::debug(log);
     if ( data.second < 300 ) {
         if ( !req.query_string().isnull()
                 || accept.find("application/json") < accept.find("text/html") )
