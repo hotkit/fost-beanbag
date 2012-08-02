@@ -28,6 +28,11 @@ namespace beanbag {
             const fostlib::json &options, const fostlib::string &pathname,
             fostlib::http::server::request &req, const fostlib::host &) const;
 
+        /// Return the database to use
+        virtual boost::shared_ptr<fostlib::jsondb> database(
+            const fostlib::json &options, const fostlib::string &pathname,
+            fostlib::http::server::request &req, const fostlib::host &) const;
+
         /// Return the JSON that will form the basis of a GET response
         virtual std::pair<fostlib::json, int> get(
             const fostlib::json &options, const fostlib::string &pathname,
