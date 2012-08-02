@@ -33,6 +33,9 @@ namespace beanbag {
             const fostlib::json &options, const fostlib::string &pathname,
             fostlib::http::server::request &req, const fostlib::host &) const;
 
+        /// Calculate the position into the JSON structure for the given path
+        virtual fostlib::jcursor position(const fostlib::string &pathname) const;
+
         /// Return the JSON that will form the basis of a GET response
         virtual std::pair<fostlib::json, int> get(
             const fostlib::json &options, const fostlib::string &pathname,
@@ -53,10 +56,6 @@ namespace beanbag {
 
         /// Return the ETag for the specified part of the JSON structure
         virtual fostlib::string etag(const fostlib::json &structure) const;
-
-        /// Calculate the position into the JSON structure for the given path
-        virtual fostlib::jcursor position(const fostlib::string &pathname,
-            fostlib::jsondb::local &db) const;
 
         /// Prepare a JSON response
         virtual boost::shared_ptr<fostlib::mime> json_response(

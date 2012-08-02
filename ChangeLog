@@ -1,5 +1,6 @@
 2012-08-02  Kirit Saelensminde  <kirit@felspar.com>
  Allow the database to be fetched through a virtual method so it can be overridden.
+ There is no reason why converting a path to a jcursor should require the database so remove it from the method signature.
 
 2012-08-01  Kirit Saelensminde  <kirit@felspar.com>
  Moved the database header so that other code can also access beanbags directly without needing to go through the web server.

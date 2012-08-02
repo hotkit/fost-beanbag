@@ -37,7 +37,7 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
         database(options, pathname, req, host);
     fostlib::jsondb::local db(*db_ptr);
 
-    fostlib::jcursor location = position(pathname, db);
+    fostlib::jcursor location = position(pathname);
     fostlib::insert(log, "jcursor", fostlib::coerce<fostlib::json>(location));
 
     std::pair<fostlib::json, int> data;
@@ -90,7 +90,7 @@ boost::shared_ptr<fostlib::jsondb> beanbag::raw_view::database(
 
 
 fostlib::jcursor beanbag::raw_view::position(
-        const fostlib::string &pathname, fostlib::jsondb::local &) const {
+        const fostlib::string &pathname) const {
     fostlib::split_type path = fostlib::split(pathname, "/");
     fostlib::jcursor position;
     for ( fostlib::split_type::const_iterator part(path.begin());
