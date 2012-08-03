@@ -18,7 +18,7 @@
 namespace beanbag {
 
 
-    class raw_view : public fostlib::urlhandler::view {
+    extern const class raw_view : public fostlib::urlhandler::view {
     public:
         /// Construct a raw view giving it the provided name
         raw_view(const fostlib::string &name);
@@ -74,7 +74,7 @@ namespace beanbag {
             const fostlib::json &options, const fostlib::string &pathname,
             fostlib::http::server::request &req, const fostlib::host &,
             fostlib::jsondb::local &db, const fostlib::jcursor &position) const;
-    };
+    } c_raw_view;
 
 
 }

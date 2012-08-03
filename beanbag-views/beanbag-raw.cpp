@@ -14,9 +14,7 @@
 #include <beanbag/databases.hpp>
 
 
-namespace {
-    const class beanbag::raw_view c_raw_beanbag("beanbag.raw");
-}
+const beanbag::raw_view beanbag::c_raw_view("beanbag.raw");
 
 
 beanbag::raw_view::raw_view(const fostlib::string &name)
