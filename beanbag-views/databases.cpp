@@ -36,8 +36,13 @@ boost::shared_ptr< fostlib::jsondb > beanbag::database(
                 fostlib::coerce<boost::filesystem::wpath>(which["template"])));
         else if ( which.has_key("initial") )
             tplate = which["initial"];
-        else
-            return boost::shared_ptr< fostlib::jsondb >();
+        else {
+            boost::shared_ptr< fostlib::jsondb > db(
+                new fostlib::jsondb(
+                    fostlib::coerce<fostlib::string>(which["filepath"])));
+            g_databases[name] = db;
+            return db;
+        }
         boost::shared_ptr< fostlib::jsondb > db(
             new fostlib::jsondb(
                 fostlib::coerce<fostlib::string>(which["filepath"]),
