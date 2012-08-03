@@ -30,8 +30,14 @@ boost::shared_ptr< fostlib::jsondb > beanbag::database(
     databases_t::const_iterator loc(g_databases.find(name));
 
     if ( loc == g_databases.end() ) {
-        fostlib::json tplate(fostlib::json::parse(fostlib::utf::load_file(
-            fostlib::coerce<boost::filesystem::wpath>(which["template"]))));
+        fostlib::json tplate;
+        if ( which.has_key("template") )
+            tplate = fostlib::json::parse(fostlib::utf::load_file(
+                fostlib::coerce<boost::filesystem::wpath>(which["template"])));
+        else if ( which.has_key("initial") )
+            tplate = which["initial"];
+        else
+            return boost::shared_ptr< fostlib::jsondb >();
         boost::shared_ptr< fostlib::jsondb > db(
             new fostlib::jsondb(
                 fostlib::coerce<fostlib::string>(which["filepath"]),
