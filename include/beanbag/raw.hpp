@@ -18,7 +18,7 @@
 namespace beanbag {
 
 
-    class raw_view : public fostlib::urlhandler::view {
+    extern const class raw_view : public fostlib::urlhandler::view {
     public:
         /// Construct a raw view giving it the provided name
         raw_view(const fostlib::string &name);
@@ -27,6 +27,14 @@ namespace beanbag {
         std::pair<boost::shared_ptr<fostlib::mime>, int> operator () (
             const fostlib::json &options, const fostlib::string &pathname,
             fostlib::http::server::request &req, const fostlib::host &) const;
+
+        /// Return the database to use
+        virtual boost::shared_ptr<fostlib::jsondb> database(
+            const fostlib::json &options, const fostlib::string &pathname,
+            fostlib::http::server::request &req, const fostlib::host &) const;
+
+        /// Calculate the position into the JSON structure for the given path
+        virtual fostlib::jcursor position(const fostlib::string &pathname) const;
 
         /// Return the JSON that will form the basis of a GET response
         virtual std::pair<fostlib::json, int> get(
@@ -49,10 +57,6 @@ namespace beanbag {
         /// Return the ETag for the specified part of the JSON structure
         virtual fostlib::string etag(const fostlib::json &structure) const;
 
-        /// Calculate the position into the JSON structure for the given path
-        virtual fostlib::jcursor position(const fostlib::string &pathname,
-            fostlib::jsondb::local &db) const;
-
         /// Prepare a JSON response
         virtual boost::shared_ptr<fostlib::mime> json_response(
             const fostlib::json &options,
@@ -70,7 +74,7 @@ namespace beanbag {
             const fostlib::json &options, const fostlib::string &pathname,
             fostlib::http::server::request &req, const fostlib::host &,
             fostlib::jsondb::local &db, const fostlib::jcursor &position) const;
-    };
+    } c_raw_view;
 
 
 }

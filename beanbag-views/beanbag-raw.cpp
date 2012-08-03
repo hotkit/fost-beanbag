@@ -11,12 +11,10 @@
 #include <fost/crypto>
 #include <fost/log>
 #include <fost/insert>
-#include "databases.hpp"
+#include <beanbag/databases.hpp>
 
 
-namespace {
-    const class beanbag::raw_view c_raw_beanbag("beanbag.raw");
-}
+const beanbag::raw_view beanbag::c_raw_view("beanbag.raw");
 
 
 beanbag::raw_view::raw_view(const fostlib::string &name)
@@ -34,10 +32,10 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
     // otherwise the database may get garbage collected whilst we're using
     // it
     boost::shared_ptr<fostlib::jsondb> db_ptr =
-        beanbag::database(options["database"]);
+        database(options, pathname, req, host);
     fostlib::jsondb::local db(*db_ptr);
 
-    fostlib::jcursor location = position(pathname, db);
+    fostlib::jcursor location = position(pathname);
     fostlib::insert(log, "jcursor", fostlib::coerce<fostlib::json>(location));
 
     std::pair<fostlib::json, int> data;
@@ -81,8 +79,16 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
 }
 
 
+boost::shared_ptr<fostlib::jsondb> beanbag::raw_view::database(
+    const fostlib::json &options, const fostlib::string &,
+    fostlib::http::server::request &, const fostlib::host &
+) const {
+    return beanbag::database(options["database"]);
+}
+
+
 fostlib::jcursor beanbag::raw_view::position(
-        const fostlib::string &pathname, fostlib::jsondb::local &) const {
+        const fostlib::string &pathname) const {
     fostlib::split_type path = fostlib::split(pathname, "/");
     fostlib::jcursor position;
     for ( fostlib::split_type::const_iterator part(path.begin());

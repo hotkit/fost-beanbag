@@ -11,6 +11,7 @@
 #define BEANBAG_BEANBAG
 
 
+#include <beanbag/databases.hpp>
 #include <beanbag/raw.hpp>
 #include <beanbag/structured.hpp>
 
