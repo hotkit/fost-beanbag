@@ -206,9 +206,15 @@ boost::shared_ptr<fostlib::mime> beanbag::raw_view::html_response(
             html = replaceAll(html, "[[path]]",
                 fostlib::json::unparse(fostlib::coerce<fostlib::json>(position_jc), false));
             html = replaceAll(html, "[[etag]]", etag(body));
-        } else
+        } else if ( options["html"].has_key("static") )
             html = fostlib::utf::load_file(
                 fostlib::coerce<boost::filesystem::wpath>(options["html"]["static"]));
+        else {
+            boost::shared_ptr<fostlib::mime> response =
+                json_response(options, body, headers, position_jc);
+            response->headers().set("Content-Type", "text/plain");
+            return response;
+        }
 
         headers.set("ETag", "\"" + fostlib::md5(html) + "\"");
     }
