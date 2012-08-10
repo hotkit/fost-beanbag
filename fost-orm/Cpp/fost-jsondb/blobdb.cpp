@@ -18,6 +18,7 @@
 
 
 using namespace fostlib;
+namespace bfs = boost::filesystem;
 
 
 /*
@@ -26,17 +27,17 @@ using namespace fostlib;
 
 
 namespace {
-    void do_save( const json &j, const string &file ) {
-        namespace bfs = boost::filesystem;
-        bfs::wpath path( coerce< std::wstring >( file ) ), tmp( coerce< std::wstring >( file + L".tmp" ) );
+    void do_save( const json &j, const bfs::wpath &path ) {
+        bfs::wpath tmp(path);
+        tmp.replace_extension(L".tmp");
         utf::save_file( tmp, json::unparse( j, false ) );
         if ( bfs::exists( path ) )
             bfs::remove( path );
         bfs::rename( tmp, path );
     }
-    json *construct( const string &filename, const nullable< json > &default_db ) {
+    json *construct( const bfs::wpath &filename, const nullable< json > &default_db ) {
         try {
-            return new json( json::parse( utf::load_file( coerce< std::wstring >( filename ) ) ) );
+            return new json( json::parse( utf::load_file( filename ) ) );
         } catch ( exceptions::unexpected_eof & ) {
             if ( default_db.isnull() )
                 throw;
@@ -51,7 +52,7 @@ fostlib::jsondb::jsondb()
 : m_blob( new json ) {
 }
 
-fostlib::jsondb::jsondb( const string &filename, const nullable< json > &default_db )
+fostlib::jsondb::jsondb( const bfs::wpath &filename, const nullable< json > &default_db )
 : m_blob( boost::lambda::bind( construct, filename, default_db ) ), filename( filename ) {
 }
 
