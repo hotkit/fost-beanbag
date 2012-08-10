@@ -28,3 +28,9 @@ alias beanbag :
         ../fost-web/Cpp/fost-webserver
         beanbag-views
     ;
+
+alias all :
+        beanbag
+        fost
+    ;
+explicit all ;
