@@ -36,14 +36,12 @@ namespace {
         bfs::rename( tmp, path );
     }
     json *construct( const bfs::wpath &filename, const nullable< json > &default_db ) {
-        try {
-            return new json( json::parse( utf::load_file( filename ) ) );
-        } catch ( exceptions::unexpected_eof & ) {
-            if ( default_db.isnull() )
-                throw;
+        string content(utf::load_file(filename, string()));
+        if ( content.empty() ) {
             do_save( default_db.value(), filename );
-            return new json( default_db.value() );
-        }
+            return new json(default_db.value());
+        } else
+            return new json(json::parse(content));
     }
 }
 
@@ -59,7 +57,7 @@ fostlib::jsondb::jsondb( const string &filename, const nullable< json > &default
 }
 
 fostlib::jsondb::jsondb( const bfs::wpath &filename, const nullable< json > &default_db )
-: m_blob( boost::lambda::bind( construct, filename, default_db ) ), filename( filename ) {
+: m_blob(boost::lambda::bind(construct, filename, default_db)), filename(filename) {
 }
 
 
