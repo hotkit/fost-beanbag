@@ -52,6 +52,12 @@ fostlib::jsondb::jsondb()
 : m_blob( new json ) {
 }
 
+fostlib::jsondb::jsondb( const string &filename, const nullable< json > &default_db )
+: m_blob(boost::lambda::bind(
+            construct, coerce<boost::filesystem::wpath>(filename), default_db)),
+        filename(coerce<boost::filesystem::wpath>(filename)) {
+}
+
 fostlib::jsondb::jsondb( const bfs::wpath &filename, const nullable< json > &default_db )
 : m_blob( boost::lambda::bind( construct, filename, default_db ) ), filename( filename ) {
 }
