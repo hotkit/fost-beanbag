@@ -15,6 +15,8 @@
 #include <fost/json.hpp>
 #include <fost/thread.hpp>
 
+#include <boost/filesystem/path.hpp>
+
 
 namespace fostlib {
 
@@ -31,9 +33,12 @@ namespace fostlib {
         /// Create a JSON database that is backed to disk
         explicit jsondb(const string &filename,
             const nullable< json > &default_db = null);
+        /// Create a JSON database that is backed to disk
+        explicit jsondb(const boost::filesystem::wpath &filename,
+            const nullable< json > &default_db = null);
 
         /// The filename of a disk backed database
-        accessors< const nullable< string > > filename;
+        accessors< const nullable< boost::filesystem::wpath > > filename;
 
         /// A transaction for accessing the database
         class FOST_JSONDB_DECLSPEC local : boost::noncopyable {

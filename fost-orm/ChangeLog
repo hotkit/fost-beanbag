@@ -1,3 +1,7 @@
+2012-08-10  Kirit Saelensminde  <kirit@felspar.com>
+ The JSON DBs backed to disk can be created with a `boost::filesystem::wpath` instance, not only from a `fostlib::string`.
+ Changed the logic when a JSON DB is loaded so that it doesn't rely on exceptions.
+
 2012-03-15  Kirit Saelensminde  <kirit@felspar.com>
  The JSON database `remove` command now makes sure that the object being removed is the same when it runs against the actual database. This makes the remove much safer as the transaction will fail if another transaction has altered the data.
 

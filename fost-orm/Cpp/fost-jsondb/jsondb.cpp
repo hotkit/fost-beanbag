@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2010, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2012, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -9,6 +9,7 @@
 #include "fost-jsondb.hpp"
 #include <fost/jsondb.hpp>
 #include <fost/db-driver>
+#include <fost/unicode>
 
 #include <fost/exception/not_null.hpp>
 #include <fost/exception/out_of_range.hpp>
@@ -71,9 +72,11 @@ namespace {
                 else {
                     try {
                         if ( create || dbname == L"master" ) // We always allow master database to be created
-                            db.reset( new jsondb( file.value(), json() ) );
+                            db.reset(
+                                new jsondb(coerce<boost::filesystem::wpath>(file.value()), json()));
                         else
-                            db.reset( new jsondb( file.value() ) );
+                            db.reset(
+                                new jsondb(coerce<boost::filesystem::wpath>(file.value())));
                     } catch ( exceptions::exception &e ) {
                         e.info() << L"Whilst trying to load the JSON database file " << file.value() << std::endl;
                         throw;
