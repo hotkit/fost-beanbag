@@ -1,3 +1,6 @@
+2012-08-16  Kirit Saelensminde  <kirit@felspar.com>
+ Can now set up an alias for a given database so the same underlying database can be referred to by more than one name.
+
 2012-08-07  Kirit Saelensminde  <kirit@felspar.com>
  If there is no HTML content given then return a JSON response for the request.
 

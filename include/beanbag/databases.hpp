@@ -13,8 +13,14 @@
 namespace beanbag {
 
 
+    /// Shorter name for the jsondb pointer type we use
+    typedef boost::shared_ptr< fostlib::jsondb > jsondb_ptr;
+
     /// Return a reference to the requested database
-    boost::shared_ptr< fostlib::jsondb > database(const fostlib::json &which);
+    jsondb_ptr database(const fostlib::json &which);
+
+    /// Add an alias to the database
+    void alias(const fostlib::string &name, jsondb_ptr db);
 
     /// Insert a specified JSON blog into the databases with the specified name. Useful for testing.
     void test_database(const fostlib::string &name, const fostlib::json &blob);
