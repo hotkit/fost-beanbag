@@ -85,6 +85,12 @@ namespace {
         else
             throw exceptions::null( L"This key position is empty so cannot be updated" );
     }
+    void do_set( json &db, const jcursor &k, const json &v ) {
+        if ( db.has_key(k) )
+            k( db ) = v;
+        else
+            k.insert( db, v );
+    }
     void do_remove( json &db, const jcursor &k, const json &old ) {
         if ( db.has_key( k ) && db[ k ] == old )
             k.del_key( db );
@@ -136,6 +142,12 @@ jsondb::local &fostlib::jsondb::local::update( const jcursor &position, const js
     json oldvalue = m_local[ position ];
     position.replace( m_local, item );
     m_operations.push_back( boost::lambda::bind( do_update, boost::lambda::_1, position, item, oldvalue ) );
+    return *this;
+}
+
+jsondb::local &fostlib::jsondb::local::set( const jcursor &position, const json &item ) {
+    m_operations.push_back( boost::lambda::bind( do_set,
+        boost::lambda::_1, position, item ) );
     return *this;
 }
 

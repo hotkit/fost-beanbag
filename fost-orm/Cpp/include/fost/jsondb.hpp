@@ -69,8 +69,10 @@ namespace fostlib {
             local &update( const jcursor &position, const json &item );
             /// Remove the JSON data at the position specified checking to make sure that the same value is being deleted
             local &remove( const jcursor &position );
+            /// Set the value at the location without any checks
+            local &set( const jcursor &position, const json &item);
 
-            /// Insert into the transaction
+            /// Insert into the transaction. Fails if there is data at the location already
             template< typename V >
             local &insert( const jcursor &position, const V &item ) {
                 return insert( position, coerce<json>( item ) );
@@ -80,10 +82,15 @@ namespace fostlib {
             local &push_back( const jcursor &position, const V &item ) {
                 return push_back( position, coerce<json>( item ) );
             }
-            /// Update the transaction
+            /// Update the transaction. Fails if there is no data at the location already
             template< typename V >
             local &update( const jcursor &position, const V &item ) {
                 return update( position, coerce<json>( item ) );
+            }
+            /// Unconditionally sets the data at the location
+            template< typename V >
+            local &set(const jcursor &position, const V &item ) {
+                return set( position, coerce<json>( item ) );
             }
 
             /// Commit the transaction

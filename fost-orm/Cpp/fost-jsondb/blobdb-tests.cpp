@@ -116,6 +116,21 @@ FSL_TEST_FUNCTION( update ) {
 }
 
 
+FSL_TEST_FUNCTION( set ) {
+    jsondb database;
+    jsondb::local loc1( database );
+
+    // We need something in the object to start with
+    FSL_CHECK_NOTHROW(
+        loc1.set(jcursor( L"hello" ), L"world").commit() );
+
+    // Change the value to something new
+    FSL_CHECK_NOTHROW(
+        loc1.set( jcursor( L"hello" ), json( L"goodbye" ) ).commit());
+    FSL_CHECK_EQ( loc1[ L"hello" ], json( L"goodbye" ) );
+}
+
+
 FSL_TEST_FUNCTION( remove ) {
     jsondb database;
     jsondb::local local( database );
