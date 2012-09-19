@@ -1,3 +1,6 @@
+2012-09-19  Kirit Saelensminde  <kirit@felspar.com>
+ Added a post commit hook to the local JSON DB transaction handler which allows code to run after a transaction is successfully committed.
+
 2012-08-17  Kirit Saelensminde  <kirit@felspar.com>
  Added `set` to the `jsondb::local` transaction to update the value of the JSON irrespective of what is already there.
 

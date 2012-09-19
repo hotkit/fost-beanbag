@@ -158,11 +158,24 @@ jsondb::local &fostlib::jsondb::local::remove( const jcursor &position ) {
     return *this;
 }
 
+std::size_t fostlib::jsondb::local::post_commit(
+    const_operation_signature_type fn
+) {
+    m_post_commit.push_back(fn);
+    return m_post_commit.size();
+}
+
 void fostlib::jsondb::local::commit() {
     if ( !m_db.filename().isnull() )
         m_operations.push_back( boost::lambda::bind( do_save, boost::lambda::_1, m_db.filename().value() ) );
     try {
-        m_local = m_db.m_blob.synchronous< json >( boost::lambda::bind( do_commit, boost::lambda::_1, m_operations ) );
+        m_local = m_db.m_blob.synchronous< json >(
+            boost::lambda::bind(
+                do_commit, boost::lambda::_1, m_operations));
+        for ( const_operations_type::iterator f_it(m_post_commit.begin());
+                f_it != m_post_commit.end(); ++f_it )
+             (*f_it)(m_local);
+        m_post_commit.clear();
     } catch ( ... ) {
         rollback();
         throw;

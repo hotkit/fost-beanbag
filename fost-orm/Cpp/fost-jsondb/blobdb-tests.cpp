@@ -195,3 +195,27 @@ FSL_TEST_FUNCTION( remove_fails_after_change ) {
         , exceptions::forwarded_exception&
     );
 }
+
+
+namespace {
+    unsigned int post_commit_run = 0;
+    void post_commit_fn(const json &) {
+        ++post_commit_run;
+    }
+}
+FSL_TEST_FUNCTION( post_commit ) {
+    jsondb database;
+    jsondb::local loc(database);
+    FSL_CHECK_EQ(loc.post_commit(post_commit_fn), 1u);
+    FSL_CHECK_EQ(post_commit_run, 0u);
+    loc
+        .insert( jcursor( L"hello" ), json( L"nightclub" ) )
+        .insert( jcursor( L"goodbye" ), json( L"country" ) )
+        .commit();
+    FSL_CHECK_EQ(post_commit_run, 1u);
+    loc
+        .update( jcursor("goodbye"), "world" )
+        .commit();
+    FSL_CHECK_EQ(post_commit_run, 1u);
+}
+
