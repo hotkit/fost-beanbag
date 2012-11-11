@@ -28,12 +28,17 @@ namespace bfs = boost::filesystem;
 
 namespace {
     void do_save( const json &j, const bfs::wpath &path ) {
+        if ( bfs::exists(path) ) {
+            bfs::wpath backup(path);
+            backup.replace_extension(L".backup");
+            if ( bfs::exists(backup) )
+                bfs::remove(backup);
+            bfs::create_hard_link(path, backup);
+        }
         bfs::wpath tmp(path);
         tmp.replace_extension(L".tmp");
-        utf::save_file( tmp, json::unparse( j, false ) );
-        if ( bfs::exists( path ) )
-            bfs::remove( path );
-        bfs::rename( tmp, path );
+        utf::save_file(tmp, json::unparse(j, false));
+        bfs::rename(tmp, path);
     }
     json *construct( const bfs::wpath &filename, const nullable< json > &default_db ) {
         string content(utf::load_file(filename, string()));
