@@ -22,9 +22,9 @@ FSL_MAIN(
     L"Test the backup process for Fost 4 JSON blobs\n"
     L"Copyright (c) 2008-2010, Felspar Co. Ltd."
 )( fostlib::ostream &out, fostlib::arguments &args ) {
-    const bfs::wpath backup("filename.backup");
-    const bfs::wpath temp("filename.tmp");
-    const bfs::wpath filename("filename.txt");
+    const bfs::wpath backup(L"filename.backup");
+    const bfs::wpath temp(L"filename.tmp");
+    const bfs::wpath filename(L"filename.txt");
 
     const string old_backup("old backup\n");
     const string original("original contents\n");
