@@ -58,6 +58,11 @@ FSL_MAIN(
     string read5(utf::load_file(backup));
     FSL_CHECK_EQ(read5, original);
 
+#if ( BOOST_VERSION_MAJOR < 46 )
+    if ( bfs::exists(filename) )
+        bfs::remove(filename);
+#endif
+
     FSL_CHECK_NOTHROW(bfs::rename(temp, filename));
     string read6(utf::load_file(filename));
     FSL_CHECK_EQ(read6, updated);

@@ -1,5 +1,5 @@
 2012-11-11  Kirit Saelensminde  <kirit@felspar.com>
- Create a backup of the old JSON database file (via a hard link) before creating the new one.
+ Create a backup of the old JSON database file (via a hard link) before creating the new one. For older versions of Boost (pre 1.46.0) there is still some small period of time when there is no disk file.
 
 2012-09-19  Kirit Saelensminde  <kirit@felspar.com>
  Added a post commit hook to the local JSON DB transaction handler which allows code to run after a transaction is successfully committed.

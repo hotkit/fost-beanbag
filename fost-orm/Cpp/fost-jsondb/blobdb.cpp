@@ -38,6 +38,10 @@ namespace {
         bfs::wpath tmp(path);
         tmp.replace_extension(L".tmp");
         utf::save_file(tmp, json::unparse(j, false));
+#if ( BOOST_VERSION_MAJOR < 46 )
+        if ( bfs::exists(path) )
+            bfs::remove(path);
+#endif
         bfs::rename(tmp, path);
     }
     json *construct( const bfs::wpath &filename, const nullable< json > &default_db ) {
