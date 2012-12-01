@@ -25,8 +25,14 @@ namespace fostlib {
     class FOST_JSONDB_DECLSPEC jsondb : boost::noncopyable {
         in_process< json > m_blob;
     public:
-        typedef boost::function< void ( json & ) > operation_signature_type;
-        typedef std::vector< operation_signature_type > operations_type;
+        typedef boost::function< void ( json & ) >
+            operation_signature_type;
+        typedef std::vector< operation_signature_type >
+            operations_type;
+        typedef boost::function< void ( const json & ) >
+            const_operation_signature_type;
+        typedef std::vector< const_operation_signature_type >
+            const_operations_type;
 
         /// Create an in memory JSON database
         jsondb();
@@ -46,6 +52,7 @@ namespace fostlib {
             json m_local;
             const jcursor m_position;
             operations_type m_operations;
+            const_operations_type m_post_commit;
         public:
             /// Create a transaction
             explicit local( jsondb &db, const jcursor & = jcursor() );
@@ -92,6 +99,9 @@ namespace fostlib {
             local &set(const jcursor &position, const V &item ) {
                 return set( position, coerce<json>( item ) );
             }
+
+            /// Register a function to run after the transaction is successfully committed
+            std::size_t post_commit(const_operation_signature_type);
 
             /// Commit the transaction
             void commit();

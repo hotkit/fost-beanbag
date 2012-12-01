@@ -28,12 +28,21 @@ namespace bfs = boost::filesystem;
 
 namespace {
     void do_save( const json &j, const bfs::wpath &path ) {
+        if ( bfs::exists(path) ) {
+            bfs::wpath backup(path);
+            backup.replace_extension(L".backup");
+            if ( bfs::exists(backup) )
+                bfs::remove(backup);
+            bfs::create_hard_link(path, backup);
+        }
         bfs::wpath tmp(path);
         tmp.replace_extension(L".tmp");
-        utf::save_file( tmp, json::unparse( j, false ) );
-        if ( bfs::exists( path ) )
-            bfs::remove( path );
-        bfs::rename( tmp, path );
+        utf::save_file(tmp, json::unparse(j, false));
+#if ( BOOST_VERSION_MAJOR < 46 )
+        if ( bfs::exists(path) )
+            bfs::remove(path);
+#endif
+        bfs::rename(tmp, path);
     }
     json *construct( const bfs::wpath &filename, const nullable< json > &default_db ) {
         string content(utf::load_file(filename, string()));
@@ -158,11 +167,24 @@ jsondb::local &fostlib::jsondb::local::remove( const jcursor &position ) {
     return *this;
 }
 
+std::size_t fostlib::jsondb::local::post_commit(
+    const_operation_signature_type fn
+) {
+    m_post_commit.push_back(fn);
+    return m_post_commit.size();
+}
+
 void fostlib::jsondb::local::commit() {
     if ( !m_db.filename().isnull() )
         m_operations.push_back( boost::lambda::bind( do_save, boost::lambda::_1, m_db.filename().value() ) );
     try {
-        m_local = m_db.m_blob.synchronous< json >( boost::lambda::bind( do_commit, boost::lambda::_1, m_operations ) );
+        m_local = m_db.m_blob.synchronous< json >(
+            boost::lambda::bind(
+                do_commit, boost::lambda::_1, m_operations));
+        for ( const_operations_type::iterator f_it(m_post_commit.begin());
+                f_it != m_post_commit.end(); ++f_it )
+             (*f_it)(m_local);
+        m_post_commit.clear();
     } catch ( ... ) {
         rollback();
         throw;

@@ -27,6 +27,9 @@ else {
 }
 fi
 
+# Remove any databases from previous test runs
+rm Cpp/fost-schema-test/jsondb-file/* 2> /dev/null
+
 if ../bjam $TOOLSET $VARIANTS  -j$CPUCOUNT `../python.opts.sh` $*
 then {
     echo fost-orm $* OK
