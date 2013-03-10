@@ -26,6 +26,17 @@ namespace bfs = boost::filesystem;
 */
 
 
+#ifdef DEBUG
+const bool c_jsondb_pretty_print_default = true;
+#else
+const bool c_jsondb_pretty_print_default = false;
+#endif
+setting<bool> fostlib::c_jsondb_pretty_print(
+    L"fost-orm/Cpp/fost-jsondb/blobdb.cpp",
+    L"JSON DB", "Pretty print database files",
+    c_jsondb_pretty_print_default, true);
+
+
 namespace {
     void do_save( const json &j, const bfs::wpath &path ) {
         if ( bfs::exists(path) ) {
@@ -37,7 +48,7 @@ namespace {
         }
         bfs::wpath tmp(path);
         tmp.replace_extension(L".tmp");
-        utf::save_file(tmp, json::unparse(j, false));
+        utf::save_file(tmp, json::unparse(j, c_jsondb_pretty_print.value()));
 #if ( BOOST_VERSION_MAJOR < 46 )
         if ( bfs::exists(path) )
             bfs::remove(path);
