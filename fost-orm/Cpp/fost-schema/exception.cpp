@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2010, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2013,Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -29,7 +29,7 @@ fostlib::exceptions::no_attribute::no_attribute( const string &attribute ) throw
     try {
         info() << L"Attribute: " << attribute << std::endl;
     } catch ( ... ) {
-        absorbException();
+        absorb_exception();
     }
 }
 fostlib::wliteral const fostlib::exceptions::no_attribute::message() const throw () {
@@ -43,7 +43,7 @@ fostlib::exceptions::query_failure::query_failure( const string &m, const fostli
     try {
         info() << L"Meta instance: " << i.fq_name() << std::endl;
     } catch ( ... ) {
-        absorbException();
+        absorb_exception();
     }
 }
 fostlib::wliteral const fostlib::exceptions::query_failure::message() const throw () {
