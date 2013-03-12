@@ -1,5 +1,5 @@
 /*
-    Copyright 2005-2010, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2005-2013, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -13,6 +13,7 @@
 #include <fost/test>
 
 #include <fost/db>
+#include <fost/jsondb>
 
 
 using namespace fostlib;
@@ -30,6 +31,9 @@ FSL_MAIN(
         out << L"Supply a JSON file which contains the database configuration as the first parameter" << std::endl;
         return 1;
     }
+
+    // Override the pretty print setting
+    setting<bool> no_pretty_print("", c_jsondb_pretty_print, false);
 
     /*
         Load the configuration and set a root if one isn't already set
