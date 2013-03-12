@@ -1,5 +1,5 @@
 /*
-    Copyright 2012 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2013 Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -201,11 +201,11 @@ boost::shared_ptr<fostlib::mime> beanbag::raw_view::html_response(
             html = fostlib::utf::load_file(
                 fostlib::coerce<boost::filesystem::wpath>(options["html"]["template"]));
 
-            html = replaceAll(html, "[[data]]",
+            html = replace_all(html, "[[data]]",
                 fostlib::json::unparse(body, true));
-            html = replaceAll(html, "[[path]]",
+            html = replace_all(html, "[[path]]",
                 fostlib::json::unparse(fostlib::coerce<fostlib::json>(position_jc), false));
-            html = replaceAll(html, "[[etag]]", etag(body));
+            html = replace_all(html, "[[etag]]", etag(body));
         } else if ( options["html"].has_key("static") )
             html = fostlib::utf::load_file(
                 fostlib::coerce<boost::filesystem::wpath>(options["html"]["static"]));
