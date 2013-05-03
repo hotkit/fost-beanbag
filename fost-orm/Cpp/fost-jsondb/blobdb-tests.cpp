@@ -1,5 +1,5 @@
 /*
-    Copyright 2007-2012, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2007-2013, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -198,6 +198,29 @@ FSL_TEST_FUNCTION( remove_fails_after_change ) {
 
 
 namespace {
+    unsigned int transformation_run = 0;
+    void transformation_fn(json &) {
+        ++transformation_run;
+    }
+}
+FSL_TEST_FUNCTION( transformation ) {
+    jsondb database;
+    jsondb::local loc(database);
+    FSL_CHECK_EQ(loc.transformation(transformation_fn), 1u);
+    FSL_CHECK_EQ(transformation_run, 0u);
+    loc
+        .insert( jcursor( L"hello" ), json( L"nightclub" ) )
+        .insert( jcursor( L"goodbye" ), json( L"country" ) )
+        .commit();
+    FSL_CHECK_EQ(transformation_run, 1u);
+    loc
+        .update( jcursor("goodbye"), "world" )
+        .commit();
+    FSL_CHECK_EQ(transformation_run, 1u);
+}
+
+
+namespace {
     unsigned int post_commit_run = 0;
     void post_commit_fn(const json &) {
         ++post_commit_run;
@@ -218,4 +241,5 @@ FSL_TEST_FUNCTION( post_commit ) {
         .commit();
     FSL_CHECK_EQ(post_commit_run, 1u);
 }
+
 

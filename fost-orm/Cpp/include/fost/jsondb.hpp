@@ -104,6 +104,9 @@ namespace fostlib {
                 return set( position, coerce<json>( item ) );
             }
 
+            /// Register an operation to be part of the transaction processing
+            std::size_t transformation(operation_signature_type);
+
             /// Register a function to run after the transaction is successfully committed
             std::size_t post_commit(const_operation_signature_type);
 
