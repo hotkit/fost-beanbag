@@ -35,7 +35,6 @@ namespace fostlib {
     protected:
         dbconnection &m_connection;
     private:
-        bool m_inTransaction;
         friend class fostlib::dbinterface::write;
     };
 

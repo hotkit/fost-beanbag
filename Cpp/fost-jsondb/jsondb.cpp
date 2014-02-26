@@ -127,7 +127,6 @@ namespace {
 
 
     class jsonwriter : public dbinterface::write {
-        jsonreader &reader;
     public:
         jsonwriter( jsonreader &reader );
 
@@ -279,7 +278,7 @@ boost::shared_ptr< dbinterface::write > jsonreader::writer() {
 
 
 jsonwriter::jsonwriter( jsonreader &reader )
-: dbinterface::write( reader ), reader( reader ), database( *reader.database ) {
+: dbinterface::write( reader ), database( *reader.database ) {
 }
 
 
