@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2013 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2014 Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -63,7 +63,7 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
     fostlib::insert(log, "accept", accept);
     fostlib::log::debug(log);
     if ( data.second < 300 ) {
-        if ( !req.query_string().isnull()
+        if ( !req.query_string().as_string().isnull()
                 || accept.find("application/json") < accept.find("text/html") )
             return std::make_pair(json_response(options,
                     data.first, response_headers, location), data.second);
