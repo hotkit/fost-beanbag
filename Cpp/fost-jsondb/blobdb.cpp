@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2013, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2008-2014, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -8,6 +8,7 @@
 
 #include "fost-jsondb.hpp"
 #include <fost/db>
+#include <fost/log>
 #include <fost/unicode>
 #include <fost/jsondb.hpp>
 
@@ -39,15 +40,17 @@ setting<bool> fostlib::c_jsondb_pretty_print(
 
 namespace {
     void do_save( const json &j, const bfs::wpath &path ) {
+#ifndef ANDROID
         if ( bfs::exists(path) ) {
             bfs::wpath backup(path);
-            backup.replace_extension(L".backup");
+            backup.replace_extension(".backup");
             if ( bfs::exists(backup) )
                 bfs::remove(backup);
             bfs::create_hard_link(path, backup);
         }
+#endif
         bfs::wpath tmp(path);
-        tmp.replace_extension(L".tmp");
+        tmp.replace_extension(".tmp");
         utf::save_file(tmp, json::unparse(j, c_jsondb_pretty_print.value()));
 #if ( BOOST_VERSION_MAJOR < 46 )
         if ( bfs::exists(path) )
