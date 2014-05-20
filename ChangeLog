@@ -1,3 +1,6 @@
+2014-05-19  Kirit Saelensminde  <kirit@felspar.com>
+ Change how the JSON database is backed up and created for Android (works around a bug in Boost).
+
 2013-04-28  Kirit Saelensminde  <kirit@felspar.com>
  Made the internal API for adding a transformation function to the JSON database through `fostlib::jsondb::local::transformation` public.
 
