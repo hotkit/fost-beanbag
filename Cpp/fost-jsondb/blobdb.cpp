@@ -39,13 +39,13 @@ setting<bool> fostlib::c_jsondb_pretty_print(
 
 
 namespace {
-#if ( BOOST_VERSION_MAJOR < 46 )
-    const boost::filesystem::wpath ext_backup(L".backup");
-    const boost::filesystem::wpath ext_temp(L".tmp");
-#else
+#if BOOST_FILESYSTEM_VERSION >= 3
     const boost::filesystem::wpath ext_backup(".backup");
     const boost::filesystem::wpath ext_temp(".tmp");
-#endif
+#else
+    const boost::filesystem::wpath ext_backup(L".backup");
+    const boost::filesystem::wpath ext_temp(L".tmp");
+ #endif
 
     void do_save( const json &j, const bfs::wpath &path ) {
 #ifndef ANDROID
@@ -60,7 +60,7 @@ namespace {
         bfs::wpath tmp(path);
         tmp.replace_extension(ext_temp);
         utf::save_file(tmp, json::unparse(j, c_jsondb_pretty_print.value()));
-#if ( BOOST_VERSION_MAJOR < 46 )
+#if BOOST_FILESYSTEM_VERSION < 3
         if ( bfs::exists(path) )
             bfs::remove(path);
 #endif
