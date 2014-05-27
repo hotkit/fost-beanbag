@@ -40,11 +40,11 @@ setting<bool> fostlib::c_jsondb_pretty_print(
 
 namespace {
 #if BOOST_FILESYSTEM_VERSION >= 3
-    const boost::filesystem::wpath ext_backup(".backup");
-    const boost::filesystem::wpath ext_temp(".tmp");
+    const bfs::wpath ext_backup(".backup");
+    const bfs::wpath ext_temp(".tmp");
 #else
-    const boost::filesystem::wpath ext_backup(L".backup");
-    const boost::filesystem::wpath ext_temp(L".tmp");
+    const std::wstring ext_backup(L".backup");
+    const std::wstring ext_temp(L".tmp");
  #endif
 
     void do_save( const json &j, const bfs::wpath &path ) {
