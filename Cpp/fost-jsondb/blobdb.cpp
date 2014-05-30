@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2013, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2008-2014, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -8,6 +8,7 @@
 
 #include "fost-jsondb.hpp"
 #include <fost/db>
+#include <fost/log>
 #include <fost/unicode>
 #include <fost/jsondb.hpp>
 
@@ -38,18 +39,28 @@ setting<bool> fostlib::c_jsondb_pretty_print(
 
 
 namespace {
+#if BOOST_FILESYSTEM_VERSION >= 3
+    const bfs::wpath ext_backup(".backup");
+    const bfs::wpath ext_temp(".tmp");
+#else
+    const std::wstring ext_backup(L".backup");
+    const std::wstring ext_temp(L".tmp");
+ #endif
+
     void do_save( const json &j, const bfs::wpath &path ) {
+#ifndef ANDROID
         if ( bfs::exists(path) ) {
             bfs::wpath backup(path);
-            backup.replace_extension(L".backup");
+            backup.replace_extension(ext_backup);
             if ( bfs::exists(backup) )
                 bfs::remove(backup);
             bfs::create_hard_link(path, backup);
         }
+#endif
         bfs::wpath tmp(path);
-        tmp.replace_extension(L".tmp");
+        tmp.replace_extension(ext_temp);
         utf::save_file(tmp, json::unparse(j, c_jsondb_pretty_print.value()));
-#if ( BOOST_VERSION_MAJOR < 46 )
+#if BOOST_FILESYSTEM_VERSION < 3
         if ( bfs::exists(path) )
             bfs::remove(path);
 #endif
