@@ -6,6 +6,7 @@
 */
 
 
+#include "beanbag-views.hpp"
 #include <beanbag/raw.hpp>
 #include <fost/exception/parse_error.hpp>
 #include <fost/crypto>
