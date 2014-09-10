@@ -17,7 +17,7 @@
 namespace beanbag {
 
 
-    class structured_view : public raw_view {
+    class FOST_BEANBAG_DECLSPEC structured_view : public raw_view {
         fostlib::jcursor relocated(
             fostlib::jsondb::local &db, fostlib::jcursor position) const;
     public:

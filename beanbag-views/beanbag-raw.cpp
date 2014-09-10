@@ -1,11 +1,12 @@
 /*
-    Copyright 2012 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2014 Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
 */
 
 
+#include "beanbag-views.hpp"
 #include <beanbag/raw.hpp>
 #include <fost/exception/parse_error.hpp>
 #include <fost/crypto>
@@ -14,9 +15,7 @@
 #include <beanbag/databases.hpp>
 
 
-namespace {
-    const class beanbag::raw_view c_raw_beanbag("beanbag.raw");
-}
+const beanbag::raw_view beanbag::c_raw_view("beanbag.raw");
 
 
 beanbag::raw_view::raw_view(const fostlib::string &name)
@@ -34,10 +33,10 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
     // otherwise the database may get garbage collected whilst we're using
     // it
     boost::shared_ptr<fostlib::jsondb> db_ptr =
-        beanbag::database(options["database"]);
+        database(options, pathname, req, host);
     fostlib::jsondb::local db(*db_ptr);
 
-    fostlib::jcursor location = position(pathname, db);
+    fostlib::jcursor location = position(pathname);
     fostlib::insert(log, "jcursor", fostlib::coerce<fostlib::json>(location));
 
     std::pair<fostlib::json, int> data;
@@ -65,7 +64,7 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
     fostlib::insert(log, "accept", accept);
     fostlib::log::debug(log);
     if ( data.second < 300 ) {
-        if ( !req.query_string().isnull()
+        if ( !req.query_string().as_string().isnull()
                 || accept.find("application/json") < accept.find("text/html") )
             return std::make_pair(json_response(options,
                     data.first, response_headers, location), data.second);
@@ -81,8 +80,16 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
 }
 
 
+boost::shared_ptr<fostlib::jsondb> beanbag::raw_view::database(
+    const fostlib::json &options, const fostlib::string &,
+    fostlib::http::server::request &, const fostlib::host &
+) const {
+    return beanbag::database(options["database"]);
+}
+
+
 fostlib::jcursor beanbag::raw_view::position(
-        const fostlib::string &pathname, fostlib::jsondb::local &) const {
+        const fostlib::string &pathname) const {
     fostlib::split_type path = fostlib::split(pathname, "/");
     fostlib::jcursor position;
     for ( fostlib::split_type::const_iterator part(path.begin());
@@ -195,14 +202,20 @@ boost::shared_ptr<fostlib::mime> beanbag::raw_view::html_response(
             html = fostlib::utf::load_file(
                 fostlib::coerce<boost::filesystem::wpath>(options["html"]["template"]));
 
-            html = replaceAll(html, "[[data]]",
+            html = replace_all(html, "[[data]]",
                 fostlib::json::unparse(body, true));
-            html = replaceAll(html, "[[path]]",
+            html = replace_all(html, "[[path]]",
                 fostlib::json::unparse(fostlib::coerce<fostlib::json>(position_jc), false));
-            html = replaceAll(html, "[[etag]]", etag(body));
-        } else
+            html = replace_all(html, "[[etag]]", etag(body));
+        } else if ( options["html"].has_key("static") )
             html = fostlib::utf::load_file(
                 fostlib::coerce<boost::filesystem::wpath>(options["html"]["static"]));
+        else {
+            boost::shared_ptr<fostlib::mime> response =
+                json_response(options, body, headers, position_jc);
+            response->headers().set("Content-Type", "text/plain");
+            return response;
+        }
 
         headers.set("ETag", "\"" + fostlib::md5(html) + "\"");
     }

@@ -1,5 +1,5 @@
 /*
-    Copyright 2012 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2014 Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -7,7 +7,6 @@
 
 
 #include <fost/test>
-#include <beanbag/databases.hpp>
 #include <beanbag/beanbag>
 
 
@@ -16,11 +15,12 @@ FSL_TEST_SUITE(beanbag_raw);
 
 namespace {
     struct setup {
-        setup()
+        setup(bool with_template = true)
         : view("beanbag.test"), status(0) {
             fostlib::insert(options, "database", "beanbag.test");
-            fostlib::insert(options, "html", "template",
-                "../../usr/share/beanbag/raw/template.html");
+            if ( with_template )
+                fostlib::insert(options, "html", "template",
+                    "../usr/share/beanbag/raw/template.html");
         }
 
         const beanbag::raw_view view;
@@ -73,6 +73,28 @@ FSL_TEST_FUNCTION(get_with_path_gives_200) {
     FSL_CHECK_EQ(env.status, 200);
     FSL_CHECK_EQ("true\n",
         fostlib::coerce<fostlib::string>(*env.response));
+}
+
+
+FSL_TEST_FUNCTION(get_without_accept_and_with_server_template) {
+    setup env;
+    fostlib::insert(env.database, "is", "a", "path", true);
+    env.do_request("GET", "/is/a/path/");
+    FSL_CHECK_EQ(env.status, 200);
+    FSL_CHECK(fostlib::coerce<fostlib::string>(*env.response)
+        .startswith("<!doctype xhtml>"));
+}
+
+
+FSL_TEST_FUNCTION(get_without_accept_and_without_server_template) {
+    setup env(false);
+    fostlib::insert(env.database, "is", "a", "path", true);
+    env.do_request("GET", "/is/a/path/");
+    FSL_CHECK_EQ(env.status, 200);
+    FSL_CHECK_EQ("true\n",
+        fostlib::coerce<fostlib::string>(*env.response));
+    FSL_CHECK_EQ(env.response->headers()["Content-Type"].value(),
+        "text/plain");
 }
 
 
