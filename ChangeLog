@@ -1,3 +1,7 @@
+2014-11-27  Kirit Saelensminde  <kirit@felspar.com>
+ Allow a path prefix to be set for the JSON DB save/load location.
+ Improved the exception reported when constructing a JSON DB fails.
+
 2014-05-19  Kirit Saelensminde  <kirit@felspar.com>
  Change how the JSON database is backed up and created for Android (works around a bug in Boost).
 
