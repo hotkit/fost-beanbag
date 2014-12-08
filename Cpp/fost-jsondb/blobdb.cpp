@@ -32,10 +32,16 @@ const bool c_jsondb_pretty_print_default = true;
 #else
 const bool c_jsondb_pretty_print_default = false;
 #endif
-setting<bool> fostlib::c_jsondb_pretty_print(
+const setting<bool> fostlib::c_jsondb_pretty_print(
     L"fost-orm/Cpp/fost-jsondb/blobdb.cpp",
     L"JSON DB", "Pretty print database files",
     c_jsondb_pretty_print_default, true);
+
+
+const setting<string> fostlib::c_jsondb_root(
+    L"fost-orm/Cpp/fost-jsondb/blobdb.cpp",
+    L"JSON DB", "Default file location",
+    "", true);
 
 
 namespace {
@@ -47,7 +53,16 @@ namespace {
     const std::wstring ext_temp(L".tmp");
  #endif
 
-    void do_save( const json &j, const bfs::wpath &path ) {
+
+    bfs::wpath get_final_path(
+            const bfs::wpath &filename) {
+        return join_paths(
+            coerce<bfs::wpath>(c_jsondb_root.value()), filename);
+    }
+
+
+    void do_save( const json &j, const bfs::wpath &ipath ) {
+        const bfs::wpath path(get_final_path(ipath));
 #ifndef ANDROID
         if ( bfs::exists(path) ) {
             bfs::wpath backup(path);
@@ -66,13 +81,23 @@ namespace {
 #endif
         bfs::rename(tmp, path);
     }
-    json *construct( const bfs::wpath &filename, const nullable< json > &default_db ) {
+    json *construct( const bfs::wpath &ifilename, const nullable< json > &default_db ) {
+        const bfs::wpath filename(get_final_path(ifilename));
         string content(utf::load_file(filename, string()));
-        if ( content.empty() ) {
-            do_save( default_db.value(), filename );
-            return new json(default_db.value());
-        } else
-            return new json(json::parse(content));
+        try {
+            if ( content.empty() ) {
+                do_save(default_db.value(), ifilename);
+                return new json(default_db.value());
+            } else {
+                return new json(json::parse(content));
+            }
+        } catch ( exceptions::exception &e ) {
+            insert(e.data(), "blobdb", "filename", ifilename);
+            insert(e.data(), "blobdb", "final-path", filename);
+            insert(e.data(), "blobdb", "file-content", content);
+            insert(e.data(), "blobdb", "initial-data", default_db);
+            throw;
+        }
     }
 }
 

@@ -22,7 +22,11 @@ namespace fostlib {
 
 
     /// Setting that controls whether the JSON DB files are pretty printed or not
-    FOST_JSONDB_DECLSPEC extern setting<bool> c_jsondb_pretty_print;
+    FOST_JSONDB_DECLSPEC extern const setting<bool> c_jsondb_pretty_print;
+
+
+    /// Setting that can be used to change the location of blobdb paths that are relative
+    FOST_JSONDB_DECLSPEC extern const setting<fostlib::string> c_jsondb_root;
 
 
     /// A simple transactional JSON based database
