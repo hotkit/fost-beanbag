@@ -63,15 +63,17 @@ namespace {
 
     void do_save( const json &j, const bfs::wpath &ipath ) {
         const bfs::wpath path(get_final_path(ipath));
-#ifndef ANDROID
         if ( bfs::exists(path) ) {
+#ifndef ANDROID
             bfs::wpath backup(path);
             backup.replace_extension(ext_backup);
             if ( bfs::exists(backup) )
                 bfs::remove(backup);
             bfs::create_hard_link(path, backup);
-        }
 #endif
+        } else {
+            bfs::create_directories(path.parent_path());
+        }
         bfs::wpath tmp(path);
         tmp.replace_extension(ext_temp);
         utf::save_file(tmp, json::unparse(j, c_jsondb_pretty_print.value()));
