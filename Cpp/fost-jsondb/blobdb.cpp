@@ -54,15 +54,8 @@ namespace {
  #endif
 
 
-    bfs::wpath get_final_path(
-            const bfs::wpath &filename) {
-        return join_paths(
-            coerce<bfs::wpath>(c_jsondb_root.value()), filename);
-    }
-
-
     void do_save( const json &j, const bfs::wpath &ipath ) {
-        const bfs::wpath path(get_final_path(ipath));
+        const bfs::wpath path(jsondb::get_db_path(ipath));
         if ( bfs::exists(path) ) {
 #ifndef ANDROID
             bfs::wpath backup(path);
@@ -84,7 +77,7 @@ namespace {
         bfs::rename(tmp, path);
     }
     json *construct( const bfs::wpath &ifilename, const nullable< json > &default_db ) {
-        const bfs::wpath filename(get_final_path(ifilename));
+        const bfs::wpath filename(jsondb::get_db_path(ifilename));
         string content(utf::load_file(filename, string()));
         try {
             if ( content.empty() ) {
@@ -116,6 +109,12 @@ fostlib::jsondb::jsondb( const string &filename, const nullable< json > &default
 
 fostlib::jsondb::jsondb( const bfs::wpath &filename, const nullable< json > &default_db )
 : m_blob(boost::lambda::bind(construct, filename, default_db)), filename(filename) {
+}
+
+
+bfs::wpath fostlib::jsondb::get_db_path(const bfs::wpath &filename) {
+    return join_paths(
+        coerce<bfs::wpath>(c_jsondb_root.value()), filename);
 }
 
 
