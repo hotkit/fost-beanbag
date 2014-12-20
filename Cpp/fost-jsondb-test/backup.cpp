@@ -1,5 +1,5 @@
 /*
-    Copyright 2012, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2014, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -7,6 +7,7 @@
 
 
 #include "fost-jsondb-test.hpp"
+#include <fost/jsondb>
 #include <fost/main>
 #include <fost/test>
 #include <fost/unicode>
@@ -20,11 +21,14 @@ FSL_MAIN(
     L"fost-jsondb-test-backup",
     L"fost-jsondb-test-backup\n"
     L"Test the backup process for Fost 4 JSON blobs\n"
-    L"Copyright (c) 2008-2010, Felspar Co. Ltd."
+    L"Copyright (c) 2008-2014, Felspar Co. Ltd."
 )( fostlib::ostream &out, fostlib::arguments &args ) {
-    const bfs::wpath backup(L"filename.backup");
-    const bfs::wpath temp(L"filename.tmp");
-    const bfs::wpath filename(L"filename.txt");
+    const bfs::wpath directory(fostlib::unique_filename());
+    bfs::create_directories(directory);
+
+    const bfs::wpath backup(directory / L"filename.backup");
+    const bfs::wpath temp(directory / L"filename.tmp");
+    const bfs::wpath filename(directory / L"filename.txt");
 
     const string old_backup("old backup\n");
     const string original("original contents\n");
