@@ -1,3 +1,9 @@
+2014-12-19  Kirit Saelensminde  <kirit@felspar.com>
+ Expose the mechanism for determining the JSON database file locations.
+
+2014-12-18  Kirit Saelensminde  <kirit@felspar.com>
+ Make sure that the directory we're about to save a JSON DB blob into actually exists.
+
 2014-11-27  Kirit Saelensminde  <kirit@felspar.com>
  Allow a path prefix to be set for the JSON DB save/load location.
  Improved the exception reported when constructing a JSON DB fails.

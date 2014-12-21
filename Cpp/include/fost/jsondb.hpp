@@ -51,7 +51,10 @@ namespace fostlib {
         explicit jsondb(const boost::filesystem::wpath &filename,
             const nullable< json > &default_db = null);
 
-        /// The filename of a disk backed database
+        /// Calculate the actual path that will be used
+        static boost::filesystem::wpath get_db_path(const boost::filesystem::wpath &);
+
+        /// The file name of a disk backed database
         accessors< const nullable< boost::filesystem::wpath > > filename;
 
         /// A transaction for accessing the database
