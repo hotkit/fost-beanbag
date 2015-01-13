@@ -140,6 +140,24 @@ FSL_TEST_FUNCTION(put_to_new_path) {
 }
 
 
+FSL_TEST_FUNCTION(put_with_unicode) {
+    setup put;
+    put.headers.set("Accept", "application/json");
+    put.do_request("PUT", "/new/path/4/", fostlib::string(L"\"\\u2014\""));
+    FSL_CHECK_EQ(put.status, 201);
+    FSL_CHECK_EQ(
+        put.response->headers()["Content-Type"].value(),
+        "application/json");
+    FSL_CHECK_EQ(
+        fostlib::coerce<fostlib::string>(*put.response),
+        fostlib::string(L"\"\\u2014\"\n"));
+    boost::shared_ptr<fostlib::jsondb> db(
+        beanbag::database(put.options["database"]));
+    fostlib::jsondb::local content(*db);
+    FSL_CHECK_EQ(content["new"]["path"][4], fostlib::json(L"\x2014"));
+}
+
+
 FSL_TEST_FUNCTION(conditional_put_matches) {
     setup put;
     put.headers.set("Accept", "application/json");
