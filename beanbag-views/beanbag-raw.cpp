@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2014 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -147,8 +147,8 @@ int beanbag::raw_view::put(
         200, options, pathname, req, host, db, position);
     if ( status != 412 ) {
         boost::shared_ptr< fostlib::binary_body > data(req.data());
-        fostlib::string json_string = fostlib::coerce<fostlib::string>(
-            data->data());
+        const fostlib::string json_string(fostlib::coerce<fostlib::string>(
+            fostlib::coerce<fostlib::utf8_string>(data->data())));
         fostlib::json new_data = fostlib::json::parse(json_string);
         if ( db.has_key(position) )
             db.update(position, new_data);
