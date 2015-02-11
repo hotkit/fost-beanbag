@@ -170,8 +170,12 @@ int beanbag::raw_view::del(
     int status = do_412_check(
         200, options, pathname, req, host, db, position);
     if ( status != 412 ) {
-        db.remove(position);
-        db.commit();
+        if ( position.size() > 0 ) {
+            db.remove(position);
+            db.commit();
+        } else {
+            throw fostlib::exceptions::not_implemented("DELETE of beanbag");
+        }
     }
     return status;
 }

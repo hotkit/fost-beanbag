@@ -215,6 +215,13 @@ FSL_TEST_FUNCTION(delete_on_empty_database) {
 }
 
 
+FSL_TEST_FUNCTION(delete_beanbag) {
+    setup env;
+    env.do_request("DELETE", "/");
+    FSL_CHECK_EQ(env.status, 200);
+}
+
+
 FSL_TEST_FUNCTION(etag_empty) {
     setup env;
     // null
