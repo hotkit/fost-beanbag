@@ -174,7 +174,7 @@ int beanbag::raw_view::del(
             db.remove(position);
             db.commit();
         } else {
-            throw fostlib::exceptions::not_implemented("DELETE of beanbag");
+            beanbag::remove(database(options, pathname, req, host));
         }
     }
     return status;
