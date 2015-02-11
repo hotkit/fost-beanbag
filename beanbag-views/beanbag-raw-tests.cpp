@@ -211,7 +211,14 @@ FSL_TEST_FUNCTION(delete_on_empty_database) {
     setup env;
     fostlib::insert(env.database, "path", fostlib::json());
     env.do_request("DELETE", "/path/");
-    FSL_CHECK_EQ(env.status, 410);
+    FSL_CHECK_EQ(env.status, 200);
+}
+
+
+FSL_TEST_FUNCTION(delete_beanbag) {
+    setup env;
+    env.do_request("DELETE", "/");
+    FSL_CHECK_EQ(env.status, 200);
 }
 
 

@@ -168,10 +168,14 @@ int beanbag::raw_view::del(
     fostlib::jsondb::local &db, const fostlib::jcursor &position
 ) const {
     int status = do_412_check(
-        410, options, pathname, req, host, db, position);
+        200, options, pathname, req, host, db, position);
     if ( status != 412 ) {
-        db.remove(position);
-        db.commit();
+        if ( position.size() > 0 ) {
+            db.remove(position);
+            db.commit();
+        } else {
+            beanbag::remove(database(options, pathname, req, host));
+        }
     }
     return status;
 }
