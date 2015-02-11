@@ -1,3 +1,6 @@
+2015-02-11  Kirit Saelensminde  <kirit@felspar.com>
+ Work out the filename for the database once on construction rather than each time we want to use it.
+
 2014-12-19  Kirit Saelensminde  <kirit@felspar.com>
  Expose the mechanism for determining the JSON database file locations.
 
