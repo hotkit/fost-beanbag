@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2014 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -59,6 +59,23 @@ beanbag::jsondb_ptr beanbag::database(
 void beanbag::alias(const fostlib::string &name, beanbag::jsondb_ptr db) {
     boost::mutex::scoped_lock lock(g_mutex);
     g_databases[name] = db;
+}
+
+
+void beanbag::remove(beanbag::jsondb_ptr db) {
+    { // Don't hold the lock while we hit the file system
+        boost::mutex::scoped_lock lock(g_mutex);
+        for ( databases_t::iterator iter(g_databases.begin()); iter != g_databases.end(); ) {
+            if ( iter->second == db ) {
+                g_databases.erase(iter++); // Note post increment
+            } else {
+                ++iter;
+            }
+        }
+    }
+    if ( not db->filename().isnull() ) {
+        boost::filesystem::remove(db->filename().value());
+    }
 }
 
 

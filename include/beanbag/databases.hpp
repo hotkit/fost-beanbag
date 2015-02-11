@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2014 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -23,6 +23,10 @@ namespace beanbag {
     /// Add an alias to the database
     FOST_BEANBAG_DECLSPEC
     void alias(const fostlib::string &name, jsondb_ptr db);
+
+    /// Remove a beanbag and delete the file from backing store
+    FOST_BEANBAG_DECLSPEC
+    void remove(jsondb_ptr db);
 
     /// Insert a specified JSON blob into the databases with the specified name. Useful for testing.
     FOST_BEANBAG_DECLSPEC
