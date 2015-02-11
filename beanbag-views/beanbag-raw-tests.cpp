@@ -6,6 +6,8 @@
 */
 
 
+#include <fost/insert>
+#include <fost/push_back>
 #include <fost/test>
 #include <beanbag/beanbag>
 
@@ -138,6 +140,24 @@ FSL_TEST_FUNCTION(put_to_new_path) {
 }
 
 
+FSL_TEST_FUNCTION(put_with_unicode) {
+    setup put;
+    put.headers.set("Accept", "application/json");
+    put.do_request("PUT", "/new/path/4/", fostlib::string(L"\"\\u2014\""));
+    FSL_CHECK_EQ(put.status, 201);
+    FSL_CHECK_EQ(
+        put.response->headers()["Content-Type"].value(),
+        "application/json");
+    FSL_CHECK_EQ(
+        fostlib::coerce<fostlib::string>(*put.response),
+        fostlib::string(L"\"\\u2014\"\n"));
+    boost::shared_ptr<fostlib::jsondb> db(
+        beanbag::database(put.options["database"]));
+    fostlib::jsondb::local content(*db);
+    FSL_CHECK_EQ(content["new"]["path"][4], fostlib::json(L"\x2014"));
+}
+
+
 FSL_TEST_FUNCTION(conditional_put_matches) {
     setup put;
     put.headers.set("Accept", "application/json");
@@ -192,5 +212,49 @@ FSL_TEST_FUNCTION(delete_on_empty_database) {
     fostlib::insert(env.database, "path", fostlib::json());
     env.do_request("DELETE", "/path/");
     FSL_CHECK_EQ(env.status, 410);
+}
+
+
+FSL_TEST_FUNCTION(etag_empty) {
+    setup env;
+    // null
+    FSL_CHECK_EQ(env.view.etag(fostlib::json()), "\"37a6259cc0c1dae299a7866489dff0bd\"");
+}
+
+
+FSL_TEST_FUNCTION(etag_empty_object) {
+    setup env;
+    // {}
+    FSL_CHECK_EQ(env.view.etag(fostlib::json::object_t()),
+        "\"99914b932bd37a50b983c5e7c90ae93b\"");
+}
+
+
+FSL_TEST_FUNCTION(etag_empty_array) {
+    setup env;
+    // []
+    FSL_CHECK_EQ(env.view.etag(fostlib::json::array_t()),
+        "\"d751713988987e9331980363e24189ce\"");
+}
+
+
+FSL_TEST_FUNCTION(etag_data) {
+    setup env;
+    fostlib::json data;
+    // null
+    FSL_CHECK_EQ(env.view.etag(data), "\"37a6259cc0c1dae299a7866489dff0bd\"");
+    fostlib::insert(data, "key1", true);
+    fostlib::insert(data, "Key1", false);
+    // {"Key1":false,"key1":true}
+    FSL_CHECK_EQ(env.view.etag(data), "\"27cfa6ee311d6e30abd463b33dc1dc6e\"");
+    fostlib::push_back(data, "array1", 0);
+    fostlib::push_back(data, "array1", 0);
+    fostlib::push_back(data, "array1", 0);
+    fostlib::push_back(data, "array1", fostlib::json::object_t());
+    // {"Key1":false,"array1":[0,0,0,{}],"key1":true}
+    FSL_CHECK_EQ(env.view.etag(data), "\"927d3596274733e668a65d3fda95915f\"");
+    fostlib::insert(data, "array1", 3, "@context", "embedded");
+    // {"Key1":false,"array1":[0,0,0,{"@context":"embedded"}],"key1":true}
+    FSL_CHECK_EQ(env.view.etag(data), "\"46eccc62fe08b8e1b694ff0c1b5a6c56\"");
 }
 
