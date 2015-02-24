@@ -1,3 +1,6 @@
+2015-02-24  Kirit Saelensminde  <kirit@felspar.com>
+ Add a hook where a DELETE on a beanbag can be dropped, or other actions taken first.
+
 2015-02-11  Kirit Saelensminde  <kirit@felspar.com>
  Correct HTTP DELETE return value and implement deletion of beanbags.
 

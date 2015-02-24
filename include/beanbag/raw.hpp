@@ -1,5 +1,5 @@
 /*
-    Copyright 2012 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -69,6 +69,13 @@ namespace beanbag {
             const fostlib::json &options,
             const fostlib::json &body, fostlib::mime::mime_headers &headers,
             const fostlib::jcursor &position_jc) const;
+
+    protected:
+        /// Called before a beanbag is removed. To override the removal return anything but 200
+        virtual int do_delete_check(int fallback,
+            const fostlib::json &options, const fostlib::string &pathname,
+            fostlib::http::server::request &req, const fostlib::host &,
+            fostlib::jsondb::local &db, const fostlib::jcursor &position) const;
 
     private:
         int do_412_check(int fallback,

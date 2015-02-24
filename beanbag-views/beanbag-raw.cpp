@@ -173,11 +173,18 @@ int beanbag::raw_view::del(
         if ( position.size() > 0 ) {
             db.remove(position);
             db.commit();
-        } else {
+        } else if ( 200 == (status = do_delete_check(status, options, pathname, req, host, db, position)) ) {
             beanbag::remove(database(options, pathname, req, host));
         }
     }
     return status;
+}
+
+int beanbag::raw_view::do_delete_check(int fallback,
+        const fostlib::json &options, const fostlib::string &pathname,
+        fostlib::http::server::request &req, const fostlib::host &host,
+        fostlib::jsondb::local &db, const fostlib::jcursor &position) const {
+    return fallback;
 }
 
 
