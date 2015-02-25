@@ -16,7 +16,7 @@ FSL_TEST_SUITE(beanbag_raw);
 
 
 // Needs external linkage (!), for C++03 anyway
-const char setup_default_name[] = "beanbag.test";
+extern const char setup_default_name[] = "beanbag.test";
 
 
 namespace {
@@ -241,8 +241,8 @@ namespace {
             return 403;
         }
     };
-    const char no_del_view[] = "beanbag.test.no-del";
 }
+extern const char no_del_view[] = "beanbag.test.no-del";
 FSL_TEST_FUNCTION(del_disallowd) {
     setup<no_del, no_del_view> env;
     env.do_request("DELETE", "/");
