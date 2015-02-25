@@ -15,8 +15,11 @@
 FSL_TEST_SUITE(beanbag_raw);
 
 
+// Needs external linkage (!), for C++03 anyway
+const char setup_default_name[] = "beanbag.test";
+
+
 namespace {
-    const char setup_default_name[] = "beanbag.test";
     template< typename V = beanbag::raw_view, const char N[] = setup_default_name >
     struct setup {
         setup(bool with_template = true)
