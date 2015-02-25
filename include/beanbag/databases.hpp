@@ -7,14 +7,15 @@
 
 
 #pragma once
-#include <fost/jsondb>
+#ifndef BEANBAG_DATABASE_HPP
+#define BEANBAG_DATABASE_HPP
+
+
+#include <beanbag/jsondb_ptr.hpp>
 
 
 namespace beanbag {
 
-
-    /// Shorter name for the jsondb pointer type we use
-    typedef boost::shared_ptr< fostlib::jsondb > jsondb_ptr;
 
     /// Return a reference to the requested database
     FOST_BEANBAG_DECLSPEC
@@ -35,3 +36,5 @@ namespace beanbag {
 
 }
 
+
+#endif // BEANBAG_DATABASE_HPP

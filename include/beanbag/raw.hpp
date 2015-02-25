@@ -12,7 +12,7 @@
 
 
 #include <fost/urlhandler>
-#include <fost/jsondb>
+#include <beanbag/jsondb_ptr.hpp>
 
 
 namespace beanbag {
@@ -30,7 +30,7 @@ namespace beanbag {
             fostlib::http::server::request &req, const fostlib::host &) const;
 
         /// Return the database to use
-        virtual boost::shared_ptr<fostlib::jsondb> database(
+        virtual beanbag::jsondb_ptr database(
             const fostlib::json &options, const fostlib::string &pathname,
             fostlib::http::server::request &req, const fostlib::host &) const;
 

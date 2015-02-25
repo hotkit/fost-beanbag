@@ -32,8 +32,7 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
     // We need to hold the shared_ptr for as long as we have the local
     // otherwise the database may get garbage collected whilst we're using
     // it
-    boost::shared_ptr<fostlib::jsondb> db_ptr =
-        database(options, pathname, req, host);
+    beanbag::jsondb_ptr db_ptr = database(options, pathname, req, host);
     fostlib::jsondb::local db(*db_ptr);
 
     fostlib::jcursor location = position(pathname);
@@ -80,7 +79,7 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
 }
 
 
-boost::shared_ptr<fostlib::jsondb> beanbag::raw_view::database(
+beanbag::jsondb_ptr beanbag::raw_view::database(
     const fostlib::json &options, const fostlib::string &,
     fostlib::http::server::request &, const fostlib::host &
 ) const {
