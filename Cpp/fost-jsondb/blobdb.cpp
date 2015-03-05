@@ -63,7 +63,7 @@ namespace {
                 bfs::remove(backup);
             bfs::create_hard_link(path, backup);
 #endif
-        } else {
+        } else if ( !path.parent_path().empty() ) {
             bfs::create_directories(path.parent_path());
         }
         bfs::wpath tmp(path);

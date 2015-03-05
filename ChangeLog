@@ -1,3 +1,6 @@
+2015-03-05  Kirit Saelensminde  <kirit@felspar.com>
+ Fix a bug where beanbags in the current directory would trigger an assert.
+
 2015-02-11  Kirit Saelensminde  <kirit@felspar.com>
  Work out the filename for the database once on construction rather than each time we want to use it.
 
