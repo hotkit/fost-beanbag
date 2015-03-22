@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2014 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -32,8 +32,7 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
     // We need to hold the shared_ptr for as long as we have the local
     // otherwise the database may get garbage collected whilst we're using
     // it
-    boost::shared_ptr<fostlib::jsondb> db_ptr =
-        database(options, pathname, req, host);
+    beanbag::jsondb_ptr db_ptr = database(options, pathname, req, host);
     fostlib::jsondb::local db(*db_ptr);
 
     fostlib::jcursor location = position(pathname);
@@ -80,7 +79,7 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
 }
 
 
-boost::shared_ptr<fostlib::jsondb> beanbag::raw_view::database(
+beanbag::jsondb_ptr beanbag::raw_view::database(
     const fostlib::json &options, const fostlib::string &,
     fostlib::http::server::request &, const fostlib::host &
 ) const {
@@ -147,8 +146,8 @@ int beanbag::raw_view::put(
         200, options, pathname, req, host, db, position);
     if ( status != 412 ) {
         boost::shared_ptr< fostlib::binary_body > data(req.data());
-        fostlib::string json_string = fostlib::coerce<fostlib::string>(
-            data->data());
+        const fostlib::string json_string(fostlib::coerce<fostlib::string>(
+            fostlib::coerce<fostlib::utf8_string>(data->data())));
         fostlib::json new_data = fostlib::json::parse(json_string);
         if ( db.has_key(position) )
             db.update(position, new_data);
@@ -168,12 +167,23 @@ int beanbag::raw_view::del(
     fostlib::jsondb::local &db, const fostlib::jcursor &position
 ) const {
     int status = do_412_check(
-        410, options, pathname, req, host, db, position);
+        200, options, pathname, req, host, db, position);
     if ( status != 412 ) {
-        db.remove(position);
-        db.commit();
+        if ( position.size() > 0 ) {
+            db.remove(position);
+            db.commit();
+        } else if ( 200 == (status = do_delete_check(status, options, pathname, req, host, db, position)) ) {
+            beanbag::remove(database(options, pathname, req, host));
+        }
     }
     return status;
+}
+
+int beanbag::raw_view::do_delete_check(int fallback,
+        const fostlib::json &options, const fostlib::string &pathname,
+        fostlib::http::server::request &req, const fostlib::host &host,
+        fostlib::jsondb::local &db, const fostlib::jcursor &position) const {
+    return fallback;
 }
 
 

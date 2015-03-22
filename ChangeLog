@@ -1,3 +1,12 @@
+2015-02-27  Kirit Saelensminde  <kirit@felspar.com>
+ Refactored DELETE hook, some types and header layout.
+
+2015-02-24  Kirit Saelensminde  <kirit@felspar.com>
+ Add a hook where a DELETE on a beanbag can be dropped, or other actions taken first.
+
+2015-02-11  Kirit Saelensminde  <kirit@felspar.com>
+ Correct HTTP DELETE return value and implement deletion of beanbags.
+
 2014-11-11  Kirit Saelensminde  <kirit@felspar.com>
  Fix a test so it doesn't depend on being built within the beanbag project.
 
