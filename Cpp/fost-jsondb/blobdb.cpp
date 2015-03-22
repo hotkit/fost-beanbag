@@ -54,8 +54,7 @@ namespace {
  #endif
 
 
-    void do_save( const json &j, const bfs::wpath &ipath ) {
-        const bfs::wpath path(jsondb::get_db_path(ipath));
+    void do_save( const json &j, const bfs::wpath &path ) {
         if ( bfs::exists(path) ) {
 #ifndef ANDROID
             bfs::wpath backup(path);
@@ -64,7 +63,7 @@ namespace {
                 bfs::remove(backup);
             bfs::create_hard_link(path, backup);
 #endif
-        } else {
+        } else if ( !path.parent_path().empty() ) {
             bfs::create_directories(path.parent_path());
         }
         bfs::wpath tmp(path);
@@ -76,19 +75,17 @@ namespace {
 #endif
         bfs::rename(tmp, path);
     }
-    json *construct( const bfs::wpath &ifilename, const nullable< json > &default_db ) {
-        const bfs::wpath filename(jsondb::get_db_path(ifilename));
+    json *construct( const bfs::wpath &filename, const nullable< json > &default_db ) {
         string content(utf::load_file(filename, string()));
         try {
             if ( content.empty() ) {
-                do_save(default_db.value(), ifilename);
+                do_save(default_db.value(), filename);
                 return new json(default_db.value());
             } else {
                 return new json(json::parse(content));
             }
         } catch ( exceptions::exception &e ) {
-            insert(e.data(), "blobdb", "filename", ifilename);
-            insert(e.data(), "blobdb", "final-path", filename);
+            insert(e.data(), "blobdb", "filename", filename);
             insert(e.data(), "blobdb", "file-content", content);
             insert(e.data(), "blobdb", "initial-data", default_db);
             throw;
@@ -101,14 +98,14 @@ fostlib::jsondb::jsondb()
 : m_blob( new json ) {
 }
 
-fostlib::jsondb::jsondb( const string &filename, const nullable< json > &default_db )
-: m_blob(boost::lambda::bind(
-            construct, coerce<boost::filesystem::wpath>(filename), default_db)),
-        filename(coerce<boost::filesystem::wpath>(filename)) {
+fostlib::jsondb::jsondb( const string &fn, const nullable< json > &default_db )
+: filename(get_db_path(coerce<boost::filesystem::wpath>(fn))),
+        m_blob(boost::lambda::bind(construct, filename().value(), default_db)) {
 }
 
-fostlib::jsondb::jsondb( const bfs::wpath &filename, const nullable< json > &default_db )
-: m_blob(boost::lambda::bind(construct, filename, default_db)), filename(filename) {
+fostlib::jsondb::jsondb( const bfs::wpath &fn, const nullable< json > &default_db )
+: filename(get_db_path(fn)),
+        m_blob(boost::lambda::bind(construct, filename().value(), default_db)) {
 }
 
 

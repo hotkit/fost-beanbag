@@ -31,7 +31,6 @@ namespace fostlib {
 
     /// A simple transactional JSON based database
     class FOST_JSONDB_DECLSPEC jsondb : boost::noncopyable {
-        in_process< json > m_blob;
     public:
         typedef boost::function< void ( json & ) >
             operation_signature_type;
@@ -126,6 +125,9 @@ namespace fostlib {
             void refresh();
         };
         friend class local;
+
+    private:
+        in_process< json > m_blob;
     };
 
 
