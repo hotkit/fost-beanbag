@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2010, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -81,10 +81,10 @@ namespace fostlib {
         : factory_base( enc, typeid( instance_type ), name ) {
         }
 
-        std::auto_ptr< instance_type > operator () ( const json &j ) const {
+        std::unique_ptr<instance_type> operator () ( const json &j ) const {
             json js( j );
             ( jcursor() / L"_meta" / L"type_info" ).insert( js, string( m_type.name() ) );
-            return std::auto_ptr< instance_type >( new instance_type( initialiser(js) ) );
+            return std::make_unique< instance_type >(initialiser(js));
         }
     };
 

@@ -1,3 +1,6 @@
+2015-05-10  Kirit Saelensminde  <kirit@felspar.com>
+ Switch to C++14 and remove `auto_ptr`s.
+
 2015-03-05  Kirit Saelensminde  <kirit@felspar.com>
  Fix a bug where beanbags in the current directory would trigger an assert.
 
