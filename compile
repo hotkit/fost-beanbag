@@ -1,42 +1,24 @@
 #!/bin/bash
-cd `dirname $0`
+cd $(dirname $0)
 
-export LD_LIBRARY_PATH=../dist/lib
-
-if test -z $1
-then {
-    export VARIANTS=debug
-} else {
-    export VARIANTS=$1
-}
-fi
+export VARIANTS=$*
 
 if test -e /proc/
 then {
-    export CPUCOUNT=`grep -c ^processor /proc/cpuinfo`
-    [ `which clang++` ] || export TOOLSET=toolset=gcc
+    export CPUCOUNT=$(grep -c ^processor /proc/cpuinfo)
     export LD_LIBRARY_PATH=../dist/lib
-    EXTENSION="so"
-}
-else {
-    export CPUCOUNT=`sysctl -n hw.ncpu`
-    export TOOLSET=toolset=darwin
+} else {
+    export CPUCOUNT=$(sysctl -n hw.ncpu)
     export DYLD_LIBRARY_PATH=../dist/lib
-    EXTENSION="dylib"
     export LANG=C
 }
 fi
 
-# Remove any databases from previous test runs
-rm Cpp/fost-schema-test/jsondb-file/*.json Cpp/fost-schema-test/jsondb-file/*.backup 2> /dev/null
-
-if ../bjam $TOOLSET $VARIANTS  -j$CPUCOUNT `../python.opts.sh` $*
+if ../bjam -j$CPUCOUNT $VARIANTS
 then {
-    rm -f ????????-*.backup filename.backup filename.txt Cpp/fost-schema-test/jsondb-file/*.json Cpp/fost-schema-test/jsondb-file/*.backup
-    echo fost-orm $* OK
+    echo fost-base $VARIANTS OK
     exit 0
 } else {
     exit 1
 }
 fi
-
