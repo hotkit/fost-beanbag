@@ -23,7 +23,10 @@ fost-exe fost-schema-test-dyndriver
     ;
 
 
-compile-fail factory-incorrect-model.cpp ;
+compile-fail factory-incorrect-model.cpp
+    :
+        $(TARGET_REQUIREMENTS)
+    ;
 
 
 run
