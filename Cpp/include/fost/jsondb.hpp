@@ -81,6 +81,11 @@ namespace fostlib {
                 return m_local[ p ];
             }
 
+            /// Return all of the data held in the transaction
+            const json &data() const {
+                return m_local;
+            }
+
             /// Insert a new item at the specified key position
             local &insert( const jcursor &position, const json &item );
             /// Push back a new item on to the array at the specified position
