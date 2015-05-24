@@ -1,5 +1,5 @@
 /*
-    Copyright 2007-2013, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2007-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -55,6 +55,9 @@ namespace fostlib {
 
         /// The file name of a disk backed database
         accessors< const nullable< boost::filesystem::wpath > > filename;
+
+        /// Register a function to run after any transaction is successfully committed
+        std::size_t post_commit(const_operation_signature_type);
 
         /// A transaction for accessing the database
         class FOST_JSONDB_DECLSPEC local : boost::noncopyable {
@@ -113,7 +116,7 @@ namespace fostlib {
             /// Register an operation to be part of the transaction processing
             std::size_t transformation(operation_signature_type);
 
-            /// Register a function to run after the transaction is successfully committed
+            /// Register a function to run after this transaction is successfully committed
             std::size_t post_commit(const_operation_signature_type);
 
             /// Commit the transaction
@@ -127,6 +130,7 @@ namespace fostlib {
         friend class local;
 
     private:
+        const_operations_type m_post_commit;
         in_process< json > m_blob;
     };
 

@@ -1,5 +1,5 @@
 /*
-    Copyright 2007-2013, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2007-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -226,11 +226,12 @@ namespace {
         ++post_commit_run;
     }
 }
-FSL_TEST_FUNCTION( post_commit ) {
+FSL_TEST_FUNCTION(post_commit_db) {
     jsondb database;
-    jsondb::local loc(database);
-    FSL_CHECK_EQ(loc.post_commit(post_commit_fn), 1u);
+    post_commit_run = 0;
+    FSL_CHECK_EQ(database.post_commit(post_commit_fn), 1u);
     FSL_CHECK_EQ(post_commit_run, 0u);
+    jsondb::local loc(database);
     loc
         .insert( jcursor( L"hello" ), json( L"nightclub" ) )
         .insert( jcursor( L"goodbye" ), json( L"country" ) )
@@ -239,7 +240,22 @@ FSL_TEST_FUNCTION( post_commit ) {
     loc
         .update( jcursor("goodbye"), "world" )
         .commit();
+    FSL_CHECK_EQ(post_commit_run, 2u);
+}
+FSL_TEST_FUNCTION(post_commit_transaction) {
+    jsondb database;
+    jsondb::local loc(database);
+    post_commit_run = 0;
+    FSL_CHECK_EQ(loc.post_commit(post_commit_fn), 1u);
+    FSL_CHECK_EQ(post_commit_run, 0u);
+    loc
+        .insert( jcursor( L"hello" ), json( L"nightclub" ) )
+        .insert( jcursor( L"goodbye" ), json( L"country" ) )
+        .commit();
+    FSL_CHECK_EQ(post_commit_run, 1u);
+    // The commit has cleared out the post-commit hooks
+    loc
+        .update( jcursor("goodbye"), "world" )
+        .commit();
     FSL_CHECK_EQ(post_commit_run, 1u);
 }
-
-

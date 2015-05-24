@@ -115,6 +115,14 @@ bfs::wpath fostlib::jsondb::get_db_path(const bfs::wpath &filename) {
 }
 
 
+std::size_t fostlib::jsondb::post_commit(
+    const_operation_signature_type fn
+) {
+    m_post_commit.push_back(fn);
+    return m_post_commit.size();
+}
+
+
 /*
     fostlib::jsondb::local
 */
@@ -206,10 +214,15 @@ void fostlib::jsondb::local::commit() {
         m_local = m_db.m_blob.synchronous< json >(
             boost::lambda::bind(
                 do_commit, boost::lambda::_1, m_operations));
-        for ( const_operations_type::iterator f_it(m_post_commit.begin());
+        // Run transaction post-commit hooks
+        for ( auto f_it(m_post_commit.begin());
                 f_it != m_post_commit.end(); ++f_it )
              (*f_it)(m_local);
         m_post_commit.clear();
+        // Run database post-commit hooks
+        for ( auto f_it(m_db.m_post_commit.begin());
+                f_it != m_db.m_post_commit.end(); ++f_it )
+            (*f_it)(m_local);
     } catch ( ... ) {
         rollback();
         throw;

@@ -1,3 +1,6 @@
+2015-05-24  Kirit Saelensminde  <kirit@felspar.com>
+ Add JSON database post-commit hooks to augement the transactions ones we already had.
+
 2015-05-11  Kirit Saelensminde  <kirit@felspar.com>
  Fix a build error with Boost 1.58.0.
 
