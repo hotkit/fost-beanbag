@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2014, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2008-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -179,6 +179,13 @@ namespace {
 fostlib::jsondb::local::local( jsondb &db, const jcursor &pos )
 : m_db( db ), m_position( pos ) {
     refresh();
+}
+
+
+fostlib::jsondb::local::local(local &&l)
+: m_db(l.m_db), m_local(std::move(l.m_local)),
+        m_operations(std::move(l.m_operations)),
+        m_post_commit(std::move(l.m_post_commit)) {
 }
 
 

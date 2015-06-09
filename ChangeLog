@@ -1,3 +1,6 @@
+2015-06-09  Kirit Saelensminde  <kirit@felspar.com>
+ Make the JSON DB local transaction movable.
+
 2015-05-24  Kirit Saelensminde  <kirit@felspar.com>
  Add a `data` member to the local JSON transaction so all of the data can be fetched.
  Add JSON database post-commit hooks to augement the transactions ones we already had.

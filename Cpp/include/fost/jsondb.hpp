@@ -69,6 +69,8 @@ namespace fostlib {
         public:
             /// Create a transaction
             explicit local( jsondb &db, const jcursor & = jcursor() );
+            /// Make movable
+            local(local &&);
 
             /// Check to see if the database contains a specified location or not
             template< typename key >
