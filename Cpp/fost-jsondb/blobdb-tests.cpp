@@ -221,6 +221,31 @@ FSL_TEST_FUNCTION( transformation ) {
 
 
 namespace {
+    unsigned int pre_commit_run = 0;
+    void pre_commit_fn(json &) {
+        ++pre_commit_run;
+    }
+}
+FSL_TEST_FUNCTION(pre_commit_transaction) {
+    jsondb database;
+    jsondb::local loc(database);
+    pre_commit_run = 0;
+    FSL_CHECK_EQ(loc.pre_commit(pre_commit_fn), 1u);
+    FSL_CHECK_EQ(pre_commit_run, 0u);
+    loc
+        .insert( jcursor( L"hello" ), json( L"nightclub" ) )
+        .insert( jcursor( L"goodbye" ), json( L"country" ) )
+        .commit();
+    FSL_CHECK_EQ(pre_commit_run, 1u);
+    // The commit has cleared out the pre-commit hooks
+    loc
+        .update( jcursor("goodbye"), "world" )
+        .commit();
+    FSL_CHECK_EQ(pre_commit_run, 1u);
+}
+
+
+namespace {
     unsigned int post_commit_run = 0;
     void post_commit_fn(const json &) {
         ++post_commit_run;
@@ -259,3 +284,4 @@ FSL_TEST_FUNCTION(post_commit_transaction) {
         .commit();
     FSL_CHECK_EQ(post_commit_run, 1u);
 }
+

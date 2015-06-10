@@ -185,6 +185,7 @@ fostlib::jsondb::local::local( jsondb &db, const jcursor &pos )
 fostlib::jsondb::local::local(local &&l)
 : m_db(l.m_db), m_local(std::move(l.m_local)),
         m_operations(std::move(l.m_operations)),
+        m_pre_commit(std::move(l.m_pre_commit)),
         m_post_commit(std::move(l.m_post_commit)) {
 }
 
@@ -194,6 +195,13 @@ void fostlib::jsondb::local::refresh() {
         boost::lambda::bind(dump, boost::lambda::_1, m_position));
 }
 
+
+std::size_t fostlib::jsondb::local::pre_commit(
+    operation_signature_type fn
+) {
+    m_pre_commit.push_back(fn);
+    return m_pre_commit.size();
+}
 
 std::size_t fostlib::jsondb::local::post_commit(
     const_operation_signature_type fn
@@ -212,12 +220,18 @@ std::size_t fostlib::jsondb::local::transformation(
 
 
 void fostlib::jsondb::local::commit() {
+    /// Add the pre-commit hooks to the end of the transformations
+    for ( auto fn : m_pre_commit )
+        transformation(fn);
+    m_pre_commit.clear();
+    // Add save to the end of the transformation
     if ( !m_db.filename().isnull() ) {
         transformation(
             boost::lambda::bind(
                 do_save, boost::lambda::_1, m_db.filename().value()));
     }
     try {
+        // Run the transformations and commit
         m_local = m_db.m_blob.synchronous< json >(
             boost::lambda::bind(
                 do_commit, boost::lambda::_1, m_operations));
@@ -239,6 +253,8 @@ void fostlib::jsondb::local::commit() {
 
 
 void fostlib::jsondb::local::rollback() {
+    m_pre_commit.clear();
+    m_post_commit.clear();
     m_operations.clear();
     refresh();
 }
