@@ -1,3 +1,6 @@
+2015-06-14  Kirit Saelensminde  <kirit@felspar.com>
+ Improved error reporting when opening a beanbag.
+
 2015-02-27  Kirit Saelensminde  <kirit@felspar.com>
  Refactored DELETE hook, some types and header layout.
 
