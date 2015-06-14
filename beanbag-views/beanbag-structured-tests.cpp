@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2014 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -34,13 +34,13 @@ namespace {
                 const fostlib::string &pathname,
                 const fostlib::string &body_data = fostlib::string() ) {
             beanbag::test_database("beanbag.test", database);
-            std::auto_ptr< fostlib::binary_body > body(
-                new fostlib::binary_body(
+            auto body = std::make_unique<fostlib::binary_body>(
                     fostlib::coerce< std::vector<unsigned char> >(
                         fostlib::coerce<fostlib::utf8_string>(body_data)),
-                    headers));
+                    headers);
             fostlib::http::server::request req(
-                method, fostlib::coerce<fostlib::url::filepath_string>(pathname), body);
+                method, fostlib::coerce<fostlib::url::filepath_string>(pathname),
+                std::move(body));
             std::pair<boost::shared_ptr<fostlib::mime>, int> res =
                 view(options, pathname, req, host);
             response = res.first;
