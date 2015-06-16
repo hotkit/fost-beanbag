@@ -6,6 +6,9 @@
 */
 
 
+#include <fost/db>
+#include <fost/exception/transaction_fault.hpp>
+
 #ifdef FOST_OS_WINDOWS
     #define FOST_JSONDB_DECLSPEC __declspec( dllimport )
 #else
