@@ -76,12 +76,6 @@ beanbag::jsondb_ptr beanbag::database(
 }
 
 
-void beanbag::alias(const fostlib::string &name, beanbag::jsondb_ptr db) {
-    boost::mutex::scoped_lock lock(g_mutex);
-    g_databases[name] = db;
-}
-
-
 void beanbag::remove(beanbag::jsondb_ptr db) {
     throw fostlib::exceptions::not_implemented(__FUNCTION__);
 //     { // Don't hold the lock while we hit the file system

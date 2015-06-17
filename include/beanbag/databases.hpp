@@ -21,10 +21,6 @@ namespace beanbag {
     FOST_BEANBAG_DECLSPEC
     jsondb_ptr database(const fostlib::json &which);
 
-    /// Add an alias to the database
-    FOST_BEANBAG_DECLSPEC
-    void alias(const fostlib::string &name, jsondb_ptr db);
-
     /// Remove a beanbag and delete the file from backing store
     FOST_BEANBAG_DECLSPEC
     void remove(jsondb_ptr db);
