@@ -1,3 +1,4 @@
+include $(TOP)/../fost-base/fost.jam ;
 using testing ;
 
 unit-test fost-jsondb-test-backup
@@ -12,6 +13,7 @@ unit-test fost-jsondb-test-backup
         ../fost-jsondb/
         backup.cpp
     :
+        $(TARGET_REQUIREMENTS)
        <target-os>windows:<source>../../../fost-base/External//ole
     ;
 
@@ -27,5 +29,6 @@ unit-test fost-jsondb-test-file
         ../fost-jsondb/
         filetest.cpp
     :
+        $(TARGET_REQUIREMENTS)
        <target-os>windows:<source>../../../fost-base/External//ole
     ;

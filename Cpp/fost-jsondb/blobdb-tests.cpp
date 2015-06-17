@@ -1,5 +1,5 @@
 /*
-    Copyright 2007-2013, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2007-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -60,7 +60,7 @@ FSL_TEST_FUNCTION( insert ) {
     FSL_CHECK_NOTHROW( loc2.insert( jcursor(), json( 10 ) ) );
     // But it throws when we commit
     FSL_CHECK_EXCEPTION(
-        loc2.commit(), exceptions::forwarded_exception& );
+        loc2.commit(), exceptions::not_null& );
 }
 
 
@@ -94,7 +94,7 @@ FSL_TEST_FUNCTION( push_back ) {
         loc1.push_back(jcursor("queued"), true);
         loc2.insert(jcursor("queued"), true).commit();
         FSL_CHECK_EXCEPTION(
-            loc1.commit(), exceptions::forwarded_exception&);
+            loc1.commit(), exceptions::json_error&);
     }
 }
 
@@ -183,7 +183,7 @@ FSL_TEST_FUNCTION( remove_fails_after_change ) {
     FSL_CHECK_EXCEPTION(loc2
         .remove( jcursor("goodbye") )
         .commit()
-        , exceptions::forwarded_exception&
+        , exceptions::transaction_fault&
     );
     FSL_CHECK_NOTHROW(loc1
         .remove( jcursor("goodbye") )
@@ -192,7 +192,7 @@ FSL_TEST_FUNCTION( remove_fails_after_change ) {
     FSL_CHECK_EXCEPTION(loc3
         .remove( jcursor("goodbye") )
         .commit()
-        , exceptions::forwarded_exception&
+        , exceptions::null&
     );
 }
 
@@ -221,16 +221,42 @@ FSL_TEST_FUNCTION( transformation ) {
 
 
 namespace {
+    unsigned int pre_commit_run = 0;
+    void pre_commit_fn(json &) {
+        ++pre_commit_run;
+    }
+}
+FSL_TEST_FUNCTION(pre_commit_transaction) {
+    jsondb database;
+    jsondb::local loc(database);
+    pre_commit_run = 0;
+    FSL_CHECK_EQ(loc.pre_commit(pre_commit_fn), 1u);
+    FSL_CHECK_EQ(pre_commit_run, 0u);
+    loc
+        .insert( jcursor( L"hello" ), json( L"nightclub" ) )
+        .insert( jcursor( L"goodbye" ), json( L"country" ) )
+        .commit();
+    FSL_CHECK_EQ(pre_commit_run, 1u);
+    // The commit has cleared out the pre-commit hooks
+    loc
+        .update( jcursor("goodbye"), "world" )
+        .commit();
+    FSL_CHECK_EQ(pre_commit_run, 1u);
+}
+
+
+namespace {
     unsigned int post_commit_run = 0;
     void post_commit_fn(const json &) {
         ++post_commit_run;
     }
 }
-FSL_TEST_FUNCTION( post_commit ) {
+FSL_TEST_FUNCTION(post_commit_db) {
     jsondb database;
-    jsondb::local loc(database);
-    FSL_CHECK_EQ(loc.post_commit(post_commit_fn), 1u);
+    post_commit_run = 0;
+    FSL_CHECK_EQ(database.post_commit(post_commit_fn), 1u);
     FSL_CHECK_EQ(post_commit_run, 0u);
+    jsondb::local loc(database);
     loc
         .insert( jcursor( L"hello" ), json( L"nightclub" ) )
         .insert( jcursor( L"goodbye" ), json( L"country" ) )
@@ -239,7 +265,23 @@ FSL_TEST_FUNCTION( post_commit ) {
     loc
         .update( jcursor("goodbye"), "world" )
         .commit();
+    FSL_CHECK_EQ(post_commit_run, 2u);
+}
+FSL_TEST_FUNCTION(post_commit_transaction) {
+    jsondb database;
+    jsondb::local loc(database);
+    post_commit_run = 0;
+    FSL_CHECK_EQ(loc.post_commit(post_commit_fn), 1u);
+    FSL_CHECK_EQ(post_commit_run, 0u);
+    loc
+        .insert( jcursor( L"hello" ), json( L"nightclub" ) )
+        .insert( jcursor( L"goodbye" ), json( L"country" ) )
+        .commit();
+    FSL_CHECK_EQ(post_commit_run, 1u);
+    // The commit has cleared out the post-commit hooks
+    loc
+        .update( jcursor("goodbye"), "world" )
+        .commit();
     FSL_CHECK_EQ(post_commit_run, 1u);
 }
-
 

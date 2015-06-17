@@ -1,4 +1,5 @@
 import testing ;
+include $(TOP)/../fost-base/fost.jam ;
 
 
 fost-smoke-test fost-schema-test-smoke
@@ -22,7 +23,10 @@ fost-exe fost-schema-test-dyndriver
     ;
 
 
-compile-fail factory-incorrect-model.cpp ;
+compile-fail factory-incorrect-model.cpp
+    :
+        $(TARGET_REQUIREMENTS)
+    ;
 
 
 run
@@ -42,6 +46,7 @@ run
         jsondb-file.json
     :
         <source>../fost-jsondb
+        $(TARGET_REQUIREMENTS)
     :
         fost-schema-test-jsondb-file
     ;
@@ -62,6 +67,7 @@ run
     :
         <target-os>windows:<source>../fost-jsondb
         <target-os>windows:<source>../../../fost-base/External//ole
+        $(TARGET_REQUIREMENTS)
     :
         fost-schema-test-dyndriver-jsondb
     ;

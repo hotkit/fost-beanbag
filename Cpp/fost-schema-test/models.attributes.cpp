@@ -1,5 +1,5 @@
 /*
-    Copyright 2009-2010, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2009-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -53,6 +53,6 @@ FSL_TEST_FUNCTION( meta ) {
 
 
 FSL_TEST_FUNCTION( constructors ) {
-    std::auto_ptr< SimpleModel > sm = s_factory_sm( fostlib::json() );
+    auto sm = s_factory_sm( fostlib::json() );
     //FSL_CHECK_EQ( sm->pk(), 0 );
 }

@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2013,Felspar Co Ltd. http://support.felspar.com/
+    Copyright 1999-2015,Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -124,8 +124,8 @@ fostlib::dbinterface::~dbinterface() {
 }
 
 
-std::auto_ptr< dbinterface::connection_data > fostlib::dbinterface::connect( dbconnection &d ) const {
-    return std::auto_ptr< connection_data >();
+std::unique_ptr<dbinterface::connection_data> fostlib::dbinterface::connect( dbconnection &d ) const {
+    return std::unique_ptr<connection_data>();
 }
 
 fostlib::dbinterface::read::read( dbconnection &d )
@@ -222,7 +222,7 @@ namespace {
         boost::scoped_ptr< dbinterface::connection_data > &cnx_data,
         boost::shared_ptr< dbinterface::read > &connection
     ) {
-        std::auto_ptr< dbinterface::connection_data > data = iface.first->connect( dbc );
+        auto data = iface.first->connect( dbc );
         if ( data.get() )
             cnx_data.reset( data.release() );
         connection = iface.first->reader( dbc );

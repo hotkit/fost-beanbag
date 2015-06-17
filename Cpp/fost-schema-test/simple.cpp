@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2010, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2008-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -41,7 +41,7 @@ FSL_TEST_FUNCTION( dynamic_construct_blank ) {
     simple
         .primary_key( L"id", L"integer" )
         .field( L"name", L"varchar", true, 10 );
-    std::auto_ptr< instance > i = simple.create();
+    auto i = simple.create();
     FSL_CHECK( !i->in_database() );
     FSL_CHECK_EQ( (*i)[ L"id" ]._meta().type().type_name(), L"integer" );
     FSL_CHECK_EQ( (*i)[ L"name" ]._meta().type().type_name(), L"varchar" );
@@ -58,7 +58,7 @@ FSL_TEST_FUNCTION( dynamic_construct_json ) {
     simple
         .primary_key( L"id", L"integer" )
         .field( L"name", L"varchar", true, 10 );
-    std::auto_ptr< instance > i = simple.create( json::parse(
+    auto i = simple.create( json::parse(
         L"{ \"id\": 123, \"name\": \"A simple name\" }"
     ) );
     FSL_CHECK_EQ( (*i)[ L"id" ].to_json(), json( 123 ) );

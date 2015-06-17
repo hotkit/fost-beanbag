@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2014, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2008-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -115,6 +115,14 @@ bfs::wpath fostlib::jsondb::get_db_path(const bfs::wpath &filename) {
 }
 
 
+std::size_t fostlib::jsondb::post_commit(
+    const_operation_signature_type fn
+) {
+    m_post_commit.push_back(fn);
+    return m_post_commit.size();
+}
+
+
 /*
     fostlib::jsondb::local
 */
@@ -174,11 +182,26 @@ fostlib::jsondb::local::local( jsondb &db, const jcursor &pos )
 }
 
 
+fostlib::jsondb::local::local(local &&l)
+: m_db(l.m_db), m_local(std::move(l.m_local)),
+        m_operations(std::move(l.m_operations)),
+        m_pre_commit(std::move(l.m_pre_commit)),
+        m_post_commit(std::move(l.m_post_commit)) {
+}
+
+
 void fostlib::jsondb::local::refresh() {
     m_local = m_db.m_blob.synchronous< json >(
         boost::lambda::bind(dump, boost::lambda::_1, m_position));
 }
 
+
+std::size_t fostlib::jsondb::local::pre_commit(
+    operation_signature_type fn
+) {
+    m_pre_commit.push_back(fn);
+    return m_pre_commit.size();
+}
 
 std::size_t fostlib::jsondb::local::post_commit(
     const_operation_signature_type fn
@@ -197,19 +220,30 @@ std::size_t fostlib::jsondb::local::transformation(
 
 
 void fostlib::jsondb::local::commit() {
+    /// Add the pre-commit hooks to the end of the transformations
+    for ( auto fn : m_pre_commit )
+        transformation(fn);
+    m_pre_commit.clear();
+    // Add save to the end of the transformation
     if ( !m_db.filename().isnull() ) {
         transformation(
             boost::lambda::bind(
                 do_save, boost::lambda::_1, m_db.filename().value()));
     }
     try {
+        // Run the transformations and commit
         m_local = m_db.m_blob.synchronous< json >(
             boost::lambda::bind(
                 do_commit, boost::lambda::_1, m_operations));
-        for ( const_operations_type::iterator f_it(m_post_commit.begin());
+        // Run transaction post-commit hooks
+        for ( auto f_it(m_post_commit.begin());
                 f_it != m_post_commit.end(); ++f_it )
              (*f_it)(m_local);
         m_post_commit.clear();
+        // Run database post-commit hooks
+        for ( auto f_it(m_db.m_post_commit.begin());
+                f_it != m_db.m_post_commit.end(); ++f_it )
+            (*f_it)(m_local);
     } catch ( ... ) {
         rollback();
         throw;
@@ -219,6 +253,8 @@ void fostlib::jsondb::local::commit() {
 
 
 void fostlib::jsondb::local::rollback() {
+    m_pre_commit.clear();
+    m_post_commit.clear();
     m_operations.clear();
     refresh();
 }

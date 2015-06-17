@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2010, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -132,9 +132,9 @@ const meta_attribute &fostlib::meta_instance::operator[] ( const string &n ) con
 }
 
 
-std::auto_ptr< instance > fostlib::meta_instance::create() const {
+std::unique_ptr<instance> fostlib::meta_instance::create() const {
     return create( json() );
 }
-std::auto_ptr< instance > fostlib::meta_instance::create( const json &j ) const {
-    return std::auto_ptr< instance >( new instance( *this, j ) );
+std::unique_ptr<instance> fostlib::meta_instance::create( const json &j ) const {
+    return std::make_unique<instance>(*this, j);
 }
