@@ -6,7 +6,7 @@
 */
 
 
-#include "beanbag-views.hpp"
+#include "beanbag.hpp"
 #include <beanbag/databases.hpp>
 #include <fost/unicode>
 
