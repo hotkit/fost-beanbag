@@ -10,7 +10,9 @@
 #include <beanbag/databases.hpp>
 #include <f5/threading/map.hpp>
 #include <fost/insert>
+#include <fost/log>
 #include <fost/unicode>
+#include <atomic>
 
 
 namespace {
@@ -23,6 +25,7 @@ namespace {
 beanbag::jsondb_ptr beanbag::database(
     const fostlib::json &which
 ) {
+    static std::atomic<int64_t> created{0};
     try {
         fostlib::nullable<fostlib::string> which_name(which.get<fostlib::string>());
         fostlib::string name;
@@ -37,6 +40,7 @@ beanbag::jsondb_ptr beanbag::database(
                     throw fostlib::exceptions::null(
                         "Beanbag configurations must specify a file path in the 'filepath' member");
                 fostlib::json tplate;
+                ++created;
                 if ( which.has_key("template") ) {
                     tplate = fostlib::json::parse(fostlib::utf::load_file(
                         fostlib::coerce<boost::filesystem::wpath>(which["template"])));
@@ -54,21 +58,34 @@ beanbag::jsondb_ptr beanbag::database(
                         tplate);
                 return cptr;
             };
-        auto fptr = g_databases.add_if_not_found(name, make);
-        if ( cptr ) {
-            // cptr is set if there was a cache miss and the lambda generated
-            // a new value
-            return cptr;
-        } else if ( fptr ) {
-            // fptr is set (and has a value) if we got a cache hit and the
-            // database is still held somewhere
-            return fptr;
-        } else {
-            // There is a dead reference in the table -- do something....
-            // just not something with a race
-            throw fostlib::exceptions::not_implemented(__FUNCTION__,
-                "When we get a dead reference");
+        auto predicate = [&cptr](boost::weak_ptr<fostlib::jsondb> p) {
+                cptr = p.lock();
+                return !cptr;
+            };
+        g_databases.insert_or_assign_if(name, predicate, make);
+        static std::size_t bound = 16;
+        const auto size = g_databases.size();
+        if ( size > bound ) {
+            const auto left = g_databases.remove_if([](const auto &, const auto &p) {
+                    return p.expired();
+                });
+            if ( left > bound ) {
+                fostlib::log::warning()
+                    ("", "Clearing out old beanbags")
+                    ("created", created.load())
+                    ("bound", "old", bound)
+                    ("bound", "new", (bound += 16))
+                    ("size", "old", size)
+                    ("size", "new", left);
+            } else {
+                fostlib::log::info()
+                    ("", "Clearing out old beanbags")
+                    ("created", created.load())
+                    ("size", "old", size)
+                    ("size", "new", left);
+            }
         }
+        return cptr;
     } catch ( fostlib::exceptions::exception &e ) {
         fostlib::insert(e.data(), "opening-beanbag", which);
         throw;
