@@ -45,13 +45,8 @@ const setting<string> fostlib::c_jsondb_root(
 
 
 namespace {
-#if BOOST_FILESYSTEM_VERSION >= 3
     const bfs::wpath ext_backup(".backup");
     const bfs::wpath ext_temp(".tmp");
-#else
-    const std::wstring ext_backup(L".backup");
-    const std::wstring ext_temp(L".tmp");
- #endif
 
 
     void do_save( const json &j, const bfs::wpath &path ) {
@@ -69,10 +64,6 @@ namespace {
         bfs::wpath tmp(path);
         tmp.replace_extension(ext_temp);
         utf::save_file(tmp, json::unparse(j, c_jsondb_pretty_print.value()));
-#if BOOST_FILESYSTEM_VERSION < 3
-        if ( bfs::exists(path) )
-            bfs::remove(path);
-#endif
         bfs::rename(tmp, path);
     }
     json *construct( const bfs::wpath &filename, const nullable< json > &default_db ) {
@@ -227,8 +218,9 @@ void fostlib::jsondb::local::commit() {
     // Add save to the end of the transformation
     if ( !m_db.filename().isnull() ) {
         transformation(
-            boost::lambda::bind(
-                do_save, boost::lambda::_1, m_db.filename().value()));
+            [this](json &j) {
+                do_save(j, m_db.filename().value());
+            });
     }
     try {
         // Run the transformations and commit
@@ -236,14 +228,12 @@ void fostlib::jsondb::local::commit() {
             boost::lambda::bind(
                 do_commit, boost::lambda::_1, m_operations));
         // Run transaction post-commit hooks
-        for ( auto f_it(m_post_commit.begin());
-                f_it != m_post_commit.end(); ++f_it )
-             (*f_it)(m_local);
+        for ( auto fn : m_post_commit )
+             fn(m_local);
         m_post_commit.clear();
         // Run database post-commit hooks
-        for ( auto f_it(m_db.m_post_commit.begin());
-                f_it != m_db.m_post_commit.end(); ++f_it )
-            (*f_it)(m_local);
+        for ( auto fn : m_db.m_post_commit )
+            fn(m_local);
     } catch ( ... ) {
         rollback();
         throw;

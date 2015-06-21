@@ -1,3 +1,6 @@
+2015-06-21  Kirit Saelensminde  <kirit@felspar.com>
+ Cleaned up some old conditional compilation that is no longer relevant.
+
 2015-06-10  Kirit Saelensminde  <kirit@felspar.com>
  Add a pre-commit mechanism to the `jsondb::local`.
 
