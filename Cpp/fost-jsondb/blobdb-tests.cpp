@@ -60,7 +60,7 @@ FSL_TEST_FUNCTION( insert ) {
     FSL_CHECK_NOTHROW( loc2.insert( jcursor(), json( 10 ) ) );
     // But it throws when we commit
     FSL_CHECK_EXCEPTION(
-        loc2.commit(), exceptions::forwarded_exception& );
+        loc2.commit(), exceptions::not_null& );
 }
 
 
@@ -94,7 +94,7 @@ FSL_TEST_FUNCTION( push_back ) {
         loc1.push_back(jcursor("queued"), true);
         loc2.insert(jcursor("queued"), true).commit();
         FSL_CHECK_EXCEPTION(
-            loc1.commit(), exceptions::forwarded_exception&);
+            loc1.commit(), exceptions::json_error&);
     }
 }
 
@@ -183,7 +183,7 @@ FSL_TEST_FUNCTION( remove_fails_after_change ) {
     FSL_CHECK_EXCEPTION(loc2
         .remove( jcursor("goodbye") )
         .commit()
-        , exceptions::forwarded_exception&
+        , exceptions::transaction_fault&
     );
     FSL_CHECK_NOTHROW(loc1
         .remove( jcursor("goodbye") )
@@ -192,7 +192,7 @@ FSL_TEST_FUNCTION( remove_fails_after_change ) {
     FSL_CHECK_EXCEPTION(loc3
         .remove( jcursor("goodbye") )
         .commit()
-        , exceptions::forwarded_exception&
+        , exceptions::null&
     );
 }
 
