@@ -9,16 +9,25 @@
 #include "beanbag.hpp"
 #include <beanbag/databases.hpp>
 #include <f5/threading/map.hpp>
+#include <fost/counter>
 #include <fost/insert>
 #include <fost/log>
 #include <fost/unicode>
 #include <atomic>
 
 
+const fostlib::module beanbag::c_beanbag("beanbag");
+
+
 namespace {
     f5::tsmap<fostlib::string, boost::weak_ptr<fostlib::jsondb>,
         f5::weak_ptr_promotion_policy<boost::weak_ptr<fostlib::jsondb>>>
             g_databases;
+
+    fostlib::performance p_bound(beanbag::c_beanbag, "database", "cache-size");
+    fostlib::performance p_loaded(beanbag::c_beanbag, "database", "loaded");
+    fostlib::performance p_found(beanbag::c_beanbag, "database", "found");
+    fostlib::performance p_expired(beanbag::c_beanbag, "database", "expired");
 }
 
 
@@ -48,11 +57,13 @@ beanbag::jsondb_ptr beanbag::database(
                     tplate = which["initial"];
                 } else {
                     // Without some sort of template we insist the file exists
+                    ++p_loaded;
                     cptr =  boost::make_shared<fostlib::jsondb>(
                             fostlib::coerce<fostlib::string>(which["filepath"]));
                     return cptr;
                 }
                 // With a template of some sort we can create a new disk file
+                ++p_loaded;
                 cptr = boost::make_shared< fostlib::jsondb>(
                         fostlib::coerce<fostlib::string>(which["filepath"]),
                         tplate);
@@ -60,25 +71,34 @@ beanbag::jsondb_ptr beanbag::database(
             };
         auto predicate = [&cptr](boost::weak_ptr<fostlib::jsondb> p) {
                 cptr = p.lock();
+                if ( cptr ) {
+                    // Cache hit
+                    ++p_found;
+                }
                 return !cptr;
             };
         g_databases.insert_or_assign_if(name, predicate, make);
-        static std::size_t bound = 16;
         const auto size = g_databases.size();
-        if ( size > bound ) {
+        if ( size > p_bound.value() ) {
             const auto left = g_databases.remove_if([](const auto &, const auto &p) {
-                    return p.expired();
+                    if ( p.expired() ) {
+                        ++p_expired;
+                        return true;
+                    } else
+                        return false;
                 });
-            if ( left > bound ) {
-                fostlib::log::warning()
+            if ( left > p_bound.value() ) {
+                const auto old = p_bound.value();
+                const auto now = (p_bound += 16);
+                fostlib::log::warning(c_beanbag)
                     ("", "Clearing out old beanbags")
                     ("created", created.load())
-                    ("bound", "old", bound)
-                    ("bound", "new", (bound += 16))
+                    ("bound", "old", old)
+                    ("bound", "new", now)
                     ("size", "old", size)
                     ("size", "new", left);
             } else {
-                fostlib::log::info()
+                fostlib::log::info(c_beanbag)
                     ("", "Clearing out old beanbags")
                     ("created", created.load())
                     ("size", "old", size)

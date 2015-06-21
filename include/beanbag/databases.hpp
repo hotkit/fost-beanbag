@@ -17,6 +17,10 @@
 namespace beanbag {
 
 
+    /// The beanbag module
+    extern const fostlib::module c_beanbag;
+
+
     /// Return a reference to the requested database
     FOST_BEANBAG_DECLSPEC
     jsondb_ptr database(const fostlib::json &which);
