@@ -26,7 +26,8 @@ namespace {
 
     fostlib::performance p_bound(beanbag::c_beanbag, "database", "cache-size");
     fostlib::performance p_loaded(beanbag::c_beanbag, "database", "loaded");
-    fostlib::performance p_found(beanbag::c_beanbag, "database", "found");
+    fostlib::performance p_found_alive(beanbag::c_beanbag, "database", "found-alive");
+    fostlib::performance p_found_dead(beanbag::c_beanbag, "database", "found-dead");
     fostlib::performance p_expired(beanbag::c_beanbag, "database", "expired");
 }
 
@@ -72,10 +73,12 @@ beanbag::jsondb_ptr beanbag::database(
         auto predicate = [&cptr](boost::weak_ptr<fostlib::jsondb> p) {
                 cptr = p.lock();
                 if ( cptr ) {
-                    // Cache hit
-                    ++p_found;
+                    ++p_found_alive;
+                    return false;
+                } else {
+                    ++p_found_dead;
+                    return true;
                 }
-                return !cptr;
             };
         g_databases.insert_or_assign_if(name, predicate, make);
         const auto size = g_databases.size();
