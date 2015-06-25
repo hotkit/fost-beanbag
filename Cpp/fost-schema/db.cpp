@@ -17,6 +17,9 @@
 using namespace fostlib;
 
 
+const module fostlib::c_fost_orm(c_fost, "orm");
+
+
 namespace {
 
 

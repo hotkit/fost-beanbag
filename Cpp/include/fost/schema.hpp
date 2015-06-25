@@ -16,14 +16,4 @@
 #include <fost/attributes.hpp>
 
 
-namespace fostlib {
-
-
-    /// The ORM module
-    extern const module c_fost_orm;
-
-
-}
-
-
 #endif // FOST_SCHEMA_HPP
