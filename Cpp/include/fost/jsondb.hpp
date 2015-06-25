@@ -11,14 +11,19 @@
 #pragma once
 
 
-#include <fost/core>
+#include <fost/file>
 #include <fost/json.hpp>
 #include <fost/thread.hpp>
 
+#include <boost/asio/strand.hpp>
 #include <boost/filesystem/path.hpp>
 
 
 namespace fostlib {
+
+
+    /// The JSONDB module
+    extern const module c_fost_orm_jsondb;
 
 
     /// Setting that controls whether the JSON DB files are pretty printed or not
@@ -45,7 +50,9 @@ namespace fostlib {
         jsondb();
         /// Create a JSON database that is backed to disk
         explicit jsondb(const string &filename,
-            const nullable< json > &default_db = null);
+            const nullable< json > &default_db = null)
+        : jsondb(coerce<boost::filesystem::wpath>(filename), default_db) {
+        }
         /// Create a JSON database that is backed to disk
         explicit jsondb(const boost::filesystem::wpath &filename,
             const nullable< json > &default_db = null);
@@ -140,8 +147,14 @@ namespace fostlib {
         friend class local;
 
     private:
+        /// The execution strand used to manage changes to the underlying JSON
+        boost::asio::io_service::strand strand;
+        /// The post commit operations that are always run for this database
         const_operations_type m_post_commit;
-        in_process< json > m_blob;
+        /// The actual JSON that is stored within the database. All access to this
+        /// must be through a lambda given to the strand. This avoids races on the
+        /// data
+        json data;
     };
 
 
