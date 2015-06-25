@@ -51,17 +51,17 @@ namespace fostlib {
         /// Create a JSON database that is backed to disk
         explicit jsondb(const string &filename,
             const nullable< json > &default_db = null)
-        : jsondb(coerce<boost::filesystem::wpath>(filename), default_db) {
+        : jsondb(coerce<boost::filesystem::path>(filename), default_db) {
         }
         /// Create a JSON database that is backed to disk
-        explicit jsondb(const boost::filesystem::wpath &filename,
+        explicit jsondb(const boost::filesystem::path &filename,
             const nullable< json > &default_db = null);
 
         /// Calculate the actual path that will be used
-        static boost::filesystem::wpath get_db_path(const boost::filesystem::wpath &);
+        static boost::filesystem::path get_db_path(const boost::filesystem::path &);
 
         /// The file name of a disk backed database
-        accessors< const nullable< boost::filesystem::wpath > > filename;
+        accessors< const nullable< boost::filesystem::path > > filename;
 
         /// Register a function to run after any transaction is successfully committed
         std::size_t post_commit(const_operation_signature_type);
