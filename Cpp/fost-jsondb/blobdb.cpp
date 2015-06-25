@@ -11,11 +11,14 @@
 #include <fost/log>
 #include <fost/unicode>
 #include <fost/jsondb.hpp>
+#include <fost/schema.hpp>
 
 #include <fost/exception/not_null.hpp>
 #include <fost/exception/out_of_range.hpp>
 #include <fost/exception/transaction_fault.hpp>
 #include <fost/exception/unexpected_eof.hpp>
+
+#include <f5/threading/boost-asio.hpp>
 
 
 using namespace fostlib;
@@ -25,6 +28,9 @@ namespace bfs = boost::filesystem;
 /*
     fostlib::jsondb
 */
+
+
+const module fostlib::c_fost_orm_jsondb(c_fost_orm, "jsondb");
 
 
 #ifdef DEBUG
@@ -66,37 +72,41 @@ namespace {
         utf::save_file(tmp, json::unparse(j, c_jsondb_pretty_print.value()));
         bfs::rename(tmp, path);
     }
-    json *construct( const bfs::wpath &filename, const nullable< json > &default_db ) {
-        string content(utf::load_file(filename, string()));
-        try {
-            if ( content.empty() ) {
-                do_save(default_db.value(), filename);
-                return new json(default_db.value());
-            } else {
-                return new json(json::parse(content));
-            }
-        } catch ( exceptions::exception &e ) {
-            insert(e.data(), "blobdb", "filename", filename);
-            insert(e.data(), "blobdb", "file-content", content);
-            insert(e.data(), "blobdb", "initial-data", default_db);
-            throw;
-        }
+
+    f5::boost_asio::reactor_pool &g_pool() {
+        static f5::boost_asio::reactor_pool p(
+            []() {
+                fostlib::log::critical(c_fost_orm_jsondb,
+                    "An exception has escaped into the beanbag reactor");
+                std::terminate();
+            });
+        return p;
     }
 }
 
 
 fostlib::jsondb::jsondb()
-: m_blob( new json ) {
-}
-
-fostlib::jsondb::jsondb( const string &fn, const nullable< json > &default_db )
-: filename(get_db_path(coerce<boost::filesystem::wpath>(fn))),
-        m_blob(boost::lambda::bind(construct, filename().value(), default_db)) {
+: strand(g_pool().get_io_service()) {
 }
 
 fostlib::jsondb::jsondb( const bfs::wpath &fn, const nullable< json > &default_db )
-: filename(get_db_path(fn)),
-        m_blob(boost::lambda::bind(construct, filename().value(), default_db)) {
+: filename(get_db_path(fn)), strand(g_pool().get_io_service()) {
+    /// We can safely access the JSON directly here because no other operation
+    /// is possilbe until the constructor returnes
+    string content(utf::load_file(filename().value(), string()));
+    try {
+        if ( content.empty() ) {
+            do_save(default_db.value(), filename().value());
+            data = default_db.value();
+        } else {
+            data = json::parse(content);
+        }
+    } catch ( exceptions::exception &e ) {
+        insert(e.data(), "blobdb", "filename", filename().value());
+        insert(e.data(), "blobdb", "file-content", content);
+        insert(e.data(), "blobdb", "initial-data", default_db);
+        throw;
+    }
 }
 
 
