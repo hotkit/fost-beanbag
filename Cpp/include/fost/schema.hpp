@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2010, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2015, Felspar Co Ltd. http://fost.3.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -14,6 +14,16 @@
 #include <fost/dynamic.hpp>
 #include <fost/static.hpp>
 #include <fost/attributes.hpp>
+
+
+namespace fostlib {
+
+
+    /// The ORM module
+    extern const module c_fost_orm;
+
+
+}
 
 
 #endif // FOST_SCHEMA_HPP
