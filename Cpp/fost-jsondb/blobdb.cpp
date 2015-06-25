@@ -8,6 +8,7 @@
 
 #include "fost-jsondb.hpp"
 #include <fost/db>
+#include <fost/db-driver>
 #include <fost/log>
 #include <fost/unicode>
 #include <fost/jsondb.hpp>
@@ -18,7 +19,7 @@
 #include <fost/exception/transaction_fault.hpp>
 #include <fost/exception/unexpected_eof.hpp>
 
-#include <f5/threading/boost-asio.hpp>
+#include <future>
 
 
 using namespace fostlib;
@@ -51,8 +52,10 @@ const setting<string> fostlib::c_jsondb_root(
 
 
 namespace {
-    const bfs::wpath ext_backup(".backup");
-    const bfs::wpath ext_temp(".tmp");
+    using lock_type = std::unique_lock<std::mutex>;
+
+    const bfs::path ext_backup(".backup");
+    const bfs::path ext_temp(".tmp");
 
 
     void do_save( const json &j, const bfs::wpath &path ) {
@@ -72,25 +75,11 @@ namespace {
         utf::save_file(tmp, json::unparse(j, c_jsondb_pretty_print.value()));
         bfs::rename(tmp, path);
     }
-
-    f5::boost_asio::reactor_pool &g_pool() {
-        static f5::boost_asio::reactor_pool p(
-            []() {
-                fostlib::log::critical(c_fost_orm_jsondb,
-                    "An exception has escaped into the beanbag reactor");
-                std::terminate();
-            });
-        return p;
-    }
 }
 
-
-fostlib::jsondb::jsondb()
-: strand(g_pool().get_io_service()) {
-}
 
 fostlib::jsondb::jsondb( const bfs::wpath &fn, const nullable< json > &default_db )
-: filename(get_db_path(fn)), strand(g_pool().get_io_service()) {
+: filename(get_db_path(fn)) {
     /// We can safely access the JSON directly here because no other operation
     /// is possilbe until the constructor returnes
     string content(utf::load_file(filename().value(), string()));
@@ -130,10 +119,6 @@ std::size_t fostlib::jsondb::post_commit(
 
 
 namespace {
-    json dump( json &j, const jcursor &p ) {
-        return json( j[ p ] );
-    }
-
     void do_insert( json &db, const jcursor &k, const json &v ) {
         k.insert( db, v );
     }
@@ -162,18 +147,6 @@ namespace {
         else
             throw exceptions::null( L"This key position has already been deleted" );
     }
-
-    json &do_commit( json &j, const jsondb::operations_type &ops ) {
-        json db( j );
-        try {
-            for ( jsondb::operations_type::const_iterator op( ops.begin() ); op != ops.end(); ++op )
-                (*op)( j );
-        } catch ( ... ) {
-            j = db;
-            throw;
-        }
-        return j;
-    }
 }
 
 
@@ -192,8 +165,8 @@ fostlib::jsondb::local::local(local &&l)
 
 
 void fostlib::jsondb::local::refresh() {
-    m_local = m_db.m_blob.synchronous< json >(
-        boost::lambda::bind(dump, boost::lambda::_1, m_position));
+    lock_type lock(m_db.control);
+    m_local = m_db.data[m_position];
 }
 
 
@@ -233,22 +206,32 @@ void fostlib::jsondb::local::commit() {
             });
     }
     try {
-        // Run the transformations and commit
-        m_local = m_db.m_blob.synchronous< json >(
-            boost::lambda::bind(
-                do_commit, boost::lambda::_1, m_operations));
+        /// All of the following runs inside the lock because we can't
+        /// access anything on m_db without holding it. This forces
+        /// serialisation of all post commit code as well, which should
+        /// make that easier to reason about
+        lock_type lock(m_db.control);
+        json db(m_db.data);
+        try {
+            for ( auto op : m_operations )
+                (op)(m_db.data);
+            m_operations.clear();
+        } catch ( ... ) {
+            m_db.data = db;
+            throw;
+        }
+        m_local = m_db.data[m_position];
         // Run transaction post-commit hooks
         for ( auto fn : m_post_commit )
-             fn(m_local);
+                fn(m_local);
         m_post_commit.clear();
         // Run database post-commit hooks
         for ( auto fn : m_db.m_post_commit )
-            fn(m_local);
+            fn(m_db.data);
     } catch ( ... ) {
         rollback();
         throw;
     }
-    m_operations.clear();
 }
 
 

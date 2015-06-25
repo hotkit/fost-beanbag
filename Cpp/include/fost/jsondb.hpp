@@ -15,8 +15,7 @@
 #include <fost/json.hpp>
 #include <fost/thread.hpp>
 
-#include <boost/asio/strand.hpp>
-#include <boost/filesystem/path.hpp>
+#include <mutex>
 
 
 namespace fostlib {
@@ -47,7 +46,7 @@ namespace fostlib {
             const_operations_type;
 
         /// Create an in memory JSON database
-        jsondb();
+        jsondb() {}
         /// Create a JSON database that is backed to disk
         explicit jsondb(const string &filename,
             const nullable< json > &default_db = null)
@@ -147,9 +146,11 @@ namespace fostlib {
         friend class local;
 
     private:
-        /// The execution strand used to manage changes to the underlying JSON
-        boost::asio::io_service::strand strand;
-        /// The post commit operations that are always run for this database
+        /// This mutex is used to control access to the post commit list, and
+        /// to the underlying JSON data.
+        std::mutex control;
+        /// The post commit operations that are always run for this database.
+        /// Additions to this must also be controlled in the right way
         const_operations_type m_post_commit;
         /// The actual JSON that is stored within the database. All access to this
         /// must be through a lambda given to the strand. This avoids races on the
