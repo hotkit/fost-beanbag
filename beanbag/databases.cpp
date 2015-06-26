@@ -24,6 +24,7 @@ namespace {
         f5::weak_ptr_promotion_policy<boost::weak_ptr<fostlib::jsondb>>>
             g_databases;
 
+    fostlib::performance p_held(beanbag::c_beanbag, "database", "live");
     fostlib::performance p_bound(beanbag::c_beanbag, "database", "cache-size");
     fostlib::performance p_loaded(beanbag::c_beanbag, "database", "loaded");
     fostlib::performance p_found_alive(beanbag::c_beanbag, "database", "found-alive");
@@ -59,12 +60,14 @@ beanbag::jsondb_ptr beanbag::database(
                 } else {
                     // Without some sort of template we insist the file exists
                     ++p_loaded;
+                    ++p_held;
                     cptr =  boost::make_shared<fostlib::jsondb>(
                             fostlib::coerce<fostlib::string>(which["filepath"]));
                     return cptr;
                 }
                 // With a template of some sort we can create a new disk file
                 ++p_loaded;
+                ++p_held;
                 cptr = boost::make_shared< fostlib::jsondb>(
                         fostlib::coerce<fostlib::string>(which["filepath"]),
                         tplate);
@@ -77,6 +80,7 @@ beanbag::jsondb_ptr beanbag::database(
                     return false;
                 } else {
                     ++p_found_dead;
+                    --p_held;
                     return true;
                 }
             };
@@ -87,6 +91,7 @@ beanbag::jsondb_ptr beanbag::database(
                 [](const auto &, const auto &p) {
                     if ( p.expired() ) {
                         ++p_expired;
+                        --p_held;
                         return true;
                     } else
                         return false;
