@@ -96,7 +96,6 @@ beanbag::jsondb_ptr beanbag::database(
                 const auto now = (p_bound += 16);
                 fostlib::log::warning(c_beanbag)
                     ("", "Clearing out old beanbags")
-                    ("created", created.load())
                     ("bound", "old", old)
                     ("bound", "new", now)
                     ("size", "old", size)
@@ -104,7 +103,6 @@ beanbag::jsondb_ptr beanbag::database(
             } else {
                 fostlib::log::info(c_beanbag)
                     ("", "Clearing out old beanbags")
-                    ("created", created.load())
                     ("size", "old", size)
                     ("size", "new", left);
             }
