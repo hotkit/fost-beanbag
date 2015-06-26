@@ -83,7 +83,8 @@ beanbag::jsondb_ptr beanbag::database(
         g_databases.insert_or_assign_if(name, predicate, make);
         const auto size = g_databases.size();
         if ( size > p_bound.value() ) {
-            const auto left = g_databases.remove_if([](const auto &, const auto &p) {
+            const auto left = g_databases.remove_if(
+                [](const auto &, const auto &p) {
                     if ( p.expired() ) {
                         ++p_expired;
                         return true;
