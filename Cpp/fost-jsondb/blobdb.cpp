@@ -7,6 +7,7 @@
 
 
 #include "fost-jsondb.hpp"
+#include <fost/counter>
 #include <fost/db>
 #include <fost/db-driver>
 #include <fost/log>
@@ -32,6 +33,12 @@ namespace bfs = boost::filesystem;
 
 
 const module fostlib::c_fost_orm_jsondb(c_fost_orm, "jsondb");
+
+
+namespace {
+    performance p_created(c_fost_orm_jsondb, "db", "created");
+    performance p_loaded(c_fost_orm_jsondb, "db", "loaded");
+}
 
 
 #ifdef DEBUG
@@ -78,7 +85,7 @@ namespace {
 }
 
 
-fostlib::jsondb::jsondb( const bfs::wpath &fn, const nullable< json > &default_db )
+fostlib::jsondb::jsondb(const bfs::wpath &fn, const nullable< json > &default_db)
 : filename(get_db_path(fn)) {
     /// We can safely access the JSON directly here because no other operation
     /// is possilbe until the constructor returnes
@@ -87,8 +94,10 @@ fostlib::jsondb::jsondb( const bfs::wpath &fn, const nullable< json > &default_d
         if ( content.empty() ) {
             do_save(default_db.value(), filename().value());
             data = default_db.value();
+            ++p_created;
         } else {
             data = json::parse(content);
+            ++p_loaded;
         }
     } catch ( exceptions::exception &e ) {
         insert(e.data(), "blobdb", "filename", filename().value());
@@ -198,7 +207,8 @@ void fostlib::jsondb::local::commit() {
     for ( auto fn : m_pre_commit )
         transformation(fn);
     m_pre_commit.clear();
-    // Add save to the end of the transformation
+    /// Add save to the end of the transformation. Access to the
+    /// filename is safe because it's a const member of m_db.
     if ( !m_db.filename().isnull() ) {
         transformation(
             [this](json &j) {
@@ -221,11 +231,11 @@ void fostlib::jsondb::local::commit() {
             throw;
         }
         m_local = m_db.data[m_position];
-        // Run transaction post-commit hooks
+        /// Run transaction post-commit hooks
         for ( auto fn : m_post_commit )
                 fn(m_local);
         m_post_commit.clear();
-        // Run database post-commit hooks
+        /// Run database post-commit hooks
         for ( auto fn : m_db.m_post_commit )
             fn(m_db.data);
     } catch ( ... ) {
