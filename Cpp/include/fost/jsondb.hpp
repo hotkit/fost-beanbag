@@ -11,14 +11,18 @@
 #pragma once
 
 
-#include <fost/core>
+#include <fost/file>
 #include <fost/json.hpp>
 #include <fost/thread.hpp>
 
-#include <boost/filesystem/path.hpp>
+#include <mutex>
 
 
 namespace fostlib {
+
+
+    /// The JSONDB module
+    extern const module c_fost_orm_jsondb;
 
 
     /// Setting that controls whether the JSON DB files are pretty printed or not
@@ -42,19 +46,21 @@ namespace fostlib {
             const_operations_type;
 
         /// Create an in memory JSON database
-        jsondb();
+        jsondb() {}
         /// Create a JSON database that is backed to disk
         explicit jsondb(const string &filename,
-            const nullable< json > &default_db = null);
+            const nullable< json > &default_db = null)
+        : jsondb(coerce<boost::filesystem::path>(filename), default_db) {
+        }
         /// Create a JSON database that is backed to disk
-        explicit jsondb(const boost::filesystem::wpath &filename,
+        explicit jsondb(const boost::filesystem::path &filename,
             const nullable< json > &default_db = null);
 
         /// Calculate the actual path that will be used
-        static boost::filesystem::wpath get_db_path(const boost::filesystem::wpath &);
+        static boost::filesystem::path get_db_path(const boost::filesystem::path &);
 
         /// The file name of a disk backed database
-        accessors< const nullable< boost::filesystem::wpath > > filename;
+        accessors< const nullable< boost::filesystem::path > > filename;
 
         /// Register a function to run after any transaction is successfully committed
         std::size_t post_commit(const_operation_signature_type);
@@ -140,8 +146,16 @@ namespace fostlib {
         friend class local;
 
     private:
+        /// This mutex is used to control access to the post commit list, and
+        /// to the underlying JSON data.
+        std::mutex control;
+        /// The post commit operations that are always run for this database.
+        /// Additions to this must also be controlled in the right way
         const_operations_type m_post_commit;
-        in_process< json > m_blob;
+        /// The actual JSON that is stored within the database. All access to this
+        /// must be through a lambda given to the strand. This avoids races on the
+        /// data
+        json data;
     };
 
 

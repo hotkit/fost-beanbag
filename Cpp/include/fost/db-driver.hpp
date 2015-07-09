@@ -18,6 +18,10 @@
 namespace fostlib {
 
 
+    /// The ORM module
+    extern const module c_fost_orm;
+
+
     /*
         Every database driver must implement these interfaces
     */
