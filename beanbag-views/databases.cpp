@@ -8,6 +8,7 @@
 
 #include "beanbag-views.hpp"
 #include <beanbag/databases.hpp>
+#include <fost/insert>
 #include <fost/unicode>
 
 
@@ -21,38 +22,46 @@ namespace {
 beanbag::jsondb_ptr beanbag::database(
     const fostlib::json &which
 ) {
-    fostlib::nullable<fostlib::string> which_name(which.get<fostlib::string>());
-    fostlib::string name;
-    if ( which_name.isnull() )
-        name = fostlib::coerce<fostlib::string>(which["name"]);
-    else
-        name = which_name.value();
+    try {
+        fostlib::nullable<fostlib::string> which_name(which.get<fostlib::string>());
+        fostlib::string name;
+        if ( which_name.isnull() )
+            name = fostlib::coerce<fostlib::string>(which["name"]);
+        else
+            name = which_name.value();
 
-    boost::mutex::scoped_lock lock(g_mutex);
-    databases_t::const_iterator loc(g_databases.find(name));
+        boost::mutex::scoped_lock lock(g_mutex);
+        databases_t::const_iterator loc(g_databases.find(name));
 
-    if ( loc == g_databases.end() ) {
-        fostlib::json tplate;
-        if ( which.has_key("template") )
-            tplate = fostlib::json::parse(fostlib::utf::load_file(
-                fostlib::coerce<boost::filesystem::wpath>(which["template"])));
-        else if ( which.has_key("initial") )
-            tplate = which["initial"];
-        else {
+        if ( loc == g_databases.end() ) {
+            if ( !which.has_key("filepath") )
+                throw fostlib::exceptions::null(
+                    "Beanbag configurations must specify a file path in the 'filepath' member");
+            fostlib::json tplate;
+            if ( which.has_key("template") )
+                tplate = fostlib::json::parse(fostlib::utf::load_file(
+                    fostlib::coerce<boost::filesystem::wpath>(which["template"])));
+            else if ( which.has_key("initial") )
+                tplate = which["initial"];
+            else {
+                boost::shared_ptr< fostlib::jsondb > db(
+                    new fostlib::jsondb(
+                        fostlib::coerce<fostlib::string>(which["filepath"])));
+                g_databases[name] = db;
+                return db;
+            }
             boost::shared_ptr< fostlib::jsondb > db(
                 new fostlib::jsondb(
-                    fostlib::coerce<fostlib::string>(which["filepath"])));
+                    fostlib::coerce<fostlib::string>(which["filepath"]),
+                    tplate) );
             g_databases[name] = db;
             return db;
-        }
-        boost::shared_ptr< fostlib::jsondb > db(
-            new fostlib::jsondb(
-                fostlib::coerce<fostlib::string>(which["filepath"]),
-                tplate) );
-        g_databases[name] = db;
-        return db;
-    } else
-        return loc->second;
+        } else
+            return loc->second;
+    } catch ( fostlib::exceptions::exception &e ) {
+        fostlib::insert(e.data(), "opening-beanbag", which);
+        throw;
+    }
 }
 
 
