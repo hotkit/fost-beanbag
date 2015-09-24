@@ -19,6 +19,7 @@ alias fost :
         ../fost-base//fost
         ../fost-internet//fost
         ../fost-orm//fost
+        beanbag-views
     ;
 explicit fost ;
 
