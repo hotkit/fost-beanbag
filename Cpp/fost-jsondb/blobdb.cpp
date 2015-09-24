@@ -7,15 +7,20 @@
 
 
 #include "fost-jsondb.hpp"
+#include <fost/counter>
 #include <fost/db>
+#include <fost/db-driver>
 #include <fost/log>
 #include <fost/unicode>
 #include <fost/jsondb.hpp>
+#include <fost/schema.hpp>
 
 #include <fost/exception/not_null.hpp>
 #include <fost/exception/out_of_range.hpp>
 #include <fost/exception/transaction_fault.hpp>
 #include <fost/exception/unexpected_eof.hpp>
+
+#include <future>
 
 
 using namespace fostlib;
@@ -25,6 +30,15 @@ namespace bfs = boost::filesystem;
 /*
     fostlib::jsondb
 */
+
+
+const module fostlib::c_fost_orm_jsondb(c_fost_orm, "jsondb");
+
+
+namespace {
+    performance p_created(c_fost_orm_jsondb, "db", "created");
+    performance p_loaded(c_fost_orm_jsondb, "db", "loaded");
+}
 
 
 #ifdef DEBUG
@@ -45,13 +59,10 @@ const setting<string> fostlib::c_jsondb_root(
 
 
 namespace {
-#if BOOST_FILESYSTEM_VERSION >= 3
-    const bfs::wpath ext_backup(".backup");
-    const bfs::wpath ext_temp(".tmp");
-#else
-    const std::wstring ext_backup(L".backup");
-    const std::wstring ext_temp(L".tmp");
- #endif
+    using lock_type = std::unique_lock<std::mutex>;
+
+    const bfs::path ext_backup(".backup");
+    const bfs::path ext_temp(".tmp");
 
 
     void do_save( const json &j, const bfs::wpath &path ) {
@@ -69,43 +80,31 @@ namespace {
         bfs::wpath tmp(path);
         tmp.replace_extension(ext_temp);
         utf::save_file(tmp, json::unparse(j, c_jsondb_pretty_print.value()));
-#if BOOST_FILESYSTEM_VERSION < 3
-        if ( bfs::exists(path) )
-            bfs::remove(path);
-#endif
         bfs::rename(tmp, path);
     }
-    json *construct( const bfs::wpath &filename, const nullable< json > &default_db ) {
-        string content(utf::load_file(filename, string()));
-        try {
-            if ( content.empty() ) {
-                do_save(default_db.value(), filename);
-                return new json(default_db.value());
-            } else {
-                return new json(json::parse(content));
-            }
-        } catch ( exceptions::exception &e ) {
-            insert(e.data(), "blobdb", "filename", filename);
-            insert(e.data(), "blobdb", "file-content", content);
-            insert(e.data(), "blobdb", "initial-data", default_db);
-            throw;
+}
+
+
+fostlib::jsondb::jsondb(const bfs::wpath &fn, const nullable< json > &default_db)
+: filename(get_db_path(fn)) {
+    /// We can safely access the JSON directly here because no other operation
+    /// is possilbe until the constructor returnes
+    string content(utf::load_file(filename().value(), string()));
+    try {
+        if ( content.empty() ) {
+            do_save(default_db.value(), filename().value());
+            data = default_db.value();
+            ++p_created;
+        } else {
+            data = json::parse(content);
+            ++p_loaded;
         }
+    } catch ( exceptions::exception &e ) {
+        insert(e.data(), "blobdb", "filename", filename().value());
+        insert(e.data(), "blobdb", "file-content", content);
+        insert(e.data(), "blobdb", "initial-data", default_db);
+        throw;
     }
-}
-
-
-fostlib::jsondb::jsondb()
-: m_blob( new json ) {
-}
-
-fostlib::jsondb::jsondb( const string &fn, const nullable< json > &default_db )
-: filename(get_db_path(coerce<boost::filesystem::wpath>(fn))),
-        m_blob(boost::lambda::bind(construct, filename().value(), default_db)) {
-}
-
-fostlib::jsondb::jsondb( const bfs::wpath &fn, const nullable< json > &default_db )
-: filename(get_db_path(fn)),
-        m_blob(boost::lambda::bind(construct, filename().value(), default_db)) {
 }
 
 
@@ -129,10 +128,6 @@ std::size_t fostlib::jsondb::post_commit(
 
 
 namespace {
-    json dump( json &j, const jcursor &p ) {
-        return json( j[ p ] );
-    }
-
     void do_insert( json &db, const jcursor &k, const json &v ) {
         k.insert( db, v );
     }
@@ -161,18 +156,6 @@ namespace {
         else
             throw exceptions::null( L"This key position has already been deleted" );
     }
-
-    json &do_commit( json &j, const jsondb::operations_type &ops ) {
-        json db( j );
-        try {
-            for ( jsondb::operations_type::const_iterator op( ops.begin() ); op != ops.end(); ++op )
-                (*op)( j );
-        } catch ( ... ) {
-            j = db;
-            throw;
-        }
-        return j;
-    }
 }
 
 
@@ -191,8 +174,8 @@ fostlib::jsondb::local::local(local &&l)
 
 
 void fostlib::jsondb::local::refresh() {
-    m_local = m_db.m_blob.synchronous< json >(
-        boost::lambda::bind(dump, boost::lambda::_1, m_position));
+    lock_type lock(m_db.control);
+    m_local = m_db.data[m_position];
 }
 
 
@@ -224,31 +207,41 @@ void fostlib::jsondb::local::commit() {
     for ( auto fn : m_pre_commit )
         transformation(fn);
     m_pre_commit.clear();
-    // Add save to the end of the transformation
+    /// Add save to the end of the transformation. Access to the
+    /// filename is safe because it's a const member of m_db.
     if ( !m_db.filename().isnull() ) {
         transformation(
-            boost::lambda::bind(
-                do_save, boost::lambda::_1, m_db.filename().value()));
+            [this](json &j) {
+                do_save(j, m_db.filename().value());
+            });
     }
     try {
-        // Run the transformations and commit
-        m_local = m_db.m_blob.synchronous< json >(
-            boost::lambda::bind(
-                do_commit, boost::lambda::_1, m_operations));
-        // Run transaction post-commit hooks
-        for ( auto f_it(m_post_commit.begin());
-                f_it != m_post_commit.end(); ++f_it )
-             (*f_it)(m_local);
+        /// All of the following runs inside the lock because we can't
+        /// access anything on m_db without holding it. This forces
+        /// serialisation of all post commit code as well, which should
+        /// make that easier to reason about
+        lock_type lock(m_db.control);
+        json db(m_db.data);
+        try {
+            for ( auto op : m_operations )
+                (op)(m_db.data);
+            m_operations.clear();
+        } catch ( ... ) {
+            m_db.data = db;
+            throw;
+        }
+        m_local = m_db.data[m_position];
+        /// Run transaction post-commit hooks
+        for ( auto fn : m_post_commit )
+                fn(m_local);
         m_post_commit.clear();
-        // Run database post-commit hooks
-        for ( auto f_it(m_db.m_post_commit.begin());
-                f_it != m_db.m_post_commit.end(); ++f_it )
-            (*f_it)(m_local);
+        /// Run database post-commit hooks
+        for ( auto fn : m_db.m_post_commit )
+            fn(m_db.data);
     } catch ( ... ) {
         rollback();
         throw;
     }
-    m_operations.clear();
 }
 
 
