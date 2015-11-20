@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2013,Felspar Co Ltd. http://support.felspar.com/
+    Copyright 1999-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -9,14 +9,18 @@
 #include "fost-schema.hpp"
 #include <fost/db.hpp>
 
+#include <fost/insert>
+#include <fost/push_back>
+
 
 fostlib::exceptions::data_driver::data_driver( const string&m, const string &d ) throw ()
 : exception( m ) {
-    m_info << L"Driver: " << d << std::endl;
+    fostlib::insert(data(), "driver", d);
 }
-fostlib::exceptions::data_driver::data_driver( const string &m, const string &d1, const string &d2 ) throw ()
+fostlib::exceptions::data_driver::data_driver(const string &m, const string &d1, const string &d2) throw ()
 : exception( m ) {
-    m_info << L"Driver 1: " << d1 << L"\nDriver 2: " << d2 << std::endl;
+    fostlib::push_back(data(), "driver", d1);
+    fostlib::push_back(data(), "driver", d2);
 }
 fostlib::wliteral const fostlib::exceptions::data_driver::message() const throw () {
     return L"Problem with database driver.";
@@ -27,7 +31,7 @@ fostlib::wliteral const fostlib::exceptions::data_driver::message() const throw 
 fostlib::exceptions::no_attribute::no_attribute( const string &attribute ) throw ()
 : exception( L"Missing attribute" ) {
     try {
-        info() << L"Attribute: " << attribute << std::endl;
+        fostlib::insert(data(), "attribute", attribute);
     } catch ( ... ) {
         absorb_exception();
     }
@@ -41,7 +45,7 @@ fostlib::wliteral const fostlib::exceptions::no_attribute::message() const throw
 fostlib::exceptions::query_failure::query_failure( const string &m, const fostlib::meta_instance &i ) throw ()
 : exception( m ) {
     try {
-        info() << L"Meta instance: " << i.fq_name() << std::endl;
+        fostlib::insert(data(), "meta-instance", i.fq_name());
     } catch ( ... ) {
         absorb_exception();
     }

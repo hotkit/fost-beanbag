@@ -183,14 +183,12 @@ namespace {
                     if ( g_interfaces().find( driver ).empty() )
                         throw exceptions::data_driver( L"No driver found even after loading driver file", driver );
                 } catch ( exceptions::exception &e ) {
-                    e.info() << L"Database driver file " << dll.value() << L"\nDrivers available: ";
+                    insert(e.data(), "database", "driver", dll.value());
+                    insert(e.data(), "drivers", json::array_t());
                     database_driver_store::keys_t k(g_interfaces().keys());
-                    if ( k.size() )
-                        for ( database_driver_store::keys_t::const_iterator i(k.begin()); i != k.end(); ++i )
-                            e.info() << *i << L" ";
-                    else
-                        e.info() << L"[no drivers are available]";
-                    e.info() << std::endl;
+                    for ( const auto &i : k ) {
+                        push_back(e.data(), "drivers", i);
+                    }
                     throw;
                 }
         }

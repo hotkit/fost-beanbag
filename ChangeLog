@@ -1,3 +1,6 @@
+2015-11-20  Kirit Saelensminde  <kirit@felspar.com>
+ Removed use of deprecated Fost APIs.
+
 2015-06-21  Kirit Saelensminde  <kirit@felspar.com>
  Use a mutex to serialise access to the beanbag data rather than a separate thread.
 
