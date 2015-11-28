@@ -17,7 +17,9 @@ namespace {
     struct setup {
         setup()
         : view("beanbag.test"), status(0) {
-            fostlib::insert(options, "database", "beanbag.test");
+            fostlib::insert(options, "database", "name", "beanbag.test");
+            fostlib::insert(options, "database", "filepath", fostlib::unique_filename());
+            fostlib::insert(options, "database", "initial", fostlib::json::object_t());
             fostlib::insert(options, "html", "template",
                 "../../usr/share/beanbag/raw/template.html");
         }

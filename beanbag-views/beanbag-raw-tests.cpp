@@ -24,7 +24,9 @@ namespace {
     struct setup {
         setup(bool with_template = true)
         : view(N), status(0) {
-            fostlib::insert(options, "database", N);
+            fostlib::insert(options, "database", "name", N);
+            fostlib::insert(options, "database", "filepath", fostlib::unique_filename());
+            fostlib::insert(options, "database", "initial", fostlib::json::object_t());
             if ( with_template )
                 fostlib::insert(options, "html", "template",
                     "../fost-beanbag/beanbag-views/beanbag-raw-tests.html");
