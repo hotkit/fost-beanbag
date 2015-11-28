@@ -92,9 +92,14 @@ fostlib::jsondb::jsondb(const bfs::wpath &fn, const nullable< json > &default_db
     string content(utf::load_file(filename().value(), string()));
     try {
         if ( content.empty() ) {
-            do_save(default_db.value(), filename().value());
-            data = default_db.value();
-            ++p_created;
+            if ( default_db.isnull() ) {
+                throw exceptions::null("Initial database data must be provided "
+                    "when database is backed to the file system and the file is empty");
+            } else {
+                do_save(default_db.value(), filename().value());
+                data = default_db.value();
+                ++p_created;
+            }
         } else {
             data = json::parse(content);
             ++p_loaded;
