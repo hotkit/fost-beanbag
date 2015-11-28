@@ -36,7 +36,6 @@ namespace {
 beanbag::jsondb_ptr beanbag::database(
     const fostlib::json &which
 ) {
-    static std::atomic<int64_t> created{0};
     try {
         fostlib::nullable<fostlib::string> which_name(which.get<fostlib::string>());
         fostlib::string name;
@@ -51,7 +50,6 @@ beanbag::jsondb_ptr beanbag::database(
                     throw fostlib::exceptions::null(
                         "Beanbag configurations must specify a file path in the 'filepath' member");
                 fostlib::json tplate;
-                ++created;
                 if ( which.has_key("template") ) {
                     tplate = fostlib::json::parse(fostlib::utf::load_file(
                         fostlib::coerce<boost::filesystem::wpath>(which["template"])));
