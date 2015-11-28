@@ -36,12 +36,13 @@ namespace {
         fostlib::host host;
         int status;
         boost::shared_ptr<fostlib::mime> response;
+        beanbag::jsondb_ptr dbp;
 
         void do_request(
                 const fostlib::string &method,
                 const fostlib::string &pathname,
                 const fostlib::string &body_data = fostlib::string() ) {
-            auto dbp = beanbag::test_database(N, database);
+            dbp = beanbag::test_database(N, database);
             auto body = std::make_unique<fostlib::binary_body>(
                     fostlib::coerce< std::vector<unsigned char> >(
                         fostlib::coerce<fostlib::utf8_string>(body_data)),

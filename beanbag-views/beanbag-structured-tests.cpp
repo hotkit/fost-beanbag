@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -28,12 +28,13 @@ namespace {
         fostlib::host host;
         int status;
         boost::shared_ptr<fostlib::mime> response;
+        beanbag::jsondb_ptr dbp;
 
         void do_request(
                 const fostlib::string &method,
                 const fostlib::string &pathname,
                 const fostlib::string &body_data = fostlib::string() ) {
-            auto dbp = beanbag::test_database("beanbag.test", database);
+            dbp = beanbag::test_database("beanbag.test", database);
             auto body = std::make_unique<fostlib::binary_body>(
                     fostlib::coerce< std::vector<unsigned char> >(
                         fostlib::coerce<fostlib::utf8_string>(body_data)),
