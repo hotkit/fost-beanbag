@@ -119,20 +119,9 @@ beanbag::jsondb_ptr beanbag::database(
 
 
 void beanbag::remove(beanbag::jsondb_ptr db) {
-    throw fostlib::exceptions::not_implemented(__FUNCTION__);
-//     { // Don't hold the lock while we hit the file system
-//         boost::mutex::scoped_lock lock(g_mutex);
-//         for ( databases_t::iterator iter(g_databases.begin()); iter != g_databases.end(); ) {
-//             if ( iter->second == db ) {
-//                 g_databases.erase(iter++); // Note post increment
-//             } else {
-//                 ++iter;
-//             }
-//         }
-//     }
-//     if ( not db->filename().isnull() ) {
-//         boost::filesystem::remove(db->filename().value());
-//     }
+    if ( not db->filename().isnull() ) {
+        boost::filesystem::remove(db->filename().value());
+    }
 }
 
 
