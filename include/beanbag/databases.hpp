@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -31,7 +31,7 @@ namespace beanbag {
 
     /// Insert a specified JSON blob into the databases with the specified name. Useful for testing.
     FOST_BEANBAG_DECLSPEC
-    void test_database(const fostlib::string &name, const fostlib::json &blob);
+    jsondb_ptr test_database(const fostlib::string &name, const fostlib::json &blob);
 
 
 }

@@ -17,9 +17,7 @@ namespace {
     struct setup {
         setup()
         : view("beanbag.test"), status(0) {
-            fostlib::insert(options, "database", "name", "beanbag.test");
-            fostlib::insert(options, "database", "filepath", fostlib::unique_filename());
-            fostlib::insert(options, "database", "initial", fostlib::json::object_t());
+            fostlib::insert(options, "database", "beanbag.test");
             fostlib::insert(options, "html", "template",
                 "../../usr/share/beanbag/raw/template.html");
         }
@@ -35,7 +33,7 @@ namespace {
                 const fostlib::string &method,
                 const fostlib::string &pathname,
                 const fostlib::string &body_data = fostlib::string() ) {
-            beanbag::test_database("beanbag.test", database);
+            auto dbp = beanbag::test_database("beanbag.test", database);
             auto body = std::make_unique<fostlib::binary_body>(
                     fostlib::coerce< std::vector<unsigned char> >(
                         fostlib::coerce<fostlib::utf8_string>(body_data)),

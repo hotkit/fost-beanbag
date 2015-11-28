@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -24,9 +24,7 @@ namespace {
     struct setup {
         setup(bool with_template = true)
         : view(N), status(0) {
-            fostlib::insert(options, "database", "name", N);
-            fostlib::insert(options, "database", "filepath", fostlib::unique_filename());
-            fostlib::insert(options, "database", "initial", fostlib::json::object_t());
+            fostlib::insert(options, "database", N);
             if ( with_template )
                 fostlib::insert(options, "html", "template",
                     "../fost-beanbag/beanbag-views/beanbag-raw-tests.html");
@@ -43,7 +41,7 @@ namespace {
                 const fostlib::string &method,
                 const fostlib::string &pathname,
                 const fostlib::string &body_data = fostlib::string() ) {
-            beanbag::test_database(N, database);
+            auto dbp = beanbag::test_database(N, database);
             auto body = std::make_unique<fostlib::binary_body>(
                     fostlib::coerce< std::vector<unsigned char> >(
                         fostlib::coerce<fostlib::utf8_string>(body_data)),

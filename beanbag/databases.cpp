@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -136,11 +136,14 @@ void beanbag::remove(beanbag::jsondb_ptr db) {
 }
 
 
-void beanbag::test_database(const fostlib::string &name, const fostlib::json &blob) {
+beanbag::jsondb_ptr beanbag::test_database(
+    const fostlib::string &name, const fostlib::json &blob
+) {
     jsondb_ptr db(boost::make_shared<fostlib::jsondb>());
     fostlib::jsondb::local transaction(*db);
     transaction.insert(fostlib::jcursor(), blob);
     transaction.commit();
     g_databases.insert_or_assign(name, db);
+    return db;
 }
 
