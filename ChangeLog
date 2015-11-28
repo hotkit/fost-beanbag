@@ -1,3 +1,6 @@
+2015-11-20  Kirit Saelensminde  <kirit@felspar.com>
+ Removed use of deprecated Fost APIs.
+
 2015-06-14  Kirit Saelensminde  <kirit@felspar.com>
  * Fixed up tests to remove use of `std::auto_ptr`.
  * Improved error reporting when opening a beanbag.
