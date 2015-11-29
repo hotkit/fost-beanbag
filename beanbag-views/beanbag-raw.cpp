@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -128,10 +128,31 @@ int beanbag::raw_view::do_412_check(int fallback,
     if ( req.data()->headers().exists("If-Match") ) {
         fostlib::string ifmatch = req.data()->headers()["If-Match"].value();
         if ( ifmatch  == "*" ) {
-            if ( !db.has_key(position) )
+            if ( !db.has_key(position) ) {
+                fostlib::log::debug(fostlib::c_fost_beanbag_views)
+                    ("", "If-Match failed wildcard check")
+                    ("If-Match", ifmatch)
+                    ("content", db.data())
+                    ("position", position);
                 return 412;
-        } else if ( ifmatch.find(etag(db[position])) == fostlib::string::npos )
+            }
+        } else if ( db.has_key(position) || position.size() == 0u ) {
+            const auto calculated = etag(db[position]);
+            if ( ifmatch.find(calculated) == fostlib::string::npos ) {
+                fostlib::log::debug(fostlib::c_fost_beanbag_views)
+                    ("", "If-Match failed eTag check")
+                    ("If-Match", ifmatch)
+                    ("calculated", calculated);
+                return 412;
+            }
+        } else {
+            fostlib::log::debug(fostlib::c_fost_beanbag_views)
+                ("", "If-Match failed eTag check because database path doesn't exist")
+                ("If-Match", ifmatch)
+                ("content", db.data())
+                ("position", position);
             return 412;
+        }
     }
     return fallback;
 }

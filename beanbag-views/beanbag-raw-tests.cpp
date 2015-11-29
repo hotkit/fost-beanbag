@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -36,12 +36,13 @@ namespace {
         fostlib::host host;
         int status;
         boost::shared_ptr<fostlib::mime> response;
+        beanbag::jsondb_ptr dbp;
 
         void do_request(
                 const fostlib::string &method,
                 const fostlib::string &pathname,
                 const fostlib::string &body_data = fostlib::string() ) {
-            beanbag::test_database(N, database);
+            dbp = beanbag::test_database(N, database);
             auto body = std::make_unique<fostlib::binary_body>(
                     fostlib::coerce< std::vector<unsigned char> >(
                         fostlib::coerce<fostlib::utf8_string>(body_data)),
@@ -180,6 +181,18 @@ FSL_TEST_FUNCTION(conditional_put_does_not_match) {
     put.headers.set("Accept", "application/json");
     put.headers.set("If-Match", "\"invalid-etag-value\"");
     put.do_request("PUT", "/", "[]");
+    FSL_CHECK_EQ(put.status, 412);
+    FSL_CHECK_EQ(
+        put.response->headers()["Content-Type"].value(),
+        "text/html");
+}
+
+
+FSL_TEST_FUNCTION(conditional_put_does_not_match_path_does_not_exist) {
+    setup<> put;
+    put.headers.set("Accept", "application/json");
+    put.headers.set("If-Match", "\"invalid-etag-value\"");
+    put.do_request("PUT", "/path/", "[]");
     FSL_CHECK_EQ(put.status, 412);
     FSL_CHECK_EQ(
         put.response->headers()["Content-Type"].value(),

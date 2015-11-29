@@ -18,7 +18,7 @@
 namespace beanbag {
 
 
-    extern const class FOST_BEANBAG_DECLSPEC raw_view :
+    extern const class FOST_BEANBAG_VIEWS_DECLSPEC raw_view :
             public fostlib::urlhandler::view {
     public:
         /// Construct a raw view giving it the provided name
