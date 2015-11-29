@@ -188,6 +188,18 @@ FSL_TEST_FUNCTION(conditional_put_does_not_match) {
 }
 
 
+FSL_TEST_FUNCTION(conditional_put_does_not_match_path_does_not_exist) {
+    setup<> put;
+    put.headers.set("Accept", "application/json");
+    put.headers.set("If-Match", "\"invalid-etag-value\"");
+    put.do_request("PUT", "/path/", "[]");
+    FSL_CHECK_EQ(put.status, 412);
+    FSL_CHECK_EQ(
+        put.response->headers()["Content-Type"].value(),
+        "text/html");
+}
+
+
 FSL_TEST_FUNCTION(conditional_put_matches_wildcard) {
     setup<> put;
     fostlib::insert(put.database, "path", fostlib::json());
