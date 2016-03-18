@@ -1,5 +1,5 @@
 /*
-    Copyright 2012 Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2015 Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -17,7 +17,8 @@
 namespace beanbag {
 
 
-    class FOST_BEANBAG_DECLSPEC structured_view : public raw_view {
+    class FOST_BEANBAG_VIEWS_DECLSPEC structured_view :
+            public raw_view {
         fostlib::jcursor relocated(
             fostlib::jsondb::local &db, fostlib::jcursor position) const;
     public:

@@ -1,0 +1,7 @@
+
+fost-lib-autotest beanbag
+    :
+        beanbag
+    :
+        ../../fost-orm/Cpp/fost-jsondb
+    ;
