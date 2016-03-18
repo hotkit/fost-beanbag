@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2010, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2008-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -8,8 +8,9 @@
 
 #include "fost-schema.hpp"
 #include <fost/attributes.hpp>
-#include <fost/thread.hpp>
 #include <fost/datetime>
+#include <fost/insert>
+#include <fost/threading>
 
 #include <fost/exception/null.hpp>
 #include <fost/exception/out_of_range.hpp>
@@ -60,15 +61,17 @@ fostlib::field_base::~field_base() {
         registry().remove( string(m_ti_nullable->name()), this );
 }
 
-const field_base &fostlib::field_base::fetch( const string &n ) {
+const field_base &fostlib::field_base::fetch(const string &n) {
     try {
         registry_type::found_t f = registry().find( n );
-        if ( f.size() != 1 )
-            throw exceptions::out_of_range< std::size_t >( L"There should only be one field of the given type found", 1, 1, f.size() );
-        else
+        if ( f.size() != 1 ) {
+            throw exceptions::out_of_range< std::size_t >(
+                "There should only be one field of the given type found", 1, 1, f.size() );
+        } else {
             return **f.begin();
+        }
     } catch ( exceptions::exception &e ) {
-        e.info() << L"Fetching a field_base of type: " << n << std::endl;
+        insert(e.data(), "fetching-field_base", "type", n);
         throw;
     }
 }

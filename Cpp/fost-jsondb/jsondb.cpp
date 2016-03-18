@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2012, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 1999-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -9,6 +9,7 @@
 #include "fost-jsondb.hpp"
 #include <fost/jsondb.hpp>
 #include <fost/db-driver>
+#include <fost/insert>
 #include <fost/unicode>
 
 #include <fost/exception/not_null.hpp>
@@ -78,7 +79,7 @@ namespace {
                             db.reset(
                                 new jsondb(coerce<boost::filesystem::wpath>(file.value())));
                     } catch ( exceptions::exception &e ) {
-                        e.info() << L"Whilst trying to load the JSON database file " << file.value() << std::endl;
+                        fostlib::insert(e.data(), "database", "filename", file.value());
                         throw;
                     }
                 }
@@ -87,7 +88,7 @@ namespace {
                     loc.insert( jcursor( L"database" ), json() ).commit();
                 p = databases.insert( std::make_pair( dbname, db ) ).first;
             } catch ( exceptions::exception &e ) {
-                e.info() << L"Whilst creating or loading the database '" << dbname << L"'" << std::endl;
+                fostlib::insert(e.data(), "database", "name", dbname);
                 throw;
             }
         }
@@ -212,7 +213,7 @@ void jsonInterface::create_database( dbconnection &dbc, const string &name ) con
                 L"The requested database already exists", master_schema->database
             );
     } catch ( exceptions::exception &e ) {
-        e.info() << L"Whilst trying to make the database " << name << std::endl;
+        fostlib::insert(e.data(), "database", "name", name);
         throw;
     }
 }

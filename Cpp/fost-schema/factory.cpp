@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2015, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2015, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -84,7 +84,8 @@ const detail::factory_base &fostlib::detail::find_factory( const string &name ) 
             throw exceptions::out_of_range< std::size_t >( L"Factory could not be found for name", 1, 1, factories.size() );
         return **factories.begin();
     } catch ( exceptions::exception &e ) {
-        e.info() << L"Whilst searching for factory with name " << name << std::endl;
+        fostlib::insert(e.data(), "factory", "name", name);
         throw;
     }
 }
+
