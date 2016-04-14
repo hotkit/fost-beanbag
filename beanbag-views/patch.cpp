@@ -11,3 +11,8 @@
 #include <fost/log>
 
 
+beanbag::patch::transforms beanbag::patch::operations(const fostlib::json &ops) {
+    transforms lambdas;
+    return lambdas;
+}
+
