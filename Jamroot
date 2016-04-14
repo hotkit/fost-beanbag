@@ -9,6 +9,7 @@ use-project fost-web : ../fost-web/ ;
 
 fost-project beanbag
     :
+        <include>../cord/include
         <include>../fost-internet/Cpp/include
         <include>../fost-orm/Cpp/include
         <include>../fost-web/Cpp/include
