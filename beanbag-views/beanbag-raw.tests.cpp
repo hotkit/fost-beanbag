@@ -27,7 +27,7 @@ namespace {
             fostlib::insert(options, "database", N);
             if ( with_template )
                 fostlib::insert(options, "html", "template",
-                    "../fost-beanbag/beanbag-views/beanbag-raw-tests.html");
+                    "../fost-beanbag/beanbag-views/beanbag-raw.tests.html");
         }
 
         const V view;
