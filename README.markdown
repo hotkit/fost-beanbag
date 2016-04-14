@@ -78,7 +78,7 @@ When the operations are executed either all or none of them transform the beanba
 Add a number. If the path location is empty then the amount is placed at that location, otherwise it is added to that location.
 
     {
-        "@context": "op:add",
+        "!": "op:add",
         "path": ["path", "to", "counter"],
         "amount": 3
     }
@@ -88,7 +88,7 @@ Add a number. If the path location is empty then the amount is placed at that lo
 The current time is placed into the requested position in ISO format.
 
     {
-        "@context": "op:now",
+        "!": "op:now",
         "path"; ["path", "to", "time"]
     }
 
@@ -97,7 +97,7 @@ The current time is placed into the requested position in ISO format.
 The passed in data is unconditionally set to the specified value.
 
     {
-        "@context": "op:set",
+        "!": "op:set",
         "path": ["path", "to", "set"],
         "value": {"example": "value"}
     }
