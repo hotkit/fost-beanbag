@@ -17,7 +17,7 @@ namespace beanbag {
 
 
         /// Transformation function that is used to build the database transactions
-        using transform_fn = std::function<void(jsondb_ptr)>;
+        using transform_fn = std::function<void(fostlib::jsondb::local&)>;
 
 
         /// Register instances of these to handle individual transformations

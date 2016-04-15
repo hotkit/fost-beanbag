@@ -18,7 +18,10 @@ namespace {
         }
 
         transform_fn operator () (const fostlib::json &js) const {
-            return transform_fn();
+            return [pos = fostlib::coerce<fostlib::jcursor>(js["path"]),
+                        value=js["value"]](fostlib::jsondb::local &trans) {
+                    trans.set(pos, value);
+                };
         }
     } c_set;
 

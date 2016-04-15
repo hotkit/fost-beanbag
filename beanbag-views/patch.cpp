@@ -28,8 +28,15 @@ namespace {
 
 beanbag::patch::transforms beanbag::patch::operations(const fostlib::json &ops) {
     transforms lambdas;
-    if ( ops.isobject() ) {
+    if ( ops.isnull() ) {
+        // This is OK, there's just nothing to do
+    } else if ( ops.isobject() ) {
         lambdas.push_back(operation(ops));
+    } else if ( ops.isarray() ) {
+
+    } else {
+        throw fostlib::exceptions::not_implemented(__FUNCTION__,
+            "Cannot deal with this type of PATCH opeation");
     }
     return lambdas;
 }
