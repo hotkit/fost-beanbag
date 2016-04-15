@@ -33,7 +33,9 @@ beanbag::patch::transforms beanbag::patch::operations(const fostlib::json &ops) 
     } else if ( ops.isobject() ) {
         lambdas.push_back(operation(ops));
     } else if ( ops.isarray() ) {
-
+        for ( const auto &op : ops ) {
+            lambdas.push_back(operation(op));
+        }
     } else {
         throw fostlib::exceptions::not_implemented(__FUNCTION__,
             "Cannot deal with this type of PATCH opeation");
