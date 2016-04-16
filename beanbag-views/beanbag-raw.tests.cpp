@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2015, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2016, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -222,6 +222,25 @@ FSL_TEST_FUNCTION(conditional_put_does_not_match_wildcard) {
     FSL_CHECK_EQ(
         put.response->headers()["Content-Type"].value(),
         "text/html");
+}
+
+
+FSL_TEST_FUNCTION(patch) {
+    setup<> patch;
+    fostlib::insert(patch.database, "path", fostlib::json::object_t());
+    fostlib::json transforms;
+    fostlib::insert(transforms, "transforms", "!", "op:set");
+    fostlib::push_back(transforms, "transforms", "path", "location");
+    fostlib::insert(transforms, "transforms", "value", true);
+
+    fostlib::json expected;
+    fostlib::insert(expected, "path", "location", true);
+
+    patch.do_request("PATCH", "/path/", fostlib::json::unparse(transforms, true));
+
+    FSL_CHECK_EQ(patch.status, 200);
+    fostlib::jsondb::local content(*patch.dbp);
+    FSL_CHECK_EQ(content.data(), expected);
 }
 
 
