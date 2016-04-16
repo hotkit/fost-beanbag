@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2015, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2008-2016, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -171,10 +171,23 @@ fostlib::jsondb::local::local( jsondb &db, const jcursor &pos )
 
 
 fostlib::jsondb::local::local(local &&l)
-: m_db(l.m_db), m_local(std::move(l.m_local)),
-        m_operations(std::move(l.m_operations)),
-        m_pre_commit(std::move(l.m_pre_commit)),
-        m_post_commit(std::move(l.m_post_commit)) {
+: m_db(l.m_db),
+    m_local(std::move(l.m_local)),
+    m_position(std::move(l.m_position)),
+    m_operations(std::move(l.m_operations)),
+    m_pre_commit(std::move(l.m_pre_commit)),
+    m_post_commit(std::move(l.m_post_commit))
+{
+}
+
+
+void fostlib::jsondb::local::rebase(const jcursor &pos) {
+    if ( m_operations.size() || m_pre_commit.size() || m_post_commit.size() ) {
+        throw fostlib::exceptions::not_implemented(
+            __FUNCTION__, "This transaction has already been used");
+    }
+    m_position = pos;
+    refresh();
 }
 
 
@@ -216,7 +229,7 @@ void fostlib::jsondb::local::commit() {
     /// filename is safe because it's a const member of m_db.
     if ( !m_db.filename().isnull() ) {
         transformation(
-            [this](json &j) {
+            [this](const jcursor &, json &j) {
                 do_save(j, m_db.filename().value());
             });
     }
@@ -229,7 +242,7 @@ void fostlib::jsondb::local::commit() {
         json db(m_db.data);
         try {
             for ( auto op : m_operations )
-                (op)(m_db.data);
+                (op)(m_position, m_db.data);
             m_operations.clear();
         } catch ( ... ) {
             m_db.data = db;
@@ -238,11 +251,11 @@ void fostlib::jsondb::local::commit() {
         m_local = m_db.data[m_position];
         /// Run transaction post-commit hooks
         for ( auto fn : m_post_commit )
-                fn(m_local);
+                fn(jcursor(), m_local);
         m_post_commit.clear();
         /// Run database post-commit hooks
         for ( auto fn : m_db.m_post_commit )
-            fn(m_db.data);
+            fn(m_position, m_db.data);
     } catch ( ... ) {
         rollback();
         throw;
@@ -258,9 +271,11 @@ void fostlib::jsondb::local::rollback() {
 }
 
 
-jsondb::local &fostlib::jsondb::local::insert( const jcursor &position, const json &item ) {
-    do_insert( m_local, position, item );
-    m_operations.push_back( boost::lambda::bind( do_insert, boost::lambda::_1, position, item ) );
+jsondb::local &fostlib::jsondb::local::insert(const jcursor &position, const json &item) {
+    do_insert(m_local, position, item);
+    transformation([position, item](const auto &jc, auto &js) {
+            do_insert(js, jc / position, item);
+        });
     return *this;
 }
 
@@ -269,33 +284,41 @@ jsondb::local &fostlib::jsondb::local::push_back(
     const jcursor &position, const json &item
 ) {
     do_push_back( m_local, position, item );
-    m_operations.push_back(boost::lambda::bind(
-        do_push_back, boost::lambda::_1, position, item));
+    transformation([position, item](const auto &jc, auto &js) {
+            do_push_back(js, jc / position, item);
+        });
     return *this;
 }
 
 
-jsondb::local &fostlib::jsondb::local::update( const jcursor &position, const json &item ) {
-    json oldvalue = m_local[ position ];
-    position.replace( m_local, item );
+jsondb::local &fostlib::jsondb::local::update(const jcursor &position, const json &item) {
+    auto old = m_local[position];
+    position.replace(m_local, item);
     transformation(
-        boost::lambda::bind( do_update, boost::lambda::_1, position, item, oldvalue ));
+        [position, item, old = std::move(old)](const auto &jc, auto &js) {
+            do_update(js, jc / position, item, old);
+        });
     return *this;
 }
 
 
-jsondb::local &fostlib::jsondb::local::set( const jcursor &position, const json &item ) {
-    transformation( boost::lambda::bind( do_set,
-        boost::lambda::_1, position, item ) );
-    return *this;
-}
-
-
-jsondb::local &fostlib::jsondb::local::remove( const jcursor &position ) {
-    json oldvalue = m_local[ position ];
-    position.del_key( m_local );
+jsondb::local &fostlib::jsondb::local::set(const jcursor &position, const json &item) {
+    do_set(m_local, position, item);
     transformation(
-        boost::lambda::bind( do_remove, boost::lambda::_1, position, oldvalue ) );
+        [position, item](const auto &jc, auto &js) {
+            do_set(js, jc / position, item);
+        });
+    return *this;
+}
+
+
+jsondb::local &fostlib::jsondb::local::remove(const jcursor &position) {
+    auto old = m_local[position];
+    position.del_key(m_local);
+    transformation(
+        [position, old = std::move(old)](const auto &jc, auto &js) {
+            do_remove(js, jc / position, old);
+        });
     return *this;
 }
 

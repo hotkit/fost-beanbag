@@ -1,5 +1,5 @@
 /*
-    Copyright 2007-2015, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2007-2016, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -153,11 +153,10 @@ FSL_TEST_FUNCTION( remove ) {
     FSL_CHECK_EXCEPTION( local.remove( jcursor( L"not a key" ) ), exceptions::json_error& );
 
     // Let's delete and update
-    FSL_CHECK_NOTHROW( local
+    FSL_CHECK_NOTHROW(local
         .remove( jcursor( L"goodbye" ) )
         .update( jcursor( L"hello" ), L"world" )
-        .commit()
-    );
+        .commit());
     FSL_CHECK_EQ( local[ L"hello" ], json( L"world" ) );
     FSL_CHECK( !local.has_key( L"goodbye"  ) );
 }
@@ -199,7 +198,7 @@ FSL_TEST_FUNCTION( remove_fails_after_change ) {
 
 namespace {
     unsigned int transformation_run = 0;
-    void transformation_fn(json &) {
+    void transformation_fn(const jcursor &, json &) {
         ++transformation_run;
     }
 }
@@ -222,7 +221,7 @@ FSL_TEST_FUNCTION( transformation ) {
 
 namespace {
     unsigned int pre_commit_run = 0;
-    void pre_commit_fn(json &) {
+    void pre_commit_fn(const jcursor &, json &) {
         ++pre_commit_run;
     }
 }
@@ -247,7 +246,7 @@ FSL_TEST_FUNCTION(pre_commit_transaction) {
 
 namespace {
     unsigned int post_commit_run = 0;
-    void post_commit_fn(const json &) {
+    void post_commit_fn(const jcursor &, const json &) {
         ++post_commit_run;
     }
 }
