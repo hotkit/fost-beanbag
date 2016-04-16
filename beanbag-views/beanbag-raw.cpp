@@ -181,6 +181,7 @@ int beanbag::raw_view::patch(
             op(db);
         }
         db.commit();
+        db.rebase(fostlib::jcursor());
     }
     return status;
 }
