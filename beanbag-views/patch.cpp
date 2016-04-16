@@ -13,14 +13,25 @@
 
 
 namespace {
-    f5::tsmap<f5::lstring, beanbag::patch::transform *> c_transformers;
+    auto &g_transformers() {
+        static f5::tsmap<f5::lstring, beanbag::patch::transform *> c_transformers;
+        return c_transformers;
+    }
 
     beanbag::patch::transform_fn operation(const fostlib::json &op) {
-        auto transformer = c_transformers.find(fostlib::coerce<fostlib::string>(op["!"]));
+        if ( g_transformers().size() != 2u )
+            throw fostlib::exceptions::not_implemented(__FUNCTION__,
+                "Not enough items in the g_transformers()", std::to_string(g_transformers().size()));
+        const auto opname = fostlib::coerce<fostlib::string>(op["!"]);
+        const auto transformer = g_transformers().find(opname, nullptr);
         if ( transformer ) {
+            if ( not (opname == transformer->name.c_str()) )
+                throw fostlib::exceptions::not_implemented(__FUNCTION__,
+                    "Found wrong operation", transformer->name.c_str());
             return (*transformer)(op);
         } else {
-            return beanbag::patch::transform_fn();
+            throw fostlib::exceptions::not_implemented(__FUNCTION__,
+                    "Could not find operation", opname);
         }
     }
 }
@@ -49,7 +60,8 @@ beanbag::patch::transforms beanbag::patch::operations(const fostlib::json &ops) 
 */
 
 
-beanbag::patch::transform::transform(f5::lstring name) {
-    c_transformers.insert_or_assign(name, this);
+beanbag::patch::transform::transform(f5::lstring n)
+: name(n) {
+    g_transformers().emplace_if_not_found(name, this);
 }
 

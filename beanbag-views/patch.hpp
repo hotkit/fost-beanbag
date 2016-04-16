@@ -28,6 +28,8 @@ namespace beanbag {
             transform(f5::lstring name);
 
         public:
+            const f5::lstring name;
+
             virtual transform_fn operator () (const fostlib::json &) const = 0;
         };
 
