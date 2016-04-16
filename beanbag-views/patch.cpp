@@ -19,9 +19,6 @@ namespace {
     }
 
     beanbag::patch::transform_fn operation(const fostlib::json &op) {
-        if ( g_transformers().size() != 2u )
-            throw fostlib::exceptions::not_implemented(__FUNCTION__,
-                "Not enough items in the g_transformers()", std::to_string(g_transformers().size()));
         const auto opname = fostlib::coerce<fostlib::string>(op["!"]);
         const auto transformer = g_transformers().find(opname, nullptr);
         if ( transformer ) {
