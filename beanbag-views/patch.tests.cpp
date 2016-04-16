@@ -31,6 +31,31 @@ FSL_TEST_FUNCTION(empty_array) {
 }
 
 
+FSL_TEST_FUNCTION(json_object_add) {
+    fostlib::json add;
+    fostlib::insert(add, "!", "op:add");
+    fostlib::insert(add, "amount", 5);
+    fostlib::push_back(add, "path", "counter");
+    auto ops = beanbag::patch::operations(add);
+    FSL_CHECK_EQ(ops.size(), 1u);
+    FSL_CHECK(bool(ops[0]));
+
+    fostlib::jsondb db;
+    {
+        fostlib::jsondb::local trans(db);
+        ops[0](trans);
+        trans.commit();
+    }
+    FSL_CHECK_EQ(fostlib::jsondb::local(db)["counter"], fostlib::json(5));
+    {
+        fostlib::jsondb::local trans(db);
+        ops[0](trans);
+        trans.commit();
+    }
+    FSL_CHECK_EQ(fostlib::jsondb::local(db)["counter"], fostlib::json(10));
+}
+
+
 FSL_TEST_FUNCTION(json_object_now) {
     auto before = fostlib::timestamp::now();
 
@@ -92,28 +117,61 @@ FSL_TEST_FUNCTION(json_z_array) {
     fostlib::insert(set, 0, "value", "key", true);
     fostlib::insert(set, 1, "!", "op:now");
     fostlib::push_back(set, 1, "path", "time");
+    fostlib::insert(set, 2, "!", "op:add");
+    fostlib::insert(set, 2, "amount", 2);
+    fostlib::push_back(set, 2, "path", "counter");
     auto ops = beanbag::patch::operations(set);
-    FSL_CHECK_EQ(ops.size(), 2u);
+    FSL_CHECK_EQ(ops.size(), 3u);
     FSL_CHECK(bool(ops[0]));
     FSL_CHECK(bool(ops[1]));
+    FSL_CHECK(bool(ops[2]));
 
     fostlib::jsondb db;
     {
         fostlib::jsondb::local trans(db);
         ops[0](trans);
         ops[1](trans);
+        ops[2](trans);
         trans.commit();
     }
-    auto after = fostlib::timestamp::now();
-    fostlib::jsondb::local trans(db);
+    auto middle = fostlib::timestamp::now();
+    {
+        fostlib::jsondb::local trans(db);
 
-    // Result of operation 0
-    FSL_CHECK_EQ(trans["location"]["key"], fostlib::json(true));
+        // Result of operation 0
+        FSL_CHECK_EQ(trans["location"]["key"], fostlib::json(true));
 
-    // Result of operation 1
-    auto recorded = fostlib::coerce<fostlib::timestamp>(
-        fostlib::jsondb::local(db).data()["time"]);
-    FSL_CHECK(before < recorded);
-    FSL_CHECK(recorded < after);
+        // Result of operation 1
+        auto recorded = fostlib::coerce<fostlib::timestamp>(
+            fostlib::jsondb::local(db).data()["time"]);
+        FSL_CHECK(before < recorded);
+        FSL_CHECK(recorded < middle);
+
+        // Result of operation 2
+        FSL_CHECK_EQ(fostlib::jsondb::local(db)["counter"], fostlib::json(2));
+    }
+    {
+        fostlib::jsondb::local trans(db);
+        ops[0](trans);
+        ops[1](trans);
+        ops[2](trans);
+        trans.commit();
+    }
+    auto after  = fostlib::timestamp::now();
+    {
+        fostlib::jsondb::local trans(db);
+
+        // Result of operation 0
+        FSL_CHECK_EQ(trans["location"]["key"], fostlib::json(true));
+
+        // Result of operation 1
+        auto recorded = fostlib::coerce<fostlib::timestamp>(
+            fostlib::jsondb::local(db).data()["time"]);
+        FSL_CHECK(middle < recorded);
+        FSL_CHECK(recorded < after);
+
+        // Result of operation 2
+        FSL_CHECK_EQ(fostlib::jsondb::local(db)["counter"], fostlib::json(4));
+    }
 }
 
