@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2015, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2016, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -7,6 +7,7 @@
 
 
 #include "beanbag-views.hpp"
+#include "patch.hpp"
 #include <beanbag/raw.hpp>
 #include <fost/exception/parse_error.hpp>
 #include <fost/crypto>
@@ -46,6 +47,10 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
         data = std::make_pair(
             get(options, pathname, req, host, db, location).first,
             status);
+    } else if ( req.method() == "PATCH" ) {
+        auto status = patch(options, pathname, req, host, db, location);
+        data = std::make_pair(
+            get(options, pathname, req, host, db, location).first, status);
     } else if ( req.method() == "DELETE" ) {
         int status = del(options, pathname, req, host, db, location);
         data = std::make_pair(fostlib::json(), status);
@@ -155,6 +160,29 @@ int beanbag::raw_view::do_412_check(int fallback,
         }
     }
     return fallback;
+}
+
+
+int beanbag::raw_view::patch(
+    const fostlib::json &options, const fostlib::string &pathname,
+    fostlib::http::server::request &req, const fostlib::host &host,
+    fostlib::jsondb::local &db, const fostlib::jcursor &position
+) const {
+    int status = do_412_check(
+        200, options, pathname, req, host, db, position);
+    if ( status != 412 ) {
+        boost::shared_ptr< fostlib::binary_body > data(req.data());
+        const fostlib::string json_string(fostlib::coerce<fostlib::string>(
+            fostlib::coerce<fostlib::utf8_string>(data->data())));
+        fostlib::json transform_json = fostlib::json::parse(json_string);
+        auto ops = patch::operations(transform_json["transforms"]);
+        db.rebase(position);
+        for ( auto &op : ops ) {
+            op(db);
+        }
+        db.commit();
+    }
+    return status;
 }
 
 
