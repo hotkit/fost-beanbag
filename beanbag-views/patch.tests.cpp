@@ -56,6 +56,40 @@ FSL_TEST_FUNCTION(json_object_add) {
 }
 
 
+FSL_TEST_FUNCTION(json_object_created) {
+    auto before = fostlib::timestamp::now();
+
+    fostlib::json create;
+    fostlib::insert(create, "!", "op:created");
+    fostlib::push_back(create, "path", "time");
+    auto ops = beanbag::patch::operations(create);
+    FSL_CHECK_EQ(ops.size(), 1u);
+    FSL_CHECK(bool(ops[0]));
+
+    fostlib::jsondb db;
+    {
+        fostlib::jsondb::local trans(db);
+        ops[0](trans);
+        trans.commit();
+    }
+    auto after = fostlib::timestamp::now();
+    auto recorded = fostlib::coerce<fostlib::timestamp>(
+        fostlib::jsondb::local(db).data()["time"]);
+    FSL_CHECK(before < recorded);
+    FSL_CHECK(recorded < after);
+
+    {
+        fostlib::jsondb::local trans(db);
+        ops[0](trans);
+        trans.commit();
+    }
+    recorded = fostlib::coerce<fostlib::timestamp>(
+        fostlib::jsondb::local(db).data()["time"]);
+    FSL_CHECK(before < recorded);
+    FSL_CHECK(recorded < after);
+}
+
+
 FSL_TEST_FUNCTION(json_object_now) {
     auto before = fostlib::timestamp::now();
 
@@ -77,6 +111,34 @@ FSL_TEST_FUNCTION(json_object_now) {
         fostlib::jsondb::local(db).data()["time"]);
     FSL_CHECK(before < recorded);
     FSL_CHECK(recorded < after);
+}
+
+
+FSL_TEST_FUNCTION(json_object_remove) {
+    fostlib::jcursor location("location");
+    fostlib::jsondb db;
+    {
+        fostlib::jsondb::local trans(db);
+        trans.insert(location, true).commit();
+    }
+
+    fostlib::json remove;
+    fostlib::insert(remove, "!", "op:remove");
+    fostlib::push_back(remove, "path", "location");
+    auto ops = beanbag::patch::operations(remove);
+    FSL_CHECK_EQ(ops.size(), 1u);
+    FSL_CHECK(bool(ops[0]));
+
+    {
+        fostlib::jsondb::local trans(db);
+        ops[0](trans);
+        trans.commit();
+    }
+
+    {
+        fostlib::jsondb::local trans(db);
+        FSL_CHECK(not trans.has_key(location));
+    }
 }
 
 

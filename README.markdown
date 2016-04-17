@@ -83,6 +83,15 @@ Add a number. If the path location is empty then the amount is placed at that lo
         "amount": 3
     }
 
+#### Created : Set the current time if it's not already set ####
+
+Sets the current time at the requested position, but only if there is nothing at that location already.
+
+    {
+        "!": "op:created",
+        "path": ["path", "to", "created", "timestamp"]
+    }
+
 #### Now : Set current time ####
 
 The current time is placed into the requested position in ISO format.
@@ -91,6 +100,16 @@ The current time is placed into the requested position in ISO format.
         "!": "op:now",
         "path"; ["path", "to", "time"]
     }
+
+#### Remove : Remove content at the location ####
+
+Removes the content at the requested location. There must be content there or this will fail.
+
+    {
+        "!": "op:remove",
+        "path"; ["path", "to", "remove"]
+    }
+
 
 #### Set : Set location content ####
 

@@ -1,3 +1,6 @@
+2016-04-17  Kirit Saelensminde  <kirit@felspar.com>
+ Add `op:remove` and `op:created` transformations for `PATCH` requests.
+
 2016-04-16  Kirit Saelensminde  <kirit@felspar.com>
  Add `PATCH` method to the raw beanbag view and operations for manipulating them.
 
