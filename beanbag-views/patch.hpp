@@ -7,7 +7,6 @@
 
 
 #include <beanbag/jsondb_ptr.hpp>
-#include <f5/cord/lstring.hpp>
 
 
 namespace beanbag {
@@ -25,10 +24,10 @@ namespace beanbag {
         protected:
             using transform_fn = beanbag::patch::transform_fn;
 
-            transform(f5::lstring name);
+            transform(fostlib::nliteral name);
 
         public:
-            const f5::lstring name;
+            const fostlib::nliteral name;
 
             virtual transform_fn operator () (const fostlib::json &) const = 0;
         };

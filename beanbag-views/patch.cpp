@@ -14,7 +14,7 @@
 
 namespace {
     auto &g_transformers() {
-        static f5::tsmap<f5::lstring, beanbag::patch::transform *> c_transformers;
+        static f5::tsmap<fostlib::string, beanbag::patch::transform *> c_transformers;
         return c_transformers;
     }
 
@@ -22,9 +22,6 @@ namespace {
         const auto opname = fostlib::coerce<fostlib::string>(op["!"]);
         const auto transformer = g_transformers().find(opname, nullptr);
         if ( transformer ) {
-            if ( not (opname == transformer->name.c_str()) )
-                throw fostlib::exceptions::not_implemented(__FUNCTION__,
-                    "Found wrong operation", transformer->name.c_str());
             return (*transformer)(op);
         } else {
             throw fostlib::exceptions::not_implemented(__FUNCTION__,
@@ -57,7 +54,7 @@ beanbag::patch::transforms beanbag::patch::operations(const fostlib::json &ops) 
 */
 
 
-beanbag::patch::transform::transform(f5::lstring n)
+beanbag::patch::transform::transform(fostlib::nliteral n)
 : name(n) {
     g_transformers().emplace_if_not_found(name, this);
 }
