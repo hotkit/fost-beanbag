@@ -84,7 +84,7 @@ beanbag::jsondb_ptr beanbag::database(
             };
         g_databases.insert_or_assign_if(name, predicate, make);
         const auto size = g_databases.size();
-        if ( size > p_bound.value() ) {
+        if ( fostlib::coerce<decltype(p_bound.value())>(size) > p_bound.value() ) {
             const auto left = g_databases.remove_if(
                 [](const auto &, const auto &p) {
                     if ( p.expired() ) {
@@ -94,7 +94,7 @@ beanbag::jsondb_ptr beanbag::database(
                     } else
                         return false;
                 });
-            if ( left > p_bound.value() ) {
+            if ( fostlib::coerce<decltype(p_bound.value())>(left) > p_bound.value() ) {
                 const auto old = p_bound.value();
                 const auto now = (p_bound += 16);
                 fostlib::log::debug(c_beanbag)
