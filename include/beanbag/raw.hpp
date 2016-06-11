@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2015, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2016, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -39,6 +39,12 @@ namespace beanbag {
 
         /// Return the JSON that will form the basis of a GET response
         virtual std::pair<fostlib::json, int> get(
+            const fostlib::json &options, const fostlib::string &pathname,
+            fostlib::http::server::request &req, const fostlib::host &,
+            fostlib::jsondb::local &db, const fostlib::jcursor &position) const;
+
+        /// Return status code for the PATCH response. The body will be from the GET handler
+        virtual int patch(
             const fostlib::json &options, const fostlib::string &pathname,
             fostlib::http::server::request &req, const fostlib::host &,
             fostlib::jsondb::local &db, const fostlib::jcursor &position) const;

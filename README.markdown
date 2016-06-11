@@ -61,6 +61,66 @@ Both `application/json` and `text/html` are supported. To receive an `applicatio
 
 Currently `GET`, `PUT` and `DELETE` are supported. `PUT` is used for both creation of new locations inside the JSON and for updating of current values. Conditional `PUT`s (i.e. use of `If-Modified`) can be used to ensure that data has not already been changed. Clients should use the `ETag` header for this purpose. `DELETE` can also be used conditionally to ensure that recently updated information is not deleted.
 
+`PATCH` can be used against a beanbag to provide a set of transforms that are executed against the beanbag. Each transform is described by a JSON object which are collected together into an array. An empty transform list used as a `PATCH` body looks like this:
+
+    {
+        "@context": "http://www.kirit.com/beanbag/patch",
+        "transforms": []
+    }
+
+Each operation is a JSON object that includes a `@context` key telling us which operation to perform and then the other keys depend on the operation. Any paths are relative to the position in the beanbag that the URL path specifies.
+
+When the operations are executed either all or none of them transform the beanbag data -- that is, all of the operations run atomically.
+
+
+#### Add : Change counter ####
+
+Add a number. If the path location is empty then the amount is placed at that location, otherwise it is added to that location.
+
+    {
+        "!": "op:add",
+        "path": ["path", "to", "counter"],
+        "amount": 3
+    }
+
+#### Created : Set the current time if it's not already set ####
+
+Sets the current time at the requested position, but only if there is nothing at that location already.
+
+    {
+        "!": "op:created",
+        "path": ["path", "to", "created", "timestamp"]
+    }
+
+#### Now : Set current time ####
+
+The current time is placed into the requested position in ISO format.
+
+    {
+        "!": "op:now",
+        "path"; ["path", "to", "time"]
+    }
+
+#### Remove : Remove content at the location ####
+
+Removes the content at the requested location. There must be content there or this will fail.
+
+    {
+        "!": "op:remove",
+        "path"; ["path", "to", "remove"]
+    }
+
+
+#### Set : Set location content ####
+
+The passed in data is unconditionally set to the specified value.
+
+    {
+        "!": "op:set",
+        "path": ["path", "to", "set"],
+        "value": {"example": "value"}
+    }
+
 
 ## beanbag.structured ##
 

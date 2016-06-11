@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2015, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2012-2016, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -84,7 +84,7 @@ beanbag::jsondb_ptr beanbag::database(
             };
         g_databases.insert_or_assign_if(name, predicate, make);
         const auto size = g_databases.size();
-        if ( size > p_bound.value() ) {
+        if ( fostlib::coerce<decltype(p_bound.value())>(size) > p_bound.value() ) {
             const auto left = g_databases.remove_if(
                 [](const auto &, const auto &p) {
                     if ( p.expired() ) {
@@ -94,18 +94,18 @@ beanbag::jsondb_ptr beanbag::database(
                     } else
                         return false;
                 });
-            if ( left > p_bound.value() ) {
+            if ( fostlib::coerce<decltype(p_bound.value())>(left) > p_bound.value() ) {
                 const auto old = p_bound.value();
                 const auto now = (p_bound += 16);
-                fostlib::log::warning(c_beanbag)
-                    ("", "Clearing out old beanbags")
+                fostlib::log::debug(c_beanbag)
+                    ("", "Clearing out old beanbags -- increasing bound")
                     ("bound", "old", old)
                     ("bound", "new", now)
                     ("size", "old", size)
                     ("size", "new", left);
             } else {
-                fostlib::log::info(c_beanbag)
-                    ("", "Clearing out old beanbags")
+                fostlib::log::debug(c_beanbag)
+                    ("", "Clearing out old beanbags -- keeping old bound")
                     ("size", "old", size)
                     ("size", "new", left);
             }
