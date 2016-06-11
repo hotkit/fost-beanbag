@@ -1,5 +1,5 @@
 /*
-    Copyright 2007-2015, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2007-2016, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -36,14 +36,10 @@ namespace fostlib {
     /// A simple transactional JSON based database
     class FOST_JSONDB_DECLSPEC jsondb : boost::noncopyable {
     public:
-        typedef boost::function< void ( json & ) >
-            operation_signature_type;
-        typedef std::vector< operation_signature_type >
-            operations_type;
-        typedef boost::function< void ( const json & ) >
-            const_operation_signature_type;
-        typedef std::vector< const_operation_signature_type >
-            const_operations_type;
+        typedef std::function<void(const jcursor &,  json &)> operation_signature_type;
+        typedef std::vector<operation_signature_type> operations_type;
+        typedef std::function<void (const jcursor &,  const json &)> const_operation_signature_type;
+        typedef std::vector<const_operation_signature_type> const_operations_type;
 
         /// Create an in memory JSON database
         jsondb() {}
@@ -69,7 +65,7 @@ namespace fostlib {
         class FOST_JSONDB_DECLSPEC local : boost::noncopyable {
             jsondb &m_db;
             json m_local;
-            const jcursor m_position;
+            jcursor m_position;
             operations_type m_operations;
             operations_type m_pre_commit;
             const_operations_type m_post_commit;
@@ -78,6 +74,10 @@ namespace fostlib {
             explicit local( jsondb &db, const jcursor & = jcursor() );
             /// Make movable
             local(local &&);
+
+            /// Change the base location of the transaction. Requires that
+            /// no changes have been made in the data yet.
+            void rebase(const jcursor &pos);
 
             /// Check to see if the database contains a specified location or not
             template< typename key >
