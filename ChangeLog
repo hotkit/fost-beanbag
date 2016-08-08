@@ -1,5 +1,8 @@
+2016-08-08  Kirit Saelensminde  <kirit@felspar.com>
+ Make the function for converting a path to a jcursor generally available.
+
 2016-05-21  Kirit Saelensminde  <kirit@felspar.com>
- * Downgrade two log messages to debug level.
+ Downgrade two log messages to debug level.
 
 2016-04-17  Kirit Saelensminde  <kirit@felspar.com>
  Add `op:remove` and `op:created` transformations for `PATCH` requests.
