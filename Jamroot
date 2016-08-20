@@ -32,6 +32,11 @@ alias beanbag :
         beanbag-views
     ;
 
+alias test :
+        beanbag
+    ;
+explicit test ;
+
 alias all :
         beanbag
         fost
