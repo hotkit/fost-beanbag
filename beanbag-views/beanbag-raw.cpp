@@ -8,6 +8,7 @@
 
 #include "beanbag-views.hpp"
 #include "patch.hpp"
+#include <beanbag/path.hpp>
 #include <beanbag/raw.hpp>
 #include <fost/exception/parse_error.hpp>
 #include <fost/crypto>
@@ -93,19 +94,9 @@ beanbag::jsondb_ptr beanbag::raw_view::database(
 
 
 fostlib::jcursor beanbag::raw_view::position(
-        const fostlib::string &pathname) const {
-    fostlib::split_type path = fostlib::split(pathname, "/");
-    fostlib::jcursor position;
-    for ( fostlib::split_type::const_iterator part(path.begin());
-            part != path.end(); ++part ) {
-        try {
-            int index = fostlib::coerce<int>(*part);
-            position /= index;
-        } catch ( fostlib::exceptions::parse_error& ) {
-            position /= *part;
-        }
-    }
-    return position;
+        const fostlib::string &pathname) const
+{
+    return path_to_jcursor(pathname);
 }
 
 fostlib::string beanbag::raw_view::etag(const fostlib::json &structure) const {
