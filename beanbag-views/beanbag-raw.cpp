@@ -69,7 +69,7 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator () 
     fostlib::insert(log, "accept", accept);
     fostlib::log::debug(fostlib::c_fost_beanbag_views, log);
     if ( data.second < 300 ) {
-        if ( !req.query_string().as_string().isnull()
+        if ( req.query_string().as_string()
                 || accept.find("application/json") < accept.find("text/html") )
             return std::make_pair(json_response(options,
                     data.first, response_headers, location), data.second);

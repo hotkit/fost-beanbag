@@ -39,7 +39,7 @@ beanbag::jsondb_ptr beanbag::database(
     try {
         fostlib::nullable<fostlib::string> which_name(which.get<fostlib::string>());
         fostlib::string name;
-        if ( which_name.isnull() )
+        if ( not which_name )
             name = fostlib::coerce<fostlib::string>(which["name"]);
         else
             name = which_name.value();
@@ -119,7 +119,7 @@ beanbag::jsondb_ptr beanbag::database(
 
 
 void beanbag::remove(beanbag::jsondb_ptr db) {
-    if ( not db->filename().isnull() ) {
+    if ( db->filename() ) {
         boost::filesystem::remove(db->filename().value());
     }
 }
