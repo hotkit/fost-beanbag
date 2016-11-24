@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2015, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 1999-2016, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -27,16 +27,15 @@ namespace {
 
     string dbname( const json &config ) {
         nullable< string > db = config[ L"database" ].get< string >();
-        if ( !db.isnull() )
-            return db.value();
-        if (
-            !config[ L"write" ].get< string >().isnull() &&
-            config[ L"read" ].get< string >() != config[ L"write" ].get< string >()
-        )
-            throw exceptions::data_driver( L"JSON database must have the same read/write connections", L"json" );
+        if ( db ) return db.value();
+        if ( config[ L"write" ].get<string>() &&
+            config[ L"read" ].get< string >() != config[ L"write" ].get< string >() )
+        {
+            throw exceptions::data_driver("JSON database must have the same "
+                "read/write connections", "json");
+        }
         nullable< string > read = config[ L"read" ].get< string >();
-        if ( !read.isnull() )
-            return read.value();
+        if ( read ) return read.value();
         throw exceptions::data_driver( L"You must specify a database name or read/write database names", L"json" );
     }
     nullable< string > dbpath( const json &config ) {
@@ -46,18 +45,14 @@ namespace {
     }
     nullable< string > dbpath( const json &config, const string &name ) {
         nullable< string > root = config[ L"root" ].get< string >();
-        if ( root.isnull() )
-            return null;
-        else
-            return concat( root, L"/", name + L".json" );
+        if ( not root ) return null;
+        else return concat( root, L"/", name + L".json" );
     }
     bool allows_write( const dbconnection &dbc ) {
-        return (
-            !dbc.configuration()[ L"database" ].get< string >().isnull() &&
-            dbc.configuration()[ L"write" ].get< bool >().value( false )
-        ) || (
-            !dbc.configuration()[ L"write" ].get< string >().isnull()
-        );
+        return
+            (dbc.configuration()[ L"database" ].get< string >() &&
+                dbc.configuration()[ L"write" ].get< bool >().value_or(false))
+            || (dbc.configuration()[ L"write" ].get< string >());
     }
 
     jsondb &g_database( const string &dbname, const nullable< string > &file, bool create ) {
@@ -68,8 +63,7 @@ namespace {
         if ( p == databases.end() ) {
             boost::shared_ptr< jsondb > db;
              try {
-                if ( file.isnull() )
-                    db.reset( new jsondb );
+                if ( not file ) db.reset(new jsondb);
                 else {
                     try {
                         if ( create || dbname == L"master" ) // We always allow master database to be created

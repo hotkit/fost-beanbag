@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2015,Felspar Co Ltd. http://support.felspar.com/
+    Copyright 1999-2016, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -99,7 +99,7 @@ namespace {
             return d.substr( n.length() + 1 );
     }
     fostlib::string driver( const fostlib::string &read, const fostlib::nullable< fostlib::string > &write ) {
-        fostlib::string rd( driver_name( read ) ), wd( driver_name( write.value( read ) ) );
+        fostlib::string rd(driver_name(read)), wd(driver_name(write.value_or(read)));
         if ( rd != wd )
             throw fostlib::exceptions::data_driver( L"Read and write drivers not the same", rd, wd );
         if ( rd.empty() )
@@ -174,9 +174,9 @@ namespace {
         boost::shared_ptr< dynlib > driver_dll( g_dlls()[ driver ].lock() );
         if ( g_interfaces().find( driver ).empty() ) {
             nullable< string > dll = setting< string >::value( L"Database drivers", driver, null );
-            if ( dll.isnull() )
+            if ( not dll ) {
                 throw exceptions::data_driver( L"No driver found", driver );
-            else
+            } else {
                 try {
                     driver_dll.reset( new dynlib( dll.value() ) );
                     g_dlls()[ driver ] = driver_dll;
@@ -191,11 +191,12 @@ namespace {
                     }
                     throw;
                 }
+            }
         }
         return std::make_pair( &**g_interfaces().find( driver ).begin(), driver_dll );
     }
     std::pair< const dbinterface *, boost::shared_ptr< dynlib > > connection( const json &cnx ) {
-        string driver = cnx[ L"driver" ].get< string >().value( c_defaultDriver.value() );
+        string driver = cnx[ L"driver" ].get<string>().value_or(c_defaultDriver.value());
         return load_driver( driver );
     }
     std::pair< const dbinterface *, boost::shared_ptr< dynlib > > connection( const string&read, const nullable< string > &write ) {
@@ -213,8 +214,7 @@ namespace {
     json cnx_conf( const string &r, const nullable< string > &w ) {
         json conf;
         jcursor( L"read" )( conf ) = dsn( r );
-        if ( !w.isnull() )
-            jcursor( L"write" )( conf ) = dsn( w.value() );
+        if ( w ) jcursor( L"write" )( conf ) = dsn( w.value() );
         return conf;
     }
     void establish(

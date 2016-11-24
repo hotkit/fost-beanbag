@@ -92,7 +92,7 @@ fostlib::jsondb::jsondb(const bfs::wpath &fn, const nullable< json > &default_db
     string content(utf::load_file(filename().value(), string()));
     try {
         if ( content.empty() ) {
-            if ( default_db.isnull() ) {
+            if ( not default_db ) {
                 throw exceptions::null("Initial database data must be provided "
                     "when database is backed to the file system and the file is empty");
             } else {
@@ -227,7 +227,7 @@ void fostlib::jsondb::local::commit() {
     m_pre_commit.clear();
     /// Add save to the end of the transformation. Access to the
     /// filename is safe because it's a const member of m_db.
-    if ( !m_db.filename().isnull() ) {
+    if ( m_db.filename() ) {
         transformation(
             [this](const jcursor &, json &j) {
                 do_save(j, m_db.filename().value());

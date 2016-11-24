@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2015, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 1999-2016, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -24,8 +24,7 @@ namespace {
     }
     void add_register( detail::factory_base *factory, const std::type_info &t, const nullable< string > &name ) {
         g_registry().add( string( t.name() ), factory );
-        if ( !name.isnull() )
-            g_registry().add( name.value(), factory );
+        if ( name ) g_registry().add( name.value(), factory );
     }
 }
 
@@ -41,12 +40,11 @@ fostlib::detail::factory_base::factory_base( const factory_base &enc, const std:
 
 fostlib::detail::factory_base::~factory_base() {
     g_registry().remove( string( m_type.name() ), this );
-    if ( !m_name.isnull() )
-        g_registry().remove( m_name.value(), this );
+    if ( m_name ) g_registry().remove( m_name.value(), this );
 }
 
 string fostlib::detail::factory_base::name() const {
-    return m_name.value( string( m_type.name() ) );
+    return m_name.value_or(string(m_type.name()));
 }
 
 namespace {
