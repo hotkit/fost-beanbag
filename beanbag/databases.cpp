@@ -69,7 +69,7 @@ beanbag::jsondb_ptr beanbag::database(
                         tplate);
                 return cptr;
             };
-        auto predicate = [&cptr](boost::weak_ptr<fostlib::jsondb> p) {
+        auto predicate = [&cptr](boost::weak_ptr<fostlib::jsondb> &p) {
                 cptr = p.lock();
                 if ( cptr ) {
                     ++p_found_alive;
