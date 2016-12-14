@@ -15,6 +15,7 @@
 #include <fost/jsondb.hpp>
 #include <fost/schema.hpp>
 
+#include <fost/exception/file_error.hpp>
 #include <fost/exception/not_null.hpp>
 #include <fost/exception/out_of_range.hpp>
 #include <fost/exception/transaction_fault.hpp>
@@ -38,6 +39,7 @@ const module fostlib::c_fost_orm_jsondb(c_fost_orm, "jsondb");
 namespace {
     performance p_created(c_fost_orm_jsondb, "db", "created");
     performance p_loaded(c_fost_orm_jsondb, "db", "loaded");
+    performance p_saved(c_fost_orm_jsondb, "db", "saved");
 }
 
 
@@ -59,6 +61,7 @@ const setting<string> fostlib::c_jsondb_root(
 
 
 namespace {
+//     std::recursive_mutex g_mutex; // Time before switching this back 326 mins
     using lock_type = std::unique_lock<std::mutex>;
 
     const bfs::path ext_backup(".backup");
@@ -77,10 +80,21 @@ namespace {
         } else if ( !path.parent_path().empty() ) {
             bfs::create_directories(path.parent_path());
         }
-        bfs::wpath tmp(path);
+        bfs::path tmp(path);
         tmp.replace_extension(ext_temp);
         utf::save_file(tmp, json::unparse(j, c_jsondb_pretty_print.value()));
-        bfs::rename(tmp, path);
+        {
+            boost::system::error_code error;
+            bfs::rename(tmp, path, error);
+            if ( error ) {
+                exceptions::file_error e("Renaming temp file when saving JSON database", tmp, error);
+                insert(e.data(), "rename", "from", tmp);
+                insert(e.data(), "rename", "to", path);
+                insert(e.data(), "rename", "saves", p_saved.value());
+                throw e;
+            }
+        }
+        ++p_saved;
     }
 }
 

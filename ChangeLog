@@ -1,4 +1,5 @@
 2016-12-14  Kirit Saelensminde  <kirit@felspar.com>
+ * Record jsondb saves and handle rename errors better.
  * Add a missing lock when adding database post-commit hooks.
  * Refactor the jsondb save process to make it more clear what the actual process is.
 
