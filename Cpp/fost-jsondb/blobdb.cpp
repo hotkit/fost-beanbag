@@ -122,6 +122,7 @@ bfs::wpath fostlib::jsondb::get_db_path(const bfs::wpath &filename) {
 std::size_t fostlib::jsondb::post_commit(
     const_operation_signature_type fn
 ) {
+    lock_type lock{control};
     m_post_commit.push_back(fn);
     return m_post_commit.size();
 }
@@ -192,7 +193,7 @@ void fostlib::jsondb::local::rebase(const jcursor &pos) {
 
 
 void fostlib::jsondb::local::refresh() {
-    lock_type lock(m_db.control);
+    lock_type lock{m_db.control};
     m_local = m_db.data[m_position];
 }
 

@@ -1,4 +1,5 @@
 2016-12-14  Kirit Saelensminde  <kirit@felspar.com>
+ * Add a missing lock when adding database post-commit hooks.
  * Refactor the jsondb save process to make it more clear what the actual process is.
 
 2016-04-16  Kirit Saelensminde  <kirit@felspar.com>
