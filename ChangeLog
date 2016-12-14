@@ -1,3 +1,6 @@
+2016-12-14  Kirit Saelensminde  <kirit@felspar.com>
+ * Refactor the jsondb save process to make it more clear what the actual process is.
+
 2016-04-16  Kirit Saelensminde  <kirit@felspar.com>
  Fix up the use of the root position in the `jsondb::local` and add a new `rebase` method for changing it. This causes a breaking change in the transformation function signature which now needs to take the transaction root as an argument.
 

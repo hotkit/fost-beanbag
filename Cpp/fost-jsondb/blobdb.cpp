@@ -221,45 +221,52 @@ std::size_t fostlib::jsondb::local::transformation(
 
 
 void fostlib::jsondb::local::commit() {
-    /// Add the pre-commit hooks to the end of the transformations
-    for ( auto fn : m_pre_commit )
-        transformation(fn);
-    m_pre_commit.clear();
-    /// Add save to the end of the transformation. Access to the
-    /// filename is safe because it's a const member of m_db.
-    if ( m_db.filename() ) {
-        transformation(
-            [this](const jcursor &, json &j) {
-                do_save(j, m_db.filename().value());
-            });
-    }
     try {
         /// All of the following runs inside the lock because we can't
         /// access anything on m_db without holding it. This forces
         /// serialisation of all post commit code as well, which should
         /// make that easier to reason about
-        lock_type lock(m_db.control);
-        json db(m_db.data);
+        lock_type lock{m_db.control};
+        /// We need to take a copy here so we can reload it into the db
+        /// in the case of an exception. The transaction will be rolled
+        /// back as a separate thing.
+        json backup(m_db.data);
         try {
-            for ( auto op : m_operations )
+            /// Run the operations that will transform the actual data
+            for ( auto &op : m_operations )
                 (op)(m_position, m_db.data);
             m_operations.clear();
+            /// Now run pre-commit hooks
+            for ( auto &fn : m_pre_commit )
+                (fn)(m_position, m_db.data);
+            m_pre_commit.clear();
+            /// Save the database -- this is the 'commit' point
+            if ( m_db.filename() ) {
+                do_save(m_db.data, m_db.filename().value());
+            }
+            /// We now refresh our content -- the data has been committed
+            /// and the local transaction now relfects the new data
+            m_local = m_db.data[m_position];
         } catch ( ... ) {
-            m_db.data = db;
+            m_db.data = backup;
             throw;
         }
-        m_local = m_db.data[m_position];
-        /// Run transaction post-commit hooks
-        for ( auto fn : m_post_commit )
-                fn(jcursor(), m_local);
-        m_post_commit.clear();
-        /// Run database post-commit hooks
-        for ( auto fn : m_db.m_post_commit )
-            fn(m_position, m_db.data);
     } catch ( ... ) {
+        /// We want the rollback to happen outside the lock because
+        /// the act of refreshing will itself lock
         rollback();
         throw;
     }
+    /// Post-commit hooks have to run outside of the exception handling
+    /// and outside of the lock because an error here doesn't roll back
+    /// anything.
+    /// 1. Run transaction post-commit hooks
+    for ( auto &fn : m_post_commit )
+            fn(m_position, m_db.data);
+    m_post_commit.clear();
+    /// 2. Run database post-commit hooks
+    for ( auto &fn : m_db.m_post_commit )
+        fn(m_position, m_db.data);
 }
 
 
