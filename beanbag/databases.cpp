@@ -50,7 +50,7 @@ beanbag::jsondb_ptr beanbag::database(
                 fostlib::json tplate;
                 if ( which.has_key("template") ) {
                     tplate = fostlib::json::parse(fostlib::utf::load_file(
-                        fostlib::coerce<boost::filesystem::wpath>(which["template"])));
+                        fostlib::coerce<boost::filesystem::path>(which["template"])));
                 } else if ( which.has_key("initial") ) {
                     tplate = which["initial"];
                 } else {
