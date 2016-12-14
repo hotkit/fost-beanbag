@@ -20,9 +20,7 @@ const fostlib::module beanbag::c_beanbag("beanbag");
 
 
 namespace {
-    f5::tsmap<fostlib::string, boost::weak_ptr<fostlib::jsondb>,
-        f5::weak_ptr_promotion_policy<boost::weak_ptr<fostlib::jsondb>>>
-            g_databases;
+    f5::tsmap<fostlib::string, boost::weak_ptr<fostlib::jsondb>> g_databases;
 
     fostlib::performance p_held(beanbag::c_beanbag, "database", "live");
     fostlib::performance p_bound(beanbag::c_beanbag, "database", "cache-size");
