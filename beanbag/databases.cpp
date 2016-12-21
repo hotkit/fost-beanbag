@@ -20,9 +20,7 @@ const fostlib::module beanbag::c_beanbag("beanbag");
 
 
 namespace {
-    f5::tsmap<fostlib::string, boost::weak_ptr<fostlib::jsondb>,
-        f5::weak_ptr_promotion_policy<boost::weak_ptr<fostlib::jsondb>>>
-            g_databases;
+    f5::tsmap<fostlib::string, boost::weak_ptr<fostlib::jsondb>> g_databases;
 
     fostlib::performance p_held(beanbag::c_beanbag, "database", "live");
     fostlib::performance p_bound(beanbag::c_beanbag, "database", "cache-size");
@@ -39,7 +37,7 @@ beanbag::jsondb_ptr beanbag::database(
     try {
         fostlib::nullable<fostlib::string> which_name(which.get<fostlib::string>());
         fostlib::string name;
-        if ( which_name.isnull() )
+        if ( not which_name )
             name = fostlib::coerce<fostlib::string>(which["name"]);
         else
             name = which_name.value();
@@ -52,7 +50,7 @@ beanbag::jsondb_ptr beanbag::database(
                 fostlib::json tplate;
                 if ( which.has_key("template") ) {
                     tplate = fostlib::json::parse(fostlib::utf::load_file(
-                        fostlib::coerce<boost::filesystem::wpath>(which["template"])));
+                        fostlib::coerce<boost::filesystem::path>(which["template"])));
                 } else if ( which.has_key("initial") ) {
                     tplate = which["initial"];
                 } else {
@@ -71,7 +69,7 @@ beanbag::jsondb_ptr beanbag::database(
                         tplate);
                 return cptr;
             };
-        auto predicate = [&cptr](boost::weak_ptr<fostlib::jsondb> p) {
+        auto predicate = [&cptr](boost::weak_ptr<fostlib::jsondb> &p) {
                 cptr = p.lock();
                 if ( cptr ) {
                     ++p_found_alive;
@@ -119,7 +117,7 @@ beanbag::jsondb_ptr beanbag::database(
 
 
 void beanbag::remove(beanbag::jsondb_ptr db) {
-    if ( not db->filename().isnull() ) {
+    if ( db->filename() ) {
         boost::filesystem::remove(db->filename().value());
     }
 }
