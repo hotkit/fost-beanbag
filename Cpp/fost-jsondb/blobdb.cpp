@@ -15,6 +15,7 @@
 #include <fost/jsondb.hpp>
 #include <fost/schema.hpp>
 
+#include <fost/exception/file_error.hpp>
 #include <fost/exception/not_null.hpp>
 #include <fost/exception/out_of_range.hpp>
 #include <fost/exception/transaction_fault.hpp>
@@ -38,6 +39,7 @@ const module fostlib::c_fost_orm_jsondb(c_fost_orm, "jsondb");
 namespace {
     performance p_created(c_fost_orm_jsondb, "db", "created");
     performance p_loaded(c_fost_orm_jsondb, "db", "loaded");
+    performance p_saved(c_fost_orm_jsondb, "db", "saved");
 }
 
 
@@ -59,6 +61,7 @@ const setting<string> fostlib::c_jsondb_root(
 
 
 namespace {
+//     std::recursive_mutex g_mutex; // Time before switching this back 326 mins
     using lock_type = std::unique_lock<std::mutex>;
 
     const bfs::path ext_backup(".backup");
@@ -77,10 +80,21 @@ namespace {
         } else if ( !path.parent_path().empty() ) {
             bfs::create_directories(path.parent_path());
         }
-        bfs::wpath tmp(path);
+        bfs::path tmp(path);
         tmp.replace_extension(ext_temp);
         utf::save_file(tmp, json::unparse(j, c_jsondb_pretty_print.value()));
-        bfs::rename(tmp, path);
+        {
+            boost::system::error_code error;
+            bfs::rename(tmp, path, error);
+            if ( error ) {
+                exceptions::file_error e("Renaming temp file when saving JSON database", tmp, error);
+                insert(e.data(), "rename", "from", tmp);
+                insert(e.data(), "rename", "to", path);
+                insert(e.data(), "rename", "saves", p_saved.value());
+                throw e;
+            }
+        }
+        ++p_saved;
     }
 }
 
@@ -92,7 +106,7 @@ fostlib::jsondb::jsondb(const bfs::wpath &fn, const nullable< json > &default_db
     string content(utf::load_file(filename().value(), string()));
     try {
         if ( content.empty() ) {
-            if ( default_db.isnull() ) {
+            if ( not default_db ) {
                 throw exceptions::null("Initial database data must be provided "
                     "when database is backed to the file system and the file is empty");
             } else {
@@ -122,6 +136,7 @@ bfs::wpath fostlib::jsondb::get_db_path(const bfs::wpath &filename) {
 std::size_t fostlib::jsondb::post_commit(
     const_operation_signature_type fn
 ) {
+    lock_type lock{control};
     m_post_commit.push_back(fn);
     return m_post_commit.size();
 }
@@ -192,7 +207,7 @@ void fostlib::jsondb::local::rebase(const jcursor &pos) {
 
 
 void fostlib::jsondb::local::refresh() {
-    lock_type lock(m_db.control);
+    lock_type lock{m_db.control};
     m_local = m_db.data[m_position];
 }
 
@@ -221,45 +236,52 @@ std::size_t fostlib::jsondb::local::transformation(
 
 
 void fostlib::jsondb::local::commit() {
-    /// Add the pre-commit hooks to the end of the transformations
-    for ( auto fn : m_pre_commit )
-        transformation(fn);
-    m_pre_commit.clear();
-    /// Add save to the end of the transformation. Access to the
-    /// filename is safe because it's a const member of m_db.
-    if ( !m_db.filename().isnull() ) {
-        transformation(
-            [this](const jcursor &, json &j) {
-                do_save(j, m_db.filename().value());
-            });
-    }
     try {
         /// All of the following runs inside the lock because we can't
         /// access anything on m_db without holding it. This forces
         /// serialisation of all post commit code as well, which should
         /// make that easier to reason about
-        lock_type lock(m_db.control);
-        json db(m_db.data);
+        lock_type lock{m_db.control};
+        /// We need to take a copy here so we can reload it into the db
+        /// in the case of an exception. The transaction will be rolled
+        /// back as a separate thing.
+        json backup(m_db.data);
         try {
-            for ( auto op : m_operations )
+            /// Run the operations that will transform the actual data
+            for ( auto &op : m_operations )
                 (op)(m_position, m_db.data);
             m_operations.clear();
+            /// Now run pre-commit hooks
+            for ( auto &fn : m_pre_commit )
+                (fn)(m_position, m_db.data);
+            m_pre_commit.clear();
+            /// Save the database -- this is the 'commit' point
+            if ( m_db.filename() ) {
+                do_save(m_db.data, m_db.filename().value());
+            }
+            /// We now refresh our content -- the data has been committed
+            /// and the local transaction now relfects the new data
+            m_local = m_db.data[m_position];
         } catch ( ... ) {
-            m_db.data = db;
+            m_db.data = backup;
             throw;
         }
-        m_local = m_db.data[m_position];
-        /// Run transaction post-commit hooks
-        for ( auto fn : m_post_commit )
-                fn(jcursor(), m_local);
-        m_post_commit.clear();
-        /// Run database post-commit hooks
-        for ( auto fn : m_db.m_post_commit )
-            fn(m_position, m_db.data);
     } catch ( ... ) {
+        /// We want the rollback to happen outside the lock because
+        /// the act of refreshing will itself lock
         rollback();
         throw;
     }
+    /// Post-commit hooks have to run outside of the exception handling
+    /// and outside of the lock because an error here doesn't roll back
+    /// anything.
+    /// 1. Run transaction post-commit hooks
+    for ( auto &fn : m_post_commit )
+            fn(m_position, m_db.data);
+    m_post_commit.clear();
+    /// 2. Run database post-commit hooks
+    for ( auto &fn : m_db.m_post_commit )
+        fn(m_position, m_db.data);
 }
 
 
