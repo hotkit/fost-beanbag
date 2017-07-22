@@ -1,3 +1,6 @@
+2017-04-27  Kirit Saelensminde  <kirit@felspar.com>
+ Improve error report when a beanbag update precondition wasn't met.
+
 2016-12-14  Kirit Saelensminde  <kirit@felspar.com>
  * Record jsondb saves and handle rename errors better.
  * Add a missing lock when adding database post-commit hooks.

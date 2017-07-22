@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2016, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2008-2017, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -155,12 +155,22 @@ namespace {
         k.push_back( db, v );
     }
     void do_update( json &db, const jcursor &k, const json &v, const json &old ) {
-        if ( db.has_key( k ) && db[ k ] == old )
-            k( db ) = v;
-        else if ( db.has_key( k ) && db[ k ] != old )
-            throw exceptions::transaction_fault( L"The value being updated is not the value that was meant to be updated" );
-        else
-            throw exceptions::null( L"This key position is empty so cannot be updated" );
+        try {
+            if ( db.has_key( k ) && db[ k ] == old ) {
+                k( db ) = v;
+            } else if ( db.has_key( k ) && db[ k ] != old ) {
+                exceptions::transaction_fault error("The value being updated is not the value "
+                    "that was meant to be updated");
+                fostlib::insert(error.data(), "expected", old);
+                fostlib::insert(error.data(), "got", db[k]);
+                throw error;
+            } else {
+                throw exceptions::null( L"This key position is empty so cannot be updated" );
+            }
+        } catch ( exceptions::exception &error ) {
+            fostlib::insert(error.data(), "path", k);
+            throw;
+        }
     }
     void do_set( json &db, const jcursor &k, const json &v ) {
         if ( db.has_key(k) )
