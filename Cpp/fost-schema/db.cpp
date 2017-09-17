@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2016, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 1999-2017, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -361,7 +361,7 @@ dbtransaction &fostlib::dbtransaction::drop_table( const fostlib::string &table 
 }
 
 
-dbtransaction &fostlib::dbtransaction::insert( const instance &object, boost::function< void( void ) > oncommit ) {
+dbtransaction &fostlib::dbtransaction::insert( const instance &object, std::function< void( void ) > oncommit ) {
     if ( !m_transaction )
         throw exceptions::transaction_fault( L"This transaction has already been used" );
     m_oncommit.push_back( oncommit );
@@ -377,14 +377,14 @@ dbtransaction &fostlib::dbtransaction::execute( const sql::statement &command ) 
 
 
 namespace {
-    void exec( boost::function< void( void ) > f ) {
+    void exec(std::function<void(void)> f)  {
         f();
     }
 }
 void fostlib::dbtransaction::commit() {
     m_transaction->commit();
-    std::for_each( m_oncommit.begin(), m_oncommit.end(), exec );
-    m_transaction = boost::shared_ptr< dbinterface::write >();
+    std::for_each(m_oncommit.begin(), m_oncommit.end(), exec);
+    m_transaction = boost::shared_ptr<dbinterface::write>();
 }
 
 

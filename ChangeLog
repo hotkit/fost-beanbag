@@ -1,3 +1,6 @@
+2017-09-17  Kirit Saelensminde  <kirit@felspar.com>
+ Remove all instances of `boost::function`
+
 2017-04-27  Kirit Saelensminde  <kirit@felspar.com>
  Improve error report when a beanbag update precondition wasn't met.
 

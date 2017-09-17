@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2015, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 1999-2017, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -140,7 +140,7 @@ namespace fostlib {
         dbtransaction &drop_table( const meta_instance &meta );
         dbtransaction &drop_table( const string &table );
 
-        dbtransaction &insert( const instance &object, boost::function< void( void ) > oncommit );
+        dbtransaction &insert(const instance &object, std::function<void(void)> oncommit);
         dbtransaction &execute( const sql::statement &cmd );
 
         void commit();
@@ -148,7 +148,7 @@ namespace fostlib {
     private:
         dbconnection &m_connection;
         boost::shared_ptr< dbinterface::write > m_transaction;
-        std::vector< boost::function< void( void ) > > m_oncommit, m_onfail;
+        std::vector<std::function<void(void)>> m_oncommit, m_onfail;
     };
 
 
