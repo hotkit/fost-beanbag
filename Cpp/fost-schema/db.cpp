@@ -196,8 +196,9 @@ namespace {
         return std::make_pair( &**g_interfaces().find( driver ).begin(), driver_dll );
     }
     std::pair< const dbinterface *, boost::shared_ptr< dynlib > > connection( const json &cnx ) {
-        string driver = cnx[ L"driver" ].get<string>().value_or(c_defaultDriver.value());
-        return load_driver( driver );
+        string driver = coerce<nullable<f5::u8view>>(cnx["driver"])
+            .value_or(c_defaultDriver.value());
+        return load_driver(driver);
     }
     std::pair< const dbinterface *, boost::shared_ptr< dynlib > > connection( const string&read, const nullable< string > &write ) {
         string d = driver( read, write );

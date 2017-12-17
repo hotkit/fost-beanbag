@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2015, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2008-2017, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -35,8 +35,8 @@ FSL_TEST_FUNCTION( checks ) {
 
     {
         dbconnection master( L"json/master", L"json/master" );
-        FSL_CHECK_EQ( master.configuration()[ L"read" ].get< string >().value(), L"master" );
-        FSL_CHECK_EQ( master.configuration()[ L"write" ].get< string >().value(), L"master" );
+        FSL_CHECK_EQ(coerce<f5::u8view>(master.configuration()["read"]), "master");
+        FSL_CHECK_EQ(coerce<f5::u8view>(master.configuration()["write"]), "master");
     }
 
     {
@@ -157,8 +157,8 @@ FSL_TEST_FUNCTION( transactions ) {
         FSL_CHECK( !dbc1.query( simple, json( 1 ) ).eof() );
         FSL_CHECK( dbc2.query( simple, json( 1 ) ).eof() );
     } catch ( exceptions::exception &e ) {
-        e.info() << L"dbc1 simple: " << json::unparse( dbc1.query( simple ).to_json(), true )
-            << L"dbc2 simple: " << json::unparse( dbc2.query( simple ).to_json(), true );
+        insert(e.data(), "dbc1", dbc1.query( simple ).to_json());
+        insert(e.data(), "dbc2", dbc2.query( simple ).to_json());
         throw;
     }
 

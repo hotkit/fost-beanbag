@@ -1,5 +1,5 @@
 /*
-    Copyright 2009, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 2009-2017, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -25,9 +25,10 @@ FSL_MAIN(
         return 1;
     }
     setting< string > configuration( L"fost-schema-test-dyndriver", L"Database drivers", args[ 1 ].value(), args[ 2 ].value(), false );
-    nullable< string > dsn = args.commandSwitch( L"d" );
-    out << configuration.name() << ": " << configuration.value() << L": " << dsn.value( L"No DSN" ) << std::endl;
-    dbconnection dbc( concat( args[ 1 ].value() + L"/", dsn.value( string() ) ).value() );
+    nullable< string > dsn = args.commandSwitch("d");
+    out << configuration.name() << ": " << configuration.value()
+        << ": " << dsn.value_or("No DSN") << std::endl;
+    dbconnection dbc(concat(args[ 1 ].value() + "/", dsn.value_or(string())).value());
     return 0;
 }
 

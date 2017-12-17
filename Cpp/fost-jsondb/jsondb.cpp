@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2016, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 1999-2017, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -26,33 +26,33 @@ namespace {
 
 
     string dbname( const json &config ) {
-        nullable< string > db = config[ L"database" ].get< string >();
+        const auto db = coerce<nullable<f5::u8view>>(config["database"]);
         if ( db ) return db.value();
-        if ( config[ L"write" ].get<string>() &&
-            config[ L"read" ].get< string >() != config[ L"write" ].get< string >() )
-        {
+        if ( config.has_key("write") && config["read"] != config["write"] ) {
             throw exceptions::data_driver("JSON database must have the same "
                 "read/write connections", "json");
         }
-        nullable< string > read = config[ L"read" ].get< string >();
+        const auto read = coerce<nullable<f5::u8view>>(config["read"]);
         if ( read ) return read.value();
-        throw exceptions::data_driver( L"You must specify a database name or read/write database names", L"json" );
+        throw exceptions::data_driver(
+            "You must specify a database name or read/write database names",
+            "json");
     }
     nullable< string > dbpath( const json &config ) {
-        nullable< string > fn = config[ L"filename" ].get< string >();
-        nullable< string > root = config[ L"root" ].get< string >();
+        const auto fn = coerce<nullable<f5::u8view>>(config["filename"]);
+        const auto root = coerce<nullable<f5::u8view>>(config["root"]);
         return concat( root, L"/", fn );
     }
-    nullable< string > dbpath( const json &config, const string &name ) {
-        nullable< string > root = config[ L"root" ].get< string >();
+    nullable<string> dbpath( const json &config, const string &name ) {
+        const auto root = coerce<nullable<f5::u8view>>(config["root"]);
         if ( not root ) return null;
-        else return concat( root, L"/", name + L".json" );
+        else return concat(root, "/", name + ".json");
     }
     bool allows_write( const dbconnection &dbc ) {
         return
-            (dbc.configuration()[ L"database" ].get< string >() &&
-                dbc.configuration()[ L"write" ].get< bool >().value_or(false))
-            || (dbc.configuration()[ L"write" ].get< string >());
+            (coerce<nullable<f5::u8view>>(dbc.configuration()["database"]) &&
+                dbc.configuration()[ L"write" ].get<bool>().value_or(false))
+            || coerce<nullable<f5::u8view>>(dbc.configuration()["write"]);
     }
 
     jsondb &g_database( const string &dbname, const nullable< string > &file, bool create ) {
