@@ -23,37 +23,37 @@ const module fostlib::c_fost_orm(c_fost, "orm");
 namespace {
 
 
-    const setting< string > c_defaultDriver( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"Default driver", L"json", true );
+    const setting< string > c_defaultDriver( "/fost-base/Cpp/fost-schema/db.cpp", "Database", "Default driver", "json", true );
 #ifdef WIN32
-    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp",
-        L"Database drivers", L"json",
+    const setting< string > c_json_driver( "/fost-base/Cpp/fost-schema/db.cpp",
+        "Database drivers", "json",
             #ifdef _DEBUG
-                L"fost-jsondb-gd.dll",
+                "fost-jsondb-gd.dll",
             #else
-                L"fost-jsondb.dll",
+                "fost-jsondb.dll",
             #endif
         true
     );
 #else
 #ifndef NeXTBSD
 #ifdef __APPLE__
-    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp",
-        L"Database drivers", L"json",
+    const setting< string > c_json_driver( "/fost-base/Cpp/fost-schema/db.cpp",
+        "Database drivers", "json",
             #ifdef _DEBUG
-                L"libfost-jsondb-d.dylib",
+                "libfost-jsondb-d.dylib",
             #else
-                L"libfost-jsondb.dylib",
+                "libfost-jsondb.dylib",
             #endif
          true
     );
 #else
     // linux?
-    const setting< string > c_json_driver( L"/fost-base/Cpp/fost-schema/db.cpp",
-        L"Database drivers", L"json",
+    const setting< string > c_json_driver( "/fost-base/Cpp/fost-schema/db.cpp",
+        "Database drivers", "json",
             #ifdef _DEBUG
-                L"libfost-jsondb-d.so",
+                "libfost-jsondb-d.so",
             #else
-                L"libfost-jsondb.so",
+                "libfost-jsondb.so",
             #endif
         true
     );
@@ -66,15 +66,15 @@ namespace {
 #else
 #define LOGGING false
 #endif
-    const setting< bool > c_logConnect( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"LogConnect", LOGGING, true );
-    const setting< bool > c_logRead( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"LogRead", LOGGING, true );
-    const setting< bool > c_logWrite( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"LogWrite", LOGGING, true );
-    const setting< bool > c_logFailure( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"LogFailure", true, true );
+    const setting< bool > c_logConnect( "/fost-base/Cpp/fost-schema/db.cpp", "Database", "LogConnect", LOGGING, true );
+    const setting< bool > c_logRead( "/fost-base/Cpp/fost-schema/db.cpp", "Database", "LogRead", LOGGING, true );
+    const setting< bool > c_logWrite( "/fost-base/Cpp/fost-schema/db.cpp", "Database", "LogWrite", LOGGING, true );
+    const setting< bool > c_logFailure( "/fost-base/Cpp/fost-schema/db.cpp", "Database", "LogFailure", true, true );
 #undef LOGGING
 
-    const setting< int > c_countCommandTimeout( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"CountCommandTimeout", 120, true );
-    const setting< int > c_readCommandTimeout( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"ReadCommandTimeout", 3600, true );
-    const setting< int > c_writeCommandTimeout( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"WriteCommandTimeout", 15, true );
+    const setting< int > c_countCommandTimeout( "/fost-base/Cpp/fost-schema/db.cpp", "Database", "CountCommandTimeout", 120, true );
+    const setting< int > c_readCommandTimeout( "/fost-base/Cpp/fost-schema/db.cpp", "Database", "ReadCommandTimeout", 3600, true );
+    const setting< int > c_writeCommandTimeout( "/fost-base/Cpp/fost-schema/db.cpp", "Database", "WriteCommandTimeout", 15, true );
 
 
     typedef threadsafe_store< const dbinterface * > database_driver_store;
@@ -84,7 +84,7 @@ namespace {
     }
 
     fostlib::string driver_name( const fostlib::string &d ) {
-        string p( partition( d, L";" ).first );
+        string p( partition( d, ";" ).first );
         string::size_type s( p.find( L'/' ) );
         if ( s == string::npos )
             return string();
@@ -101,7 +101,7 @@ namespace {
     fostlib::string driver( const fostlib::string &read, const fostlib::nullable< fostlib::string > &write ) {
         fostlib::string rd(driver_name(read)), wd(driver_name(write.value_or(read)));
         if ( rd != wd )
-            throw fostlib::exceptions::data_driver( L"Read and write drivers not the same", rd, wd );
+            throw fostlib::exceptions::data_driver( "Read and write drivers not the same", rd, wd );
         if ( rd.empty() )
             return c_defaultDriver.value();
         else
@@ -123,7 +123,7 @@ fostlib::dbinterface::dbinterface( const string &name )
 }
 fostlib::dbinterface::~dbinterface() {
     g_interfaces().remove( name(), this );
-    //std::cout << L"Removed driver " << name() << std::endl;
+    //std::cout << "Removed driver " << name() << std::endl;
 }
 
 
@@ -173,15 +173,15 @@ namespace {
         // in a driver DLL/so
         boost::shared_ptr< dynlib > driver_dll( g_dlls()[ driver ].lock() );
         if ( g_interfaces().find( driver ).empty() ) {
-            nullable< string > dll = setting< string >::value( L"Database drivers", driver, null );
+            nullable< string > dll = setting< string >::value( "Database drivers", driver, null );
             if ( not dll ) {
-                throw exceptions::data_driver( L"No driver found", driver );
+                throw exceptions::data_driver( "No driver found", driver );
             } else {
                 try {
                     driver_dll.reset( new dynlib( dll.value() ) );
                     g_dlls()[ driver ] = driver_dll;
                     if ( g_interfaces().find( driver ).empty() )
-                        throw exceptions::data_driver( L"No driver found even after loading driver file", driver );
+                        throw exceptions::data_driver( "No driver found even after loading driver file", driver );
                 } catch ( exceptions::exception &e ) {
                     insert(e.data(), "database", "driver", dll.value());
                     insert(e.data(), "drivers", json::array_t());
@@ -207,15 +207,15 @@ namespace {
 }
 
 
-const setting< bool > fostlib::dbconnection::c_commitCount( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"Commit count", true, true );
-const setting< string > fostlib::dbconnection::c_commitCountDomain( L"/fost-base/Cpp/fost-schema/db.cpp", L"Database", L"Commit count domain", L"Commit count", true );
+const setting< bool > fostlib::dbconnection::c_commitCount( "/fost-base/Cpp/fost-schema/db.cpp", "Database", "Commit count", true, true );
+const setting< string > fostlib::dbconnection::c_commitCountDomain( "/fost-base/Cpp/fost-schema/db.cpp", "Database", "Commit count domain", "Commit count", true );
 
 
 namespace {
     json cnx_conf( const string &r, const nullable< string > &w ) {
         json conf;
-        jcursor( L"read" )( conf ) = dsn( r );
-        if ( w ) jcursor( L"write" )( conf ) = dsn( w.value() );
+        jcursor( "read" )( conf ) = dsn( r );
+        if ( w ) jcursor( "write" )( conf ) = dsn( w.value() );
         return conf;
     }
     void establish(
@@ -248,12 +248,12 @@ fostlib::dbconnection::~dbconnection()
 try{
 } catch ( ... ) {
     /*try {
-        if ( setting< bool >::value( L"Database", L"LogFailure" ) ) {
+        if ( setting< bool >::value( "Database", "LogFailure" ) ) {
             YAML::Record failure;
-            failure.add( L"DB", L"Failure" );
-            failure.add( L"Place", L"DBConnection::~DBConnection()" );
-            failure.add( L"Exception", L"Unknown exception" );
-            failure.add( L"Connection", L"Read" );
+            failure.add( "DB", "Failure" );
+            failure.add( "Place", "DBConnection::~DBConnection()" );
+            failure.add( "Exception", "Unknown exception" );
+            failure.add( "Connection", "Read" );
             failure.log();
         }
     } catch ( exceptions::exception & ) {
@@ -276,12 +276,12 @@ const dbinterface &fostlib::dbconnection::driver() const {
 
 recordset fostlib::dbconnection::query( const meta_instance &item, const json &key ) {
     if ( !m_connection )
-        throw exceptions::transaction_fault( L"Database connection has not started a read transaction" );
+        throw exceptions::transaction_fault( "Database connection has not started a read transaction" );
     return m_connection->query( item, key );
 }
 recordset fostlib::dbconnection::query( const sql::statement &cmd ) {
     if ( !m_connection )
-        throw exceptions::transaction_fault( L"Database connection has not started a read transaction" );
+        throw exceptions::transaction_fault( "Database connection has not started a read transaction" );
     return m_connection->query( cmd );
 }
 
@@ -304,7 +304,7 @@ bool fostlib::dbconnection::in_transaction() const {
 
 dbtransaction &fostlib::dbconnection::transaction() {
     if ( !m_transaction )
-        throw exceptions::transaction_fault( L"No transaction is active" );
+        throw exceptions::transaction_fault( "No transaction is active" );
     return *m_transaction;
 }
 
@@ -325,7 +325,7 @@ dbinterface::connection_data &fostlib::dbconnection::connection_data() {
 fostlib::dbtransaction::dbtransaction( dbconnection &dbc )
 : m_connection( dbc ) {
     if ( m_connection.in_transaction() )
-        throw exceptions::transaction_fault( L"Nested transaction not yet supported" );
+        throw exceptions::transaction_fault( "Nested transaction not yet supported" );
     m_transaction = dbc.m_connection->writer();
     m_connection.m_transaction = this;
 }
@@ -335,14 +335,14 @@ fostlib::dbtransaction::~dbtransaction() {
     if ( m_transaction )
         m_transaction->rollback();
     if ( m_connection.m_transaction != this )
-        throw exceptions::transaction_fault( L"The current transaction has changed" );
+        throw exceptions::transaction_fault( "The current transaction has changed" );
     m_connection.m_transaction = NULL;
 }
 
 
 dbtransaction &fostlib::dbtransaction::create_table( const meta_instance &meta ) {
     if ( !m_transaction )
-        throw exceptions::transaction_fault( L"This transaction has already been used" );
+        throw exceptions::transaction_fault( "This transaction has already been used" );
     m_transaction->create_table( meta );
     return *this;
 }
@@ -350,13 +350,13 @@ dbtransaction &fostlib::dbtransaction::create_table( const meta_instance &meta )
 
 dbtransaction &fostlib::dbtransaction::drop_table( const meta_instance &meta ) {
     if ( !m_transaction )
-        throw exceptions::transaction_fault( L"This transaction has already been used" );
+        throw exceptions::transaction_fault( "This transaction has already been used" );
     m_transaction->drop_table( meta );
     return *this;
 }
 dbtransaction &fostlib::dbtransaction::drop_table( const fostlib::string &table ) {
     if ( !m_transaction )
-        throw exceptions::transaction_fault( L"This transaction has already been used" );
+        throw exceptions::transaction_fault( "This transaction has already been used" );
     m_transaction->drop_table( table );
     return *this;
 }
@@ -364,14 +364,14 @@ dbtransaction &fostlib::dbtransaction::drop_table( const fostlib::string &table 
 
 dbtransaction &fostlib::dbtransaction::insert( const instance &object, std::function< void( void ) > oncommit ) {
     if ( !m_transaction )
-        throw exceptions::transaction_fault( L"This transaction has already been used" );
+        throw exceptions::transaction_fault( "This transaction has already been used" );
     m_oncommit.push_back( oncommit );
     m_transaction->insert( object );
     return *this;
 }
 dbtransaction &fostlib::dbtransaction::execute( const sql::statement &command ) {
     if ( !m_transaction )
-        throw exceptions::transaction_fault( L"This transaction has already been used" );
+        throw exceptions::transaction_fault( "This transaction has already been used" );
     m_transaction->execute( command );
     return *this;
 }
@@ -445,7 +445,7 @@ const json &fostlib::recordset::field( std::size_t i ) const {
     if ( m_interface.get() )
         return m_interface->field( i );
     else
-        throw exceptions::unexpected_eof( L"The recordset came from a write SQL instruction" );
+        throw exceptions::unexpected_eof( "The recordset came from a write SQL instruction" );
 }
 
 
@@ -453,7 +453,7 @@ const json &fostlib::recordset::field( const string &name ) const {
     if ( m_interface.get() )
         return m_interface->field( name );
     else
-        throw exceptions::unexpected_eof( L"The recordset came from a write SQL instruction" );
+        throw exceptions::unexpected_eof( "The recordset came from a write SQL instruction" );
 }
 
 
