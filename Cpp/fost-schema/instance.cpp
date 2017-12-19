@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2010, Felspar Co Ltd. http://fost.3.felspar.com/
+    Copyright 1999-2017, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -11,8 +11,6 @@
 #include <fost/db.hpp>
 
 #include <fost/exception/no_attribute.hpp>
-
-#include <boost/lambda/lambda.hpp>
 
 
 using namespace fostlib;
@@ -46,11 +44,11 @@ attribute_base &fostlib::instance::operator [] ( const string &name ) {
         return *p->second;
 }
 
-void fostlib::instance::save( fostlib::dbtransaction &t ) {
+void fostlib::instance::save(fostlib::dbtransaction &t) {
     if ( m_in_database )
         throw exceptions::not_implemented(
             "fostlib::instance::save() -- when already in database");
     else
-        t.insert( *this, boost::lambda::var( m_in_database ) = true );
+        t.insert(*this, [this]() {  m_in_database = true; });
 }
 
