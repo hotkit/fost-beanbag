@@ -35,7 +35,7 @@ beanbag::jsondb_ptr beanbag::database(
     const fostlib::json &which
 ) {
     try {
-        fostlib::nullable<fostlib::string> which_name(which.get<fostlib::string>());
+        auto which_name(fostlib::coerce<fostlib::nullable<f5::u8view>>(which));
         fostlib::string name;
         if ( not which_name )
             name = fostlib::coerce<fostlib::string>(which["name"]);
