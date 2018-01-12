@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2017, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 1999-2018, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -56,9 +56,9 @@ namespace {
     }
 
     jsondb &g_database( const string &dbname, const nullable< string > &file, bool create ) {
-        static boost::mutex mx;
-        static std::map< string, boost::shared_ptr< jsondb > > databases;
-        boost::mutex::scoped_lock lock( mx );
+        static std::mutex mx;
+        static std::map<string, boost::shared_ptr<jsondb>> databases;
+        std::lock_guard<std::mutex> lock{mx};
         std::map< string, boost::shared_ptr< jsondb > >::iterator p( databases.find( dbname ) );
         if ( p == databases.end() ) {
             boost::shared_ptr< jsondb > db;
