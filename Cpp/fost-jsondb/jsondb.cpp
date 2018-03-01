@@ -1,5 +1,5 @@
 /*
-    Copyright 1999-2016, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 1999-2018, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -26,39 +26,39 @@ namespace {
 
 
     string dbname( const json &config ) {
-        nullable< string > db = config[ L"database" ].get< string >();
+        const auto db = coerce<nullable<f5::u8view>>(config["database"]);
         if ( db ) return db.value();
-        if ( config[ L"write" ].get<string>() &&
-            config[ L"read" ].get< string >() != config[ L"write" ].get< string >() )
-        {
+        if ( config.has_key("write") && config["read"] != config["write"] ) {
             throw exceptions::data_driver("JSON database must have the same "
                 "read/write connections", "json");
         }
-        nullable< string > read = config[ L"read" ].get< string >();
+        const auto read = coerce<nullable<f5::u8view>>(config["read"]);
         if ( read ) return read.value();
-        throw exceptions::data_driver( L"You must specify a database name or read/write database names", L"json" );
+        throw exceptions::data_driver(
+            "You must specify a database name or read/write database names",
+            "json");
     }
     nullable< string > dbpath( const json &config ) {
-        nullable< string > fn = config[ L"filename" ].get< string >();
-        nullable< string > root = config[ L"root" ].get< string >();
-        return concat( root, L"/", fn );
+        const auto fn = coerce<nullable<f5::u8view>>(config["filename"]);
+        const auto root = coerce<nullable<f5::u8view>>(config["root"]);
+        return concat(root, "/", fn);
     }
-    nullable< string > dbpath( const json &config, const string &name ) {
-        nullable< string > root = config[ L"root" ].get< string >();
+    nullable<string> dbpath( const json &config, const string &name ) {
+        const auto root = coerce<nullable<f5::u8view>>(config["root"]);
         if ( not root ) return null;
-        else return concat( root, L"/", name + L".json" );
+        else return concat(root, "/", name + ".json");
     }
     bool allows_write( const dbconnection &dbc ) {
         return
-            (dbc.configuration()[ L"database" ].get< string >() &&
-                dbc.configuration()[ L"write" ].get< bool >().value_or(false))
-            || (dbc.configuration()[ L"write" ].get< string >());
+            (coerce<nullable<f5::u8view>>(dbc.configuration()["database"]) &&
+                dbc.configuration()["write"].get<bool>().value_or(false))
+            || coerce<nullable<f5::u8view>>(dbc.configuration()["write"]);
     }
 
     jsondb &g_database( const string &dbname, const nullable< string > &file, bool create ) {
-        static boost::mutex mx;
-        static std::map< string, boost::shared_ptr< jsondb > > databases;
-        boost::mutex::scoped_lock lock( mx );
+        static std::mutex mx;
+        static std::map<string, boost::shared_ptr<jsondb>> databases;
+        std::lock_guard<std::mutex> lock{mx};
         std::map< string, boost::shared_ptr< jsondb > >::iterator p( databases.find( dbname ) );
         if ( p == databases.end() ) {
             boost::shared_ptr< jsondb > db;
@@ -66,7 +66,7 @@ namespace {
                 if ( not file ) db.reset(new jsondb);
                 else {
                     try {
-                        if ( create || dbname == L"master" ) // We always allow master database to be created
+                        if ( create || dbname == "master" ) // We always allow master database to be created
                             db.reset(
                                 new jsondb(coerce<boost::filesystem::wpath>(file.value()), json()));
                         else
@@ -78,8 +78,8 @@ namespace {
                     }
                 }
                 jsondb::local loc( *db );
-                if ( dbname == L"master" && !loc.has_key( L"database" ) )
-                    loc.insert( jcursor( L"database" ), json() ).commit();
+                if ( dbname == "master" && !loc.has_key("database") )
+                    loc.insert( jcursor("database"), json() ).commit();
                 p = databases.insert( std::make_pair( dbname, db ) ).first;
             } catch ( exceptions::exception &e ) {
                 fostlib::insert(e.data(), "database", "name", dbname);

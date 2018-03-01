@@ -1,5 +1,5 @@
 /*
-    Copyright 2005-2013, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2005-2017, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -25,9 +25,9 @@ void do_insert_test( dbconnection &dbc );
 
 FSL_MAIN(
     L"fost-schema-test-jsondb-file",
-    L"fost-schema-test-jsondb-file\nTest the file handling for Fost 4 JSON databases\nCopyright (c) 2008-2010, Felspar Co. Ltd."
+    L"fost-schema-test-jsondb-file\nTest the file handling for Fost 4 JSON databases\nCopyright (C) 2008-2017, Felspar Co. Ltd."
 )( fostlib::ostream &out, fostlib::arguments &args ) {
-    if ( args[ 1 ].isnull() ) {
+    if ( not args[1] ) {
         out << L"Supply a JSON file which contains the database configuration as the first parameter" << std::endl;
         return 1;
     }
@@ -38,16 +38,17 @@ FSL_MAIN(
     /*
         Load the configuration and set a root if one isn't already set
     */
-    json configuration( json::parse( utf::load_file( coerce< std::wstring >( args[ 1 ].value() ).c_str() ) ) );
+    json configuration(json::parse(utf::load_file(
+        coerce<boost::filesystem::path>(args[1].value()))));
     if ( !configuration.has_key( L"root" ) )
-        jcursor( L"root" )( configuration ) = L"../fost-orm/Cpp/fost-schema-test/jsondb-file";
+        jcursor("root")(configuration) = "../fost-orm/Cpp/fost-schema-test/jsondb-file";
 
     /*
         Connect to the master and then create the new database
     */
-    dbconnection master( configuration );
-    string dbname( guid() );
-    master.create_database( dbname );
+    dbconnection master(configuration);
+    string dbname(guid());
+    master.create_database(dbname);
 
     /*
         Create a new configuration and then connect to the database
@@ -66,14 +67,16 @@ FSL_MAIN(
     /*
         Now check that the file on disk matches the first test file
     */
+    auto fnn = coerce<boost::filesystem::path>(
+        concat(coerce<string>(new_config["root"]),
+            "/", coerce<string>(new_config["filename"])));
+    auto fno = coerce<boost::filesystem::path>(
+        concat(coerce<string>(new_config["root"]),
+            "/", "../first-test.json"));
+    out << "Comparing " << fnn << " and " << fno << std::endl;
     FSL_CHECK_EQ(
-        fostlib::trim( utf::load_file( coerce< std::wstring >( concat(
-            new_config[ L"root" ].get< string >().value(), L"/", new_config[ L"filename" ].get< string >().value()
-        ).value() ).c_str() ) ).value(),
-        fostlib::trim( utf::load_file( coerce< std::wstring >( concat(
-            new_config[ L"root" ].get< string >().value(), L"/../", L"first-test.json"
-        ).value() ).c_str() ) ).value()
-    );
+        fostlib::trim(utf::load_file(fnn)).value(),
+        fostlib::trim(utf::load_file(fno)).value());
 
     return 0;
 }

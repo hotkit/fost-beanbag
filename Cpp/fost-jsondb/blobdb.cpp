@@ -206,12 +206,12 @@ fostlib::jsondb::local::local(local &&l)
 }
 
 
-void fostlib::jsondb::local::rebase(const jcursor &pos) {
+void fostlib::jsondb::local::rebase(jcursor pos) {
     if ( m_operations.size() || m_pre_commit.size() || m_post_commit.size() ) {
         throw fostlib::exceptions::not_implemented(
             __FUNCTION__, "This transaction has already been used");
     }
-    m_position = pos;
+    m_position = std::move(pos);
     refresh();
 }
 

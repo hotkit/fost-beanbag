@@ -1,5 +1,5 @@
 /*
-    Copyright 2007-2016, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2007-2017, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -77,7 +77,7 @@ namespace fostlib {
 
             /// Change the base location of the transaction. Requires that
             /// no changes have been made in the data yet.
-            void rebase(const jcursor &pos);
+            void rebase(jcursor pos);
 
             /// Check to see if the database contains a specified location or not
             template< typename key >
