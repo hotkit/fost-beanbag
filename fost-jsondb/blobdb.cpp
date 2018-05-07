@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2017, Felspar Co Ltd. http://support.felspar.com/
+    Copyright 2008-2018, Felspar Co Ltd. http://support.felspar.com/
     Distributed under the Boost Software License, Version 1.0.
     See accompanying file LICENSE_1_0.txt or copy at
         http://www.boost.org/LICENSE_1_0.txt
@@ -8,8 +8,6 @@
 
 #include "fost-jsondb.hpp"
 #include <fost/counter>
-#include <fost/db>
-#include <fost/db-driver>
 #include <fost/log>
 #include <fost/unicode>
 #include <fost/jsondb.hpp>
@@ -32,13 +30,13 @@ namespace bfs = boost::filesystem;
 */
 
 
-const module fostlib::c_fost_orm_jsondb(c_fost_orm, "jsondb");
+const module fostlib::c_fost_jsondb(c_fost, "jsondb");
 
 
 namespace {
-    performance p_created(c_fost_orm_jsondb, "db", "created");
-    performance p_loaded(c_fost_orm_jsondb, "db", "loaded");
-    performance p_saved(c_fost_orm_jsondb, "db", "saved");
+    performance p_created(c_fost_jsondb, "db", "created");
+    performance p_loaded(c_fost_jsondb, "db", "loaded");
+    performance p_saved(c_fost_jsondb, "db", "saved");
 }
 
 

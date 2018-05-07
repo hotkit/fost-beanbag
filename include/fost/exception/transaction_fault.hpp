@@ -20,7 +20,7 @@ namespace fostlib {
     namespace exceptions {
 
 
-        class FOST_SCHEMA_DECLSPEC transaction_fault : public exception {
+        class FOST_JSONDB_DECLSPEC transaction_fault : public exception {
         public:
             transaction_fault( const string &error ) throw ();
 
