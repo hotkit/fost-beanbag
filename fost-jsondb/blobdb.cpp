@@ -13,7 +13,6 @@
 #include <fost/log>
 #include <fost/unicode>
 #include <fost/jsondb.hpp>
-#include <fost/schema.hpp>
 
 #include <fost/exception/file_error.hpp>
 #include <fost/exception/not_null.hpp>
