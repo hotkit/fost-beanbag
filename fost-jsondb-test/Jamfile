@@ -3,13 +3,13 @@ using testing ;
 
 unit-test fost-jsondb-test-backup
     :
-        ../../../Boost//boost-date_time-dll
-        ../../../Boost//boost-filesystem-dll
-        ../../../Boost//boost-system-dll
-        ../../../Boost//boost-thread-dll
-        ../../../fost-base/Cpp/fost-cli/
-        ../../../fost-base/Cpp/fost-core/
-        ../../../fost-base/Cpp/fost-test/
+        ../../Boost//boost-date_time-dll
+        ../../Boost//boost-filesystem-dll
+        ../../Boost//boost-system-dll
+        ../../Boost//boost-thread-dll
+        ../../fost-base/Cpp/fost-cli/
+        ../../fost-base/Cpp/fost-core/
+        ../../fost-base/Cpp/fost-test/
         ../fost-jsondb/
         backup.cpp
     :
@@ -19,13 +19,13 @@ unit-test fost-jsondb-test-backup
 
 unit-test fost-jsondb-test-file
     :
-        ../../../Boost//boost-date_time-dll
-        ../../../Boost//boost-filesystem-dll
-        ../../../Boost//boost-system-dll
-        ../../../Boost//boost-thread-dll
-        ../../../fost-base/Cpp/fost-cli/
-        ../../../fost-base/Cpp/fost-core/
-        ../../../fost-base/Cpp/fost-test/
+        ../../Boost//boost-date_time-dll
+        ../../Boost//boost-filesystem-dll
+        ../../Boost//boost-system-dll
+        ../../Boost//boost-thread-dll
+        ../../fost-base/Cpp/fost-cli/
+        ../../fost-base/Cpp/fost-core/
+        ../../fost-base/Cpp/fost-test/
         ../fost-jsondb/
         filetest.cpp
     :

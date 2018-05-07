@@ -1,9 +1,7 @@
 
 fost-lib-autotest fost-jsondb
     :
-        Cpp/fost-jsondb
-    :
-        ../fost-schema/
+       fost-jsondb
     :
         <include>../../../threading/include
     ;
