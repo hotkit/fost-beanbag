@@ -12,6 +12,8 @@ add_library(beanbag-views
 target_link_libraries(beanbag-views beanbag fost-crypto fost-urlhandler)
 install(TARGETS beanbag-views LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/beanbag-raw.tests.html
+    ${CMAKE_CURRENT_BINARY_DIR}/beanbag-raw.tests.html COPYONLY)
 add_library(beanbag-views-smoke STATIC EXCLUDE_FROM_ALL
         beanbag-raw.tests.cpp
         beanbag-structured.tests.cpp
