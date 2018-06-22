@@ -1,7 +1,0 @@
-
-fost-lib-autotest fost-jsondb
-    :
-       fost-jsondb
-    :
-        <include>../../../threading/include
-    ;
