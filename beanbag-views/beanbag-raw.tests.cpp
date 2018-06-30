@@ -1,8 +1,8 @@
-/*
-    Copyright 2012-2016, Felspar Co Ltd. http://support.felspar.com/
+/**
+    Copyright 2012-2018, Felspar Co Ltd. <http://support.felspar.com/>
+
     Distributed under the Boost Software License, Version 1.0.
-    See accompanying file LICENSE_1_0.txt or copy at
-        http://www.boost.org/LICENSE_1_0.txt
+    See <http://www.boost.org/LICENSE_1_0.txt>
 */
 
 
@@ -15,7 +15,7 @@
 FSL_TEST_SUITE(beanbag_raw);
 
 
-// Needs external linkage (!), for C++03 anyway
+/// Needs external linkage (!), for C++03 anyway
 extern const char setup_default_name[] = "beanbag.test";
 
 
@@ -25,9 +25,13 @@ namespace {
         setup(bool with_template = true)
         : view(N), status(0) {
             fostlib::insert(options, "database", N);
-            if ( with_template )
-                fostlib::insert(options, "html", "template",
-                    "../fost-beanbag/beanbag-views/beanbag-raw.tests.html");
+            if ( with_template ) {
+                /**
+                    With cmake the file gets copied over to the build location
+                    from the [CMakeLists.txt](./CMakeLists.txt) file.
+                 */
+                fostlib::insert(options, "html", "template", "beanbag-raw.tests.html");
+            }
         }
 
         const V view;
