@@ -4,6 +4,7 @@ add_library(beanbag
     )
 target_link_libraries(beanbag fost-jsondb)
 target_include_directories(beanbag PUBLIC ../include)
+set_target_properties(beanbag PROPERTIES DEBUG_POSTFIX "-d")
 install(TARGETS beanbag LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
 add_library(beanbag-smoke STATIC EXCLUDE_FROM_ALL

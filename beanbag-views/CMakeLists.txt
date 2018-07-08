@@ -10,6 +10,7 @@ add_library(beanbag-views
         patch.op-set.cpp
     )
 target_link_libraries(beanbag-views beanbag fost-crypto fost-urlhandler)
+set_target_properties(beanbag-views PROPERTIES DEBUG_POSTFIX "-d")
 install(TARGETS beanbag-views LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/beanbag-raw.tests.html
