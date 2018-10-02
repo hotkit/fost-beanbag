@@ -160,7 +160,7 @@ FSL_TEST_FUNCTION(put_with_unicode) {
         "application/json");
     FSL_CHECK_EQ(
         fostlib::coerce<fostlib::string>(*put.response),
-        fostlib::string(L"\"\\u2014\"\n"));
+        fostlib::string("\"\xE2\x80\x94\"\n"));
     boost::shared_ptr<fostlib::jsondb> db(
         beanbag::database(put.options["database"]));
     fostlib::jsondb::local content(*db);
