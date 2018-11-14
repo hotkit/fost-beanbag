@@ -6,16 +6,15 @@
 */
 
 
+#include <fost/log>
 #include <fost/test>
 #include <beanbag/beanbag>
 
 
 namespace {
-/*    const fostlib::setting<fostlib::string> c_data_root(
-        "fost-beanbag/databases-tests.cpp", fostlib::c_jsondb_root,
-        fostlib::coerce<fostlib::string>(fostlib::unique_filename()));*/
+    const fostlib::module c_test(beanbag::c_beanbag, "test");
+    const fostlib::module c_test_database(c_test, "database");
 }
-
 
 FSL_TEST_SUITE(databases);
 
@@ -44,6 +43,8 @@ FSL_TEST_FUNCTION(can_delete_database) {
     beanbag::jsondb_ptr db(beanbag::database(config));
     FSL_CHECK(db.get());
     FSL_CHECK(db->filename().has_value());
+    fostlib::log::debug(c_test_database)
+            ("filename", db->filename().value());
     FSL_CHECK(boost::filesystem::exists(db->filename().value()));
     beanbag::remove(db);
     FSL_CHECK(not boost::filesystem::exists(db->filename().value()));
