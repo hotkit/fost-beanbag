@@ -1,8 +1,8 @@
-/*
-    Copyright 2008-2018, Felspar Co Ltd. http://support.felspar.com/
+/**
+    Copyright 2008-2018, Felspar Co Ltd. <http://support.felspar.com/>
+
     Distributed under the Boost Software License, Version 1.0.
-    See accompanying file LICENSE_1_0.txt or copy at
-        http://www.boost.org/LICENSE_1_0.txt
+    See <http://www.boost.org/LICENSE_1_0.txt>
 */
 
 
@@ -54,7 +54,7 @@ const setting<bool> fostlib::c_jsondb_pretty_print(
 const setting<string> fostlib::c_jsondb_root(
     L"fost-orm/Cpp/fost-jsondb/blobdb.cpp",
     L"JSON DB", "Default file location",
-    ".", true);
+    "", true);
 
 
 namespace {
