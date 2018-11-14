@@ -11,9 +11,9 @@
 
 
 namespace {
-    const fostlib::setting<fostlib::string> c_data_root(
+/*    const fostlib::setting<fostlib::string> c_data_root(
         "fost-beanbag/databases-tests.cpp", fostlib::c_jsondb_root,
-        fostlib::coerce<fostlib::string>(fostlib::unique_filename()));
+        fostlib::coerce<fostlib::string>(fostlib::unique_filename()));*/
 }
 
 
