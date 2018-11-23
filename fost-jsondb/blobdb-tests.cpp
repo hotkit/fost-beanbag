@@ -197,12 +197,13 @@ FSL_TEST_FUNCTION( remove_fails_after_change ) {
 
 
 namespace {
-    unsigned int transformation_run = 0;
+    unsigned int transformation_run{};
     void transformation_fn(const jcursor &, json &) {
         ++transformation_run;
     }
 }
 FSL_TEST_FUNCTION( transformation ) {
+    transformation_run = 0u;
     jsondb database;
     jsondb::local loc(database);
     FSL_CHECK_EQ(loc.transformation(transformation_fn), 1u);
