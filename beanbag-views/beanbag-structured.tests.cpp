@@ -15,11 +15,11 @@ FSL_TEST_SUITE(beanbag_structured);
 
 namespace {
     struct setup {
-        setup()
-        : view("beanbag.test"), status(0) {
+        setup() : view("beanbag.test"), status(0) {
             fostlib::insert(options, "database", "beanbag.test");
-            fostlib::insert(options, "html", "template",
-                "../../usr/share/beanbag/raw/template.html");
+            fostlib::insert(
+                    options, "html", "template",
+                    "../../usr/share/beanbag/raw/template.html");
         }
 
         const beanbag::structured_view view;
@@ -33,22 +33,24 @@ namespace {
         void do_request(
                 const fostlib::string &method,
                 const fostlib::string &pathname,
-                const fostlib::string &body_data = fostlib::string() ) {
+                const fostlib::string &body_data = fostlib::string()) {
             dbp = beanbag::test_database("beanbag.test", database);
             auto body = std::make_unique<fostlib::binary_body>(
-                    fostlib::coerce< std::vector<unsigned char> >(
-                        fostlib::coerce<fostlib::utf8_string>(body_data)),
+                    fostlib::coerce<std::vector<unsigned char>>(
+                            fostlib::coerce<fostlib::utf8_string>(body_data)),
                     headers);
             fostlib::http::server::request req(
-                method, fostlib::coerce<fostlib::url::filepath_string>(pathname),
-                std::move(body));
+                    method,
+                    fostlib::coerce<fostlib::url::filepath_string>(pathname),
+                    std::move(body));
             std::pair<boost::shared_ptr<fostlib::mime>, int> res =
-                view(options, pathname, req, host);
+                    view(options, pathname, req, host);
             response = res.first;
             status = res.second;
-            if ( response->headers()["Content-Type"].value() == "application/json" )
+            if (response->headers()["Content-Type"].value()
+                == "application/json")
                 response_data = fostlib::json::parse(
-                    fostlib::coerce<fostlib::string>(*response));
+                        fostlib::coerce<fostlib::string>(*response));
         }
     };
 }
@@ -62,4 +64,3 @@ FSL_TEST_FUNCTION(get_for_empty_key) {
     FSL_CHECK_EQ(env.status, 200);
     FSL_CHECK_EQ(env.response_data, env.database[""]);
 }
-

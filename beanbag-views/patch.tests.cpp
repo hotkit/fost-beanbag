@@ -74,7 +74,7 @@ FSL_TEST_FUNCTION(json_object_created) {
     }
     auto after = fostlib::timestamp::now();
     auto recorded = fostlib::coerce<fostlib::timestamp>(
-        fostlib::jsondb::local(db).data()["time"]);
+            fostlib::jsondb::local(db).data()["time"]);
     FSL_CHECK(before < recorded);
     FSL_CHECK(recorded < after);
 
@@ -84,7 +84,7 @@ FSL_TEST_FUNCTION(json_object_created) {
         trans.commit();
     }
     recorded = fostlib::coerce<fostlib::timestamp>(
-        fostlib::jsondb::local(db).data()["time"]);
+            fostlib::jsondb::local(db).data()["time"]);
     FSL_CHECK(before < recorded);
     FSL_CHECK(recorded < after);
 }
@@ -108,7 +108,7 @@ FSL_TEST_FUNCTION(json_object_now) {
     }
     auto after = fostlib::timestamp::now();
     auto recorded = fostlib::coerce<fostlib::timestamp>(
-        fostlib::jsondb::local(db).data()["time"]);
+            fostlib::jsondb::local(db).data()["time"]);
     FSL_CHECK(before < recorded);
     FSL_CHECK(recorded < after);
 }
@@ -205,7 +205,7 @@ FSL_TEST_FUNCTION(json_z_array) {
 
         // Result of operation 1
         auto recorded = fostlib::coerce<fostlib::timestamp>(
-            fostlib::jsondb::local(db).data()["time"]);
+                fostlib::jsondb::local(db).data()["time"]);
         FSL_CHECK(before < recorded);
         FSL_CHECK(recorded < middle);
 
@@ -219,7 +219,7 @@ FSL_TEST_FUNCTION(json_z_array) {
         ops[2](trans);
         trans.commit();
     }
-    auto after  = fostlib::timestamp::now();
+    auto after = fostlib::timestamp::now();
     {
         fostlib::jsondb::local trans(db);
 
@@ -228,7 +228,7 @@ FSL_TEST_FUNCTION(json_z_array) {
 
         // Result of operation 1
         auto recorded = fostlib::coerce<fostlib::timestamp>(
-            fostlib::jsondb::local(db).data()["time"]);
+                fostlib::jsondb::local(db).data()["time"]);
         FSL_CHECK(middle < recorded);
         FSL_CHECK(recorded < after);
 
@@ -236,4 +236,3 @@ FSL_TEST_FUNCTION(json_z_array) {
         FSL_CHECK_EQ(fostlib::jsondb::local(db)["counter"], fostlib::json(4));
     }
 }
-

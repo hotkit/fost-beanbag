@@ -20,17 +20,17 @@ extern const char setup_default_name[] = "beanbag.test";
 
 
 namespace {
-    template< typename V = beanbag::raw_view, const char N[] = setup_default_name >
+    template<typename V = beanbag::raw_view, const char N[] = setup_default_name>
     struct setup {
-        setup(bool with_template = true)
-        : view(N), status(0) {
+        setup(bool with_template = true) : view(N), status(0) {
             fostlib::insert(options, "database", N);
-            if ( with_template ) {
+            if (with_template) {
                 /**
                     With cmake the file gets copied over to the build location
                     from the [CMakeLists.txt](./CMakeLists.txt) file.
                  */
-                fostlib::insert(options, "html", "template", "beanbag-raw.tests.html");
+                fostlib::insert(
+                        options, "html", "template", "beanbag-raw.tests.html");
             }
         }
 
@@ -45,17 +45,18 @@ namespace {
         void do_request(
                 const fostlib::string &method,
                 const fostlib::string &pathname,
-                const fostlib::string &body_data = fostlib::string() ) {
+                const fostlib::string &body_data = fostlib::string()) {
             dbp = beanbag::test_database(N, database);
             auto body = std::make_unique<fostlib::binary_body>(
-                    fostlib::coerce< std::vector<unsigned char> >(
-                        fostlib::coerce<fostlib::utf8_string>(body_data)),
+                    fostlib::coerce<std::vector<unsigned char>>(
+                            fostlib::coerce<fostlib::utf8_string>(body_data)),
                     headers);
             fostlib::http::server::request req(
-                method, fostlib::coerce<fostlib::url::filepath_string>(pathname),
-                std::move(body));
+                    method,
+                    fostlib::coerce<fostlib::url::filepath_string>(pathname),
+                    std::move(body));
             std::pair<boost::shared_ptr<fostlib::mime>, int> res =
-                view(options, pathname, req, host);
+                    view(options, pathname, req, host);
             response = res.first;
             status = res.second;
         }
@@ -68,12 +69,11 @@ FSL_TEST_FUNCTION(get_non_existent_path_returns_404) {
     env.headers.set("Accept", "application/json");
     env.do_request("GET", "/not/a/path/");
     FSL_CHECK_EQ(env.status, 404);
-    FSL_CHECK_EQ(
-        env.response->headers()["Content-Type"].value(),
-        "text/html");
+    FSL_CHECK_EQ(env.response->headers()["Content-Type"].value(), "text/html");
     FSL_CHECK(
-        fostlib::coerce<fostlib::string>(*env.response).find(
-            "Resource not found") != fostlib::string::npos);
+            fostlib::coerce<fostlib::string>(*env.response)
+                    .find("Resource not found")
+            != fostlib::string::npos);
 }
 
 
@@ -83,8 +83,7 @@ FSL_TEST_FUNCTION(get_with_path_gives_200) {
     fostlib::insert(env.database, "is", "a", "path", true);
     env.do_request("GET", "/is/a/path/");
     FSL_CHECK_EQ(env.status, 200);
-    FSL_CHECK_EQ("true\n",
-        fostlib::coerce<fostlib::string>(*env.response));
+    FSL_CHECK_EQ("true\n", fostlib::coerce<fostlib::string>(*env.response));
 }
 
 
@@ -94,7 +93,7 @@ FSL_TEST_FUNCTION(get_without_accept_and_with_server_template) {
     env.do_request("GET", "/is/a/path/");
     FSL_CHECK_EQ(env.status, 200);
     FSL_CHECK(fostlib::coerce<fostlib::string>(*env.response)
-        .startswith("<!doctype xhtml>"));
+                      .startswith("<!doctype xhtml>"));
 }
 
 
@@ -103,10 +102,8 @@ FSL_TEST_FUNCTION(get_without_accept_and_without_server_template) {
     fostlib::insert(env.database, "is", "a", "path", true);
     env.do_request("GET", "/is/a/path/");
     FSL_CHECK_EQ(env.status, 200);
-    FSL_CHECK_EQ("true\n",
-        fostlib::coerce<fostlib::string>(*env.response));
-    FSL_CHECK_EQ(env.response->headers()["Content-Type"].value(),
-        "text/plain");
+    FSL_CHECK_EQ("true\n", fostlib::coerce<fostlib::string>(*env.response));
+    FSL_CHECK_EQ(env.response->headers()["Content-Type"].value(), "text/plain");
 }
 
 
@@ -114,9 +111,7 @@ FSL_TEST_FUNCTION(get_html_has_etag) {
     setup<> env;
     env.do_request("GET", "/");
     FSL_CHECK_EQ(env.status, 200);
-    FSL_CHECK_EQ(
-        env.response->headers()["Content-Type"].value(),
-        "text/html");
+    FSL_CHECK_EQ(env.response->headers()["Content-Type"].value(), "text/html");
     FSL_CHECK(env.response->headers().exists("ETag"));
     FSL_CHECK_EQ(env.response->headers()["ETag"].value()[0], '"');
     FSL_CHECK_NEQ(env.response->headers()["ETag"].value()[1], '"');
@@ -129,12 +124,12 @@ FSL_TEST_FUNCTION(get_json_has_etag) {
     env.do_request("GET", "/");
     FSL_CHECK_EQ(env.status, 200);
     FSL_CHECK_EQ(
-        env.response->headers()["Content-Type"].value(),
-        "application/json");
+            env.response->headers()["Content-Type"].value(),
+            "application/json");
     FSL_CHECK(env.response->headers().exists("ETag"));
     FSL_CHECK_EQ(
-        env.response->headers()["ETag"].value(),
-        "\"37a6259cc0c1dae299a7866489dff0bd\"");
+            env.response->headers()["ETag"].value(),
+            "\"37a6259cc0c1dae299a7866489dff0bd\"");
 }
 
 
@@ -144,8 +139,8 @@ FSL_TEST_FUNCTION(put_to_new_path) {
     put.do_request("PUT", "/new/path/3/", "null");
     FSL_CHECK_EQ(put.status, 201);
     FSL_CHECK_EQ(
-        put.response->headers()["Content-Type"].value(),
-        "application/json");
+            put.response->headers()["Content-Type"].value(),
+            "application/json");
     FSL_CHECK(put.response->headers().exists("ETag"));
 }
 
@@ -156,13 +151,13 @@ FSL_TEST_FUNCTION(put_with_unicode) {
     put.do_request("PUT", "/new/path/4/", fostlib::string(L"\"\\u2014\""));
     FSL_CHECK_EQ(put.status, 201);
     FSL_CHECK_EQ(
-        put.response->headers()["Content-Type"].value(),
-        "application/json");
+            put.response->headers()["Content-Type"].value(),
+            "application/json");
     FSL_CHECK_EQ(
-        fostlib::coerce<fostlib::string>(*put.response),
-        fostlib::string("\"\xE2\x80\x94\"\n"));
+            fostlib::coerce<fostlib::string>(*put.response),
+            fostlib::string("\"\xE2\x80\x94\"\n"));
     boost::shared_ptr<fostlib::jsondb> db(
-        beanbag::database(put.options["database"]));
+            beanbag::database(put.options["database"]));
     fostlib::jsondb::local content(*db);
     FSL_CHECK_EQ(content["new"]["path"][4], fostlib::json(L"\x2014"));
 }
@@ -175,8 +170,8 @@ FSL_TEST_FUNCTION(conditional_put_matches) {
     put.do_request("PUT", "/", "[]");
     FSL_CHECK_EQ(put.status, 201);
     FSL_CHECK_EQ(
-        put.response->headers()["Content-Type"].value(),
-        "application/json");
+            put.response->headers()["Content-Type"].value(),
+            "application/json");
 }
 
 
@@ -186,9 +181,7 @@ FSL_TEST_FUNCTION(conditional_put_does_not_match) {
     put.headers.set("If-Match", "\"invalid-etag-value\"");
     put.do_request("PUT", "/", "[]");
     FSL_CHECK_EQ(put.status, 412);
-    FSL_CHECK_EQ(
-        put.response->headers()["Content-Type"].value(),
-        "text/html");
+    FSL_CHECK_EQ(put.response->headers()["Content-Type"].value(), "text/html");
 }
 
 
@@ -198,9 +191,7 @@ FSL_TEST_FUNCTION(conditional_put_does_not_match_path_does_not_exist) {
     put.headers.set("If-Match", "\"invalid-etag-value\"");
     put.do_request("PUT", "/path/", "[]");
     FSL_CHECK_EQ(put.status, 412);
-    FSL_CHECK_EQ(
-        put.response->headers()["Content-Type"].value(),
-        "text/html");
+    FSL_CHECK_EQ(put.response->headers()["Content-Type"].value(), "text/html");
 }
 
 
@@ -212,8 +203,8 @@ FSL_TEST_FUNCTION(conditional_put_matches_wildcard) {
     put.do_request("PUT", "/path/", "[]");
     FSL_CHECK_EQ(put.status, 200);
     FSL_CHECK_EQ(
-        put.response->headers()["Content-Type"].value(),
-        "application/json");
+            put.response->headers()["Content-Type"].value(),
+            "application/json");
 }
 
 
@@ -223,9 +214,7 @@ FSL_TEST_FUNCTION(conditional_put_does_not_match_wildcard) {
     put.headers.set("If-Match", "*");
     put.do_request("PUT", "/path/", "[]");
     FSL_CHECK_EQ(put.status, 412);
-    FSL_CHECK_EQ(
-        put.response->headers()["Content-Type"].value(),
-        "text/html");
+    FSL_CHECK_EQ(put.response->headers()["Content-Type"].value(), "text/html");
 }
 
 
@@ -240,7 +229,8 @@ FSL_TEST_FUNCTION(patch) {
     fostlib::json expected;
     fostlib::insert(expected, "path", "location", true);
 
-    patch.do_request("PATCH", "/path/", fostlib::json::unparse(transforms, true));
+    patch.do_request(
+            "PATCH", "/path/", fostlib::json::unparse(transforms, true));
 
     FSL_CHECK_EQ(patch.status, 200);
     fostlib::jsondb::local content(*patch.dbp);
@@ -265,15 +255,18 @@ FSL_TEST_FUNCTION(delete_beanbag) {
 
 namespace {
     class no_del : public beanbag::raw_view {
-    public:
-        no_del(const fostlib::string &n)
-        : raw_view(n) {
-        }
-    protected:
-        int do_delete_check(int fallback,
-                const fostlib::json &options, const fostlib::string &pathname,
-                fostlib::http::server::request &req, const fostlib::host &host,
-                fostlib::jsondb::local &db, const fostlib::jcursor &position) const {
+      public:
+        no_del(const fostlib::string &n) : raw_view(n) {}
+
+      protected:
+        int do_delete_check(
+                int fallback,
+                const fostlib::json &options,
+                const fostlib::string &pathname,
+                fostlib::http::server::request &req,
+                const fostlib::host &host,
+                fostlib::jsondb::local &db,
+                const fostlib::jcursor &position) const {
             return 403;
         }
     };
@@ -289,23 +282,27 @@ FSL_TEST_FUNCTION(del_disallowd) {
 FSL_TEST_FUNCTION(etag_empty) {
     setup<> env;
     // null
-    FSL_CHECK_EQ(env.view.etag(fostlib::json()), "\"37a6259cc0c1dae299a7866489dff0bd\"");
+    FSL_CHECK_EQ(
+            env.view.etag(fostlib::json()),
+            "\"37a6259cc0c1dae299a7866489dff0bd\"");
 }
 
 
 FSL_TEST_FUNCTION(etag_empty_object) {
     setup<> env;
     // {}
-    FSL_CHECK_EQ(env.view.etag(fostlib::json::object_t()),
-        "\"99914b932bd37a50b983c5e7c90ae93b\"");
+    FSL_CHECK_EQ(
+            env.view.etag(fostlib::json::object_t()),
+            "\"99914b932bd37a50b983c5e7c90ae93b\"");
 }
 
 
 FSL_TEST_FUNCTION(etag_empty_array) {
     setup<> env;
     // []
-    FSL_CHECK_EQ(env.view.etag(fostlib::json::array_t()),
-        "\"d751713988987e9331980363e24189ce\"");
+    FSL_CHECK_EQ(
+            env.view.etag(fostlib::json::array_t()),
+            "\"d751713988987e9331980363e24189ce\"");
 }
 
 
@@ -328,4 +325,3 @@ FSL_TEST_FUNCTION(etag_data) {
     // {"Key1":false,"array1":[0,0,0,{"@context":"embedded"}],"key1":true}
     FSL_CHECK_EQ(env.view.etag(data), "\"46eccc62fe08b8e1b694ff0c1b5a6c56\"");
 }
-

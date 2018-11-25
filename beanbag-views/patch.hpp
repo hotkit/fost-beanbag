@@ -16,20 +16,20 @@ namespace beanbag {
 
 
         /// Transformation function that is used to build the database transactions
-        using transform_fn = std::function<void(fostlib::jsondb::local&)>;
+        using transform_fn = std::function<void(fostlib::jsondb::local &)>;
 
 
         /// Register instances of these to handle individual transformations
         class transform {
-        protected:
+          protected:
             using transform_fn = beanbag::patch::transform_fn;
 
             transform(fostlib::nliteral name);
 
-        public:
+          public:
             const fostlib::nliteral name;
 
-            virtual transform_fn operator () (const fostlib::json &) const = 0;
+            virtual transform_fn operator()(const fostlib::json &) const = 0;
         };
 
 
@@ -45,4 +45,3 @@ namespace beanbag {
 
 
 }
-

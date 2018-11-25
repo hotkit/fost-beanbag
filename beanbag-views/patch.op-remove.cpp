@@ -13,19 +13,15 @@ namespace {
 
 
     const struct remove : protected beanbag::patch::transform {
-        remove()
-        : transform("op:remove") {
-        }
+        remove() : transform("op:remove") {}
 
-        transform_fn operator () (const fostlib::json &js) const {
-            return
-                [pos = fostlib::coerce<fostlib::jcursor>(js["path"])]
-                (fostlib::jsondb::local &trans) {
-                    trans.remove(pos);
-                };
+        transform_fn operator()(const fostlib::json &js) const {
+            return [pos = fostlib::coerce<fostlib::jcursor>(js["path"])](
+                           fostlib::jsondb::local &trans) {
+                trans.remove(pos);
+            };
         }
     } c_set;
 
 
 }
-

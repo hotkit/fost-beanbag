@@ -43,10 +43,8 @@ FSL_TEST_FUNCTION(can_delete_database) {
     beanbag::jsondb_ptr db(beanbag::database(config));
     FSL_CHECK(db.get());
     FSL_CHECK(db->filename().has_value());
-    fostlib::log::debug(c_test_database)
-            ("filename", db->filename().value());
+    fostlib::log::debug(c_test_database)("filename", db->filename().value());
     FSL_CHECK(boost::filesystem::exists(db->filename().value()));
     beanbag::remove(db);
     FSL_CHECK(not boost::filesystem::exists(db->filename().value()));
 }
-

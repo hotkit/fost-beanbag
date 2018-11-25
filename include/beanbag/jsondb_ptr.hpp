@@ -18,7 +18,7 @@ namespace beanbag {
 
 
     /// Shorter name for the jsondb pointer type we use
-    typedef boost::shared_ptr< fostlib::jsondb > jsondb_ptr;
+    typedef boost::shared_ptr<fostlib::jsondb> jsondb_ptr;
 
 
 }

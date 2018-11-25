@@ -14,19 +14,15 @@ namespace {
 
 
     const struct now : protected beanbag::patch::transform {
-        now()
-        : transform("op:now") {
-        }
+        now() : transform("op:now") {}
 
-        transform_fn operator () (const fostlib::json &js) const {
-            return
-                [pos = fostlib::coerce<fostlib::jcursor>(js["path"])]
-                (fostlib::jsondb::local &trans) {
-                    trans.set(pos, fostlib::timestamp::now());
-                };
+        transform_fn operator()(const fostlib::json &js) const {
+            return [pos = fostlib::coerce<fostlib::jcursor>(js["path"])](
+                           fostlib::jsondb::local &trans) {
+                trans.set(pos, fostlib::timestamp::now());
+            };
         }
     } c_now;
 
 
 }
-

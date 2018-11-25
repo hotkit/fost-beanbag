@@ -15,4 +15,3 @@ namespace {
 
 
 const fostlib::module fostlib::c_fost_beanbag_views(c_fost_beanbag, "views");
-
