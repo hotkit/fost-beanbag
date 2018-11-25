@@ -13,13 +13,11 @@ target_link_libraries(beanbag-views beanbag fost-crypto fost-urlhandler)
 set_target_properties(beanbag-views PROPERTIES DEBUG_POSTFIX "-d")
 install(TARGETS beanbag-views LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/beanbag-raw.tests.html
-    ${CMAKE_CURRENT_BINARY_DIR}/beanbag-raw.tests.html COPYONLY)
-add_library(beanbag-views-smoke STATIC EXCLUDE_FROM_ALL
-        beanbag-raw.tests.cpp
-        beanbag-structured.tests.cpp
-        patch.tests.cpp
-    )
-target_link_libraries(beanbag-views-smoke beanbag-views)
-smoke_test(beanbag-views-smoke)
-
+if(TARGET check)
+    add_library(beanbag-views-smoke STATIC EXCLUDE_FROM_ALL
+            beanbag-structured.tests.cpp
+            patch.tests.cpp
+        )
+    target_link_libraries(beanbag-views-smoke beanbag-views)
+    smoke_test(beanbag-views-smoke)
+endif()
