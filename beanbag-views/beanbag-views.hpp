@@ -7,11 +7,11 @@
 
 
 #ifdef FOST_OS_WINDOWS
-    #define FOST_BEANBAG_DECLSPEC __declspec( dllimport )
-    #define FOST_BEANBAG_VIEWS_DECLSPEC __declspec( dllexport )
+#define FOST_BEANBAG_DECLSPEC __declspec(dllimport)
+#define FOST_BEANBAG_VIEWS_DECLSPEC __declspec(dllexport)
 #else
-    #define FOST_BEANBAG_DECLSPEC
-    #define FOST_BEANBAG_VIEWS_DECLSPEC
+#define FOST_BEANBAG_DECLSPEC
+#define FOST_BEANBAG_VIEWS_DECLSPEC
 #endif
 
 
@@ -21,4 +21,3 @@
 namespace fostlib {
     extern const module c_fost_beanbag_views;
 }
-

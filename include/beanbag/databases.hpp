@@ -29,9 +29,11 @@ namespace beanbag {
     FOST_BEANBAG_DECLSPEC
     void remove(jsondb_ptr db);
 
-    /// Insert a specified JSON blob into the databases with the specified name. Useful for testing.
+    /// Insert a specified JSON blob into the databases with the specified name.
+    /// Useful for testing.
     FOST_BEANBAG_DECLSPEC
-    jsondb_ptr test_database(const fostlib::string &name, const fostlib::json &blob);
+    jsondb_ptr test_database(
+            const fostlib::string &name, const fostlib::json &blob);
 
 
 }

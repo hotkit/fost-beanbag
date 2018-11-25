@@ -14,25 +14,21 @@ namespace {
 
 
     const struct add : protected beanbag::patch::transform {
-        add()
-        : transform("op:add") {
-        }
+        add() : transform("op:add") {}
 
-        transform_fn operator () (const fostlib::json &js) const {
-            return
-                [pos = fostlib::coerce<fostlib::jcursor>(js["path"]),
-                    amount = fostlib::coerce<int64_t>(js["amount"])]
-                (fostlib::jsondb::local &trans) {
-                    if ( trans.has_key(pos) ) {
-                        const auto current = fostlib::coerce<int64_t>(trans[pos]);
-                        trans.update(pos, current + amount);
-                    } else {
-                        trans.insert(pos, amount);
-                    }
-                };
+        transform_fn operator()(const fostlib::json &js) const {
+            return [pos = fostlib::coerce<fostlib::jcursor>(js["path"]),
+                    amount = fostlib::coerce<int64_t>(js["amount"])](
+                           fostlib::jsondb::local &trans) {
+                if (trans.has_key(pos)) {
+                    const auto current = fostlib::coerce<int64_t>(trans[pos]);
+                    trans.update(pos, current + amount);
+                } else {
+                    trans.insert(pos, amount);
+                }
+            };
         }
     } c_operation;
 
 
 }
-

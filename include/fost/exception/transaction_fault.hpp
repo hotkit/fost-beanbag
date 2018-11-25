@@ -21,11 +21,11 @@ namespace fostlib {
 
 
         class FOST_JSONDB_DECLSPEC transaction_fault : public exception {
-        public:
-            transaction_fault( const string &error ) throw ();
+          public:
+            transaction_fault(const string &error) throw();
 
-        protected:
-            wliteral const message() const throw ();
+          protected:
+            wliteral const message() const throw();
         };
 
 

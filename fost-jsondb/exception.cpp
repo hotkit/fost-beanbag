@@ -10,10 +10,10 @@
 #include <fost/exception/transaction_fault.hpp>
 
 
-fostlib::exceptions::transaction_fault::transaction_fault( const string &error ) throw ()
-: exception( error ) {
-}
-fostlib::wliteral const fostlib::exceptions::transaction_fault::message() const throw () {
+fostlib::exceptions::transaction_fault::transaction_fault(
+        const string &error) throw()
+: exception(error) {}
+fostlib::wliteral const fostlib::exceptions::transaction_fault::message() const
+        throw() {
     return L"Fault in transaction handling";
 }
-

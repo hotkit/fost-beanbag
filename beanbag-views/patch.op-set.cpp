@@ -13,18 +13,15 @@ namespace {
 
 
     const struct set : protected beanbag::patch::transform {
-        set()
-        : transform("op:set") {
-        }
+        set() : transform("op:set") {}
 
-        transform_fn operator () (const fostlib::json &js) const {
+        transform_fn operator()(const fostlib::json &js) const {
             return [pos = fostlib::coerce<fostlib::jcursor>(js["path"]),
-                        value=js["value"]](fostlib::jsondb::local &trans) {
-                    trans.set(pos, value);
-                };
+                    value = js["value"]](fostlib::jsondb::local &trans) {
+                trans.set(pos, value);
+            };
         }
     } c_set;
 
 
 }
-

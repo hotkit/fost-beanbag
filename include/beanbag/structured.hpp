@@ -17,27 +17,34 @@
 namespace beanbag {
 
 
-    class FOST_BEANBAG_VIEWS_DECLSPEC structured_view :
-            public raw_view {
+    class FOST_BEANBAG_VIEWS_DECLSPEC structured_view : public raw_view {
         fostlib::jcursor relocated(
-            fostlib::jsondb::local &db, fostlib::jcursor position) const;
-    public:
+                fostlib::jsondb::local &db, fostlib::jcursor position) const;
+
+      public:
         structured_view(const fostlib::string &name);
 
-        std::pair<fostlib::json, int> get(
-            const fostlib::json &options, const fostlib::string &pathname,
-            fostlib::http::server::request &req, const fostlib::host &,
-            fostlib::jsondb::local &db, const fostlib::jcursor &position) const;
+        std::pair<fostlib::json, int>
+                get(const fostlib::json &options,
+                    const fostlib::string &pathname,
+                    fostlib::http::server::request &req,
+                    const fostlib::host &,
+                    fostlib::jsondb::local &db,
+                    const fostlib::jcursor &position) const;
 
-        int put(
-            const fostlib::json &options, const fostlib::string &pathname,
-            fostlib::http::server::request &req, const fostlib::host &,
-            fostlib::jsondb::local &db, const fostlib::jcursor &position) const;
+        int put(const fostlib::json &options,
+                const fostlib::string &pathname,
+                fostlib::http::server::request &req,
+                const fostlib::host &,
+                fostlib::jsondb::local &db,
+                const fostlib::jcursor &position) const;
 
-        int del(
-            const fostlib::json &options, const fostlib::string &pathname,
-            fostlib::http::server::request &req, const fostlib::host &,
-            fostlib::jsondb::local &db, const fostlib::jcursor &position) const;
+        int del(const fostlib::json &options,
+                const fostlib::string &pathname,
+                fostlib::http::server::request &req,
+                const fostlib::host &,
+                fostlib::jsondb::local &db,
+                const fostlib::jcursor &position) const;
     };
 
 

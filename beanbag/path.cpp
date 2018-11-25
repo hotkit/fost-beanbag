@@ -15,15 +15,12 @@
 fostlib::jcursor beanbag::path_to_jcursor(const fostlib::string &pathname) {
     fostlib::split_type path = fostlib::split(pathname, "/");
     fostlib::jcursor position;
-    for ( fostlib::split_type::const_iterator part(path.begin());
-            part != path.end(); ++part ) {
+    for (fostlib::split_type::const_iterator part(path.begin());
+         part != path.end(); ++part) {
         try {
             int index = fostlib::coerce<int>(*part);
             position /= index;
-        } catch ( fostlib::exceptions::parse_error& ) {
-            position /= *part;
-        }
+        } catch (fostlib::exceptions::parse_error &) { position /= *part; }
     }
     return position;
 }
-
