@@ -106,7 +106,7 @@ namespace {
         if (not which_name) {
             return fostlib::coerce<fostlib::string>(which["name"]);
         } else {
-            which_name.value();
+            return which_name.value();
         }
     }
     beanbag::jsondb_ptr search_databases(fostlib::string const &name, fostlib::json const &which) {
