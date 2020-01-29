@@ -33,9 +33,8 @@ namespace {
         is no room then the LRU is demoted to cold and the cold is emptied and
         used as the new LRU.
 
-        When a beanbag is loaded the LRU is searched first, then the cold store
-        and finally the `g_databases`. If not already in the LRU it will be placed
-        in the LRU.
+        When a beanbag is loaded the it is only necessary to search `g_databases`
+        because all databases must be present in that data structure.
 
         This algorithm ensures we don't need to sort the LRU by last access to
         push out the least recently used ones, but it will have the same effect
