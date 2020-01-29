@@ -192,7 +192,7 @@ namespace {
             logger("status", "Adding to LRU");
             g_lru.push_back({name, dbp});
             logger("lru", "size", g_lru.size());
-            if(g_lru.size() > 32u) {
+            if(g_lru.size() > 10u) {
                 std::swap(g_lru, g_cold);
                 g_lru.clear();
             }
