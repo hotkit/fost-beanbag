@@ -40,7 +40,8 @@ namespace {
         push out the least recently used ones, but it will have the same effect
         based on how often databases are loaded.
      */
-    using cache_type = std::vector<std::pair<fostlib::string, boost::shared_ptr<fostlib::jsondb>>>;
+    using cache_type = std::vector<
+            std::pair<fostlib::string, boost::shared_ptr<fostlib::jsondb>>>;
     cache_type g_lru, g_cold;
     /**
         In order to ensure safey of manipulating the caches we need to have a
@@ -67,7 +68,8 @@ namespace {
         Search in `g_databases` for the database and load from disk if it can't
         be recovered from memory.
         */
-    beanbag::jsondb_ptr search_databases(fostlib::string const &, fostlib::json const &);
+    beanbag::jsondb_ptr
+            search_databases(fostlib::string const &, fostlib::json const &);
     void register_to_lru(fostlib::string const &, beanbag::jsondb_ptr);
 }
 
@@ -108,13 +110,15 @@ namespace {
             return which_name.value();
         }
     }
-    beanbag::jsondb_ptr search_databases(fostlib::string const &name, fostlib::json const &which) {
+    beanbag::jsondb_ptr search_databases(
+            fostlib::string const &name, fostlib::json const &which) {
         try {
             beanbag::jsondb_ptr cptr;
             auto make = [&which, &cptr]() {
                 if (!which.has_key("filepath"))
                     throw fostlib::exceptions::null(
-                            "Beanbag configurations must specify a file path in "
+                            "Beanbag configurations must specify a file path "
+                            "in "
                             "the 'filepath' member");
                 fostlib::json tplate;
                 if (which.has_key("template")) {
@@ -128,7 +132,8 @@ namespace {
                     ++p_loaded;
                     ++p_held;
                     cptr = boost::make_shared<fostlib::jsondb>(
-                            fostlib::coerce<fostlib::string>(which["filepath"]));
+                            fostlib::coerce<fostlib::string>(
+                                    which["filepath"]));
                     return cptr;
                 }
                 // With a template of some sort we can create a new disk file
@@ -168,12 +173,14 @@ namespace {
                     const auto old = p_bound.value();
                     const auto now = (p_bound += 16);
                     fostlib::log::debug(beanbag::c_beanbag)(
-                            "", "Clearing out old beanbags -- increasing bound")(
+                            "",
+                            "Clearing out old beanbags -- increasing bound")(
                             "bound", "old", old)("bound", "new", now)(
                             "size", "old", size)("size", "new", left);
                 } else {
                     fostlib::log::debug(beanbag::c_beanbag)(
-                            "", "Clearing out old beanbags -- keeping old bound")(
+                            "",
+                            "Clearing out old beanbags -- keeping old bound")(
                             "size", "old", size)("size", "new", left);
                 }
             }
@@ -188,11 +195,12 @@ namespace {
         auto logger = fostlib::log::debug(beanbag::c_beanbag);
         logger("", "register_to_lru");
         logger("name", name);
-        if (std::find(g_lru.begin(), g_lru.end(), std::pair{name, dbp}) == g_lru.end()) {
+        if (std::find(g_lru.begin(), g_lru.end(), std::pair{name, dbp})
+            == g_lru.end()) {
             logger("status", "Adding to LRU");
             g_lru.push_back({name, dbp});
             logger("lru", "size", g_lru.size());
-            if(g_lru.size() > 10u) {
+            if (g_lru.size() > 10u) {
                 std::swap(g_lru, g_cold);
                 g_lru.clear();
             }
