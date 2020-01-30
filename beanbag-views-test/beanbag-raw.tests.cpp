@@ -1,5 +1,5 @@
 /**
-    Copyright 2012-2019 Red Anchor Trading Co. Ltd.
+    Copyright 2012-2020 Red Anchor Trading Co. Ltd.
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -148,7 +148,7 @@ FSL_TEST_FUNCTION(put_to_new_path) {
 FSL_TEST_FUNCTION(put_with_unicode) {
     setup<> put;
     put.headers.set("Accept", "application/json");
-    put.do_request("PUT", "/new/path/4/", fostlib::string(L"\"\\u2014\""));
+    put.do_request("PUT", "/new/path/4/", fostlib::string{u"\"\\u2014\""});
     FSL_CHECK_EQ(put.status, 201);
     FSL_CHECK_EQ(
             put.response->headers()["Content-Type"].value(),
@@ -159,7 +159,7 @@ FSL_TEST_FUNCTION(put_with_unicode) {
     boost::shared_ptr<fostlib::jsondb> db(
             beanbag::database(put.options["database"]));
     fostlib::jsondb::local content(*db);
-    FSL_CHECK_EQ(content["new"]["path"][4], fostlib::json(L"\x2014"));
+    FSL_CHECK_EQ(content["new"]["path"][4], fostlib::json(u"\x2014"));
 }
 
 
