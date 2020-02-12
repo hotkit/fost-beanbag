@@ -148,7 +148,7 @@ FSL_TEST_FUNCTION(put_to_new_path) {
 FSL_TEST_FUNCTION(put_with_unicode) {
     setup<> put;
     put.headers.set("Accept", "application/json");
-    put.do_request("PUT", "/new/path/4/", fostlib::string{u"\"\\u2014\""});
+    put.do_request("PUT", "/new/path/4/", fostlib::string{L"\"\\u2014\""});
     FSL_CHECK_EQ(put.status, 201);
     FSL_CHECK_EQ(
             put.response->headers()["Content-Type"].value(),
