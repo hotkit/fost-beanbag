@@ -1,5 +1,5 @@
 /**
-    Copyright 2007-2019 Red Anchor Trading Co. Ltd.
+    Copyright 2007-2020 Red Anchor Trading Co. Ltd.
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -103,15 +103,14 @@ FSL_TEST_FUNCTION(update) {
     /*
         We need something in the object to start with
     */
-    FSL_CHECK_NOTHROW(loc1.insert(jcursor(L"hello"), json(L"world")).commit());
+    FSL_CHECK_NOTHROW(loc1.insert(jcursor("hello"), json("world")).commit());
     // Change the value to something new
-    FSL_CHECK_NOTHROW(
-            loc1.update(jcursor(L"hello"), json(L"goodbye")).commit());
-    FSL_CHECK_EQ(loc1[L"hello"], json(L"goodbye"));
+    FSL_CHECK_NOTHROW(loc1.update(jcursor("hello"), json("goodbye")).commit());
+    FSL_CHECK_EQ(loc1["hello"], json("goodbye"));
 
     // Try to update a non-existent location
     FSL_CHECK_EXCEPTION(
-            loc1.update(jcursor(L"empty"), json(L"won't work")),
+            loc1.update(jcursor("empty"), json("won't work")),
             exceptions::null &);
 }
 
@@ -121,11 +120,11 @@ FSL_TEST_FUNCTION(set) {
     jsondb::local loc1(database);
 
     // We need something in the object to start with
-    FSL_CHECK_NOTHROW(loc1.set(jcursor(L"hello"), L"world").commit());
+    FSL_CHECK_NOTHROW(loc1.set(jcursor("hello"), "world").commit());
 
     // Change the value to something new
-    FSL_CHECK_NOTHROW(loc1.set(jcursor(L"hello"), json(L"goodbye")).commit());
-    FSL_CHECK_EQ(loc1[L"hello"], json(L"goodbye"));
+    FSL_CHECK_NOTHROW(loc1.set(jcursor("hello"), json("goodbye")).commit());
+    FSL_CHECK_EQ(loc1["hello"], json("goodbye"));
 }
 
 
@@ -136,11 +135,11 @@ FSL_TEST_FUNCTION(remove) {
     /*
         We need something in the object to start with
     */
-    FSL_CHECK_NOTHROW(local.insert(jcursor(L"hello"), json(L"nightclub"))
-                              .insert(jcursor(L"goodbye"), json(L"country"))
+    FSL_CHECK_NOTHROW(local.insert(jcursor("hello"), json("nightclub"))
+                              .insert(jcursor("goodbye"), json("country"))
                               .commit());
-    FSL_CHECK_EQ(local[L"hello"], json(L"nightclub"));
-    FSL_CHECK_EQ(local[L"goodbye"], json(L"country"));
+    FSL_CHECK_EQ(local["hello"], json("nightclub"));
+    FSL_CHECK_EQ(local["goodbye"], json("country"));
 
     // We must have at least one level of path in the jcursor
     FSL_CHECK_EXCEPTION(
@@ -148,14 +147,14 @@ FSL_TEST_FUNCTION(remove) {
 
     // Deleting from a non-existent key will fail straight away
     FSL_CHECK_EXCEPTION(
-            local.remove(jcursor(L"not a key")), exceptions::json_error &);
+            local.remove(jcursor("not a key")), exceptions::json_error &);
 
     // Let's delete and update
-    FSL_CHECK_NOTHROW(local.remove(jcursor(L"goodbye"))
-                              .update(jcursor(L"hello"), L"world")
+    FSL_CHECK_NOTHROW(local.remove(jcursor("goodbye"))
+                              .update(jcursor("hello"), "world")
                               .commit());
-    FSL_CHECK_EQ(local[L"hello"], json(L"world"));
-    FSL_CHECK(!local.has_key(L"goodbye"));
+    FSL_CHECK_EQ(local["hello"], json("world"));
+    FSL_CHECK(!local.has_key("goodbye"));
 }
 
 
@@ -163,11 +162,11 @@ FSL_TEST_FUNCTION(remove_fails_after_change) {
     jsondb database;
     jsondb::local loc1(database);
 
-    FSL_CHECK_NOTHROW(loc1.insert(jcursor(L"hello"), json(L"nightclub"))
-                              .insert(jcursor(L"goodbye"), json(L"country"))
+    FSL_CHECK_NOTHROW(loc1.insert(jcursor("hello"), json("nightclub"))
+                              .insert(jcursor("goodbye"), json("country"))
                               .commit());
-    FSL_CHECK_EQ(loc1[L"hello"], json(L"nightclub"));
-    FSL_CHECK_EQ(loc1[L"goodbye"], json(L"country"));
+    FSL_CHECK_EQ(loc1["hello"], json("nightclub"));
+    FSL_CHECK_EQ(loc1["goodbye"], json("country"));
 
     jsondb::local loc2(database), loc3(database);
     FSL_CHECK_NOTHROW(loc1.update(jcursor("goodbye"), "world").commit());
@@ -190,8 +189,8 @@ FSL_TEST_FUNCTION(transformation) {
     jsondb::local loc(database);
     FSL_CHECK_EQ(loc.transformation(transformation_fn), 1u);
     FSL_CHECK_EQ(transformation_run, 0u);
-    loc.insert(jcursor(L"hello"), json(L"nightclub"))
-            .insert(jcursor(L"goodbye"), json(L"country"))
+    loc.insert(jcursor("hello"), json("nightclub"))
+            .insert(jcursor("goodbye"), json("country"))
             .commit();
     FSL_CHECK_EQ(transformation_run, 1u);
     loc.update(jcursor("goodbye"), "world").commit();
@@ -209,8 +208,8 @@ FSL_TEST_FUNCTION(pre_commit_transaction) {
     pre_commit_run = 0;
     FSL_CHECK_EQ(loc.pre_commit(pre_commit_fn), 1u);
     FSL_CHECK_EQ(pre_commit_run, 0u);
-    loc.insert(jcursor(L"hello"), json(L"nightclub"))
-            .insert(jcursor(L"goodbye"), json(L"country"))
+    loc.insert(jcursor("hello"), json("nightclub"))
+            .insert(jcursor("goodbye"), json("country"))
             .commit();
     FSL_CHECK_EQ(pre_commit_run, 1u);
     // The commit has cleared out the pre-commit hooks
@@ -229,8 +228,8 @@ FSL_TEST_FUNCTION(post_commit_db) {
     FSL_CHECK_EQ(database.post_commit(post_commit_fn), 1u);
     FSL_CHECK_EQ(post_commit_run, 0u);
     jsondb::local loc(database);
-    loc.insert(jcursor(L"hello"), json(L"nightclub"))
-            .insert(jcursor(L"goodbye"), json(L"country"))
+    loc.insert(jcursor("hello"), json("nightclub"))
+            .insert(jcursor("goodbye"), json("country"))
             .commit();
     FSL_CHECK_EQ(post_commit_run, 1u);
     loc.update(jcursor("goodbye"), "world").commit();
@@ -242,8 +241,8 @@ FSL_TEST_FUNCTION(post_commit_transaction) {
     post_commit_run = 0;
     FSL_CHECK_EQ(loc.post_commit(post_commit_fn), 1u);
     FSL_CHECK_EQ(post_commit_run, 0u);
-    loc.insert(jcursor(L"hello"), json(L"nightclub"))
-            .insert(jcursor(L"goodbye"), json(L"country"))
+    loc.insert(jcursor("hello"), json("nightclub"))
+            .insert(jcursor("goodbye"), json("country"))
             .commit();
     FSL_CHECK_EQ(post_commit_run, 1u);
     // The commit has cleared out the post-commit hooks
