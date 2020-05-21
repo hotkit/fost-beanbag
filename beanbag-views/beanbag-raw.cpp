@@ -1,5 +1,5 @@
 /**
-    Copyright 2012-2019 Red Anchor Trading Co. Ltd.
+    Copyright 2012-2020 Red Anchor Trading Co. Ltd.
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -56,7 +56,7 @@ std::pair<boost::shared_ptr<fostlib::mime>, int> beanbag::raw_view::operator()(
     } else {
         boost::shared_ptr<fostlib::mime> response(new fostlib::text_body(
                 req.method() + " not supported", response_headers,
-                L"text/plain"));
+                "text/plain"));
         return std::make_pair(response, 403);
     }
     fostlib::insert(log, "status-code", data.second);
@@ -250,7 +250,7 @@ boost::shared_ptr<fostlib::mime> beanbag::raw_view::json_response(
         const fostlib::jcursor &position_jc) const {
     headers.set("ETag", etag(body));
     return boost::shared_ptr<fostlib::mime>(new fostlib::text_body(
-            fostlib::json::unparse(body, true), headers, L"application/json"));
+            fostlib::json::unparse(body, true), headers, "application/json"));
 }
 
 
@@ -292,5 +292,5 @@ boost::shared_ptr<fostlib::mime> beanbag::raw_view::html_response(
         headers.set("ETag", "\"" + fostlib::md5(html) + "\"");
     }
     return boost::shared_ptr<fostlib::mime>(
-            new fostlib::text_body(html, headers, L"text/html"));
+            new fostlib::text_body(html, headers, "text/html"));
 }

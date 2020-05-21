@@ -1,5 +1,5 @@
 /**
-    Copyright 2008-2019 Red Anchor Trading Co. Ltd.
+    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -45,25 +45,23 @@ const bool c_jsondb_pretty_print_default = true;
 #else
 const bool c_jsondb_pretty_print_default = false;
 #endif
-const setting<bool> fostlib::c_jsondb_pretty_print(
-        L"fost-orm/Cpp/fost-jsondb/blobdb.cpp",
-        L"JSON DB",
+const setting<bool> fostlib::c_jsondb_pretty_print{
+        "fost-orm/Cpp/fost-jsondb/blobdb.cpp",
+        "JSON DB",
         "Pretty print database files",
         c_jsondb_pretty_print_default,
-        true);
+        true};
 
 
-const setting<string> fostlib::c_jsondb_root(
-        L"fost-orm/Cpp/fost-jsondb/blobdb.cpp",
-        L"JSON DB",
+const setting<string> fostlib::c_jsondb_root{
+        "fost-orm/Cpp/fost-jsondb/blobdb.cpp",
+        "JSON DB",
         "Default file location",
         "",
-        true);
+        true};
 
 
 namespace {
-    //     std::recursive_mutex g_mutex; // Time before switching this back 326
-    //     mins
     using lock_type = std::unique_lock<std::mutex>;
 
     const bfs::path ext_backup(".backup");
@@ -159,7 +157,7 @@ namespace {
     void do_update(json &db, const jcursor &k, const json &v, const json &old) {
         try {
             if (db.has_key(k) && db[k] == old) {
-                k(db) = v;
+                k.set(db, v);
             } else if (db.has_key(k) && db[k] != old) {
                 exceptions::transaction_fault error(
                         "The value being updated is not the value "
@@ -168,8 +166,8 @@ namespace {
                 fostlib::insert(error.data(), "got", db[k]);
                 throw error;
             } else {
-                throw exceptions::null(
-                        L"This key position is empty so cannot be updated");
+                throw exceptions::null{
+                        "This key position is empty so cannot be updated"};
             }
         } catch (exceptions::exception &error) {
             fostlib::insert(error.data(), "path", k);
@@ -177,21 +175,23 @@ namespace {
         }
     }
     void do_set(json &db, const jcursor &k, const json &v) {
-        if (db.has_key(k))
-            k(db) = v;
-        else
+        if (db.has_key(k)) {
+            k.set(db, v);
+        } else {
             k.insert(db, v);
+        }
     }
     void do_remove(json &db, const jcursor &k, const json &old) {
-        if (db.has_key(k) && db[k] == old)
+        if (db.has_key(k) && db[k] == old) {
             k.del_key(db);
-        else if (db.has_key(k) && db[k] != old)
-            throw exceptions::transaction_fault(
-                    L"The value being deleted is not the value that was meant "
-                    L"to be deleted");
-        else
-            throw exceptions::null(
-                    L"This key position has already been deleted");
+        } else if (db.has_key(k) && db[k] != old) {
+            throw exceptions::transaction_fault{
+                    "The value being deleted is not the value that was meant "
+                    "to be deleted"};
+        } else {
+            throw exceptions::null{
+                    "This key position has already been deleted"};
+        }
     }
 }
 
@@ -213,8 +213,8 @@ fostlib::jsondb::local::local(local &&l)
 
 void fostlib::jsondb::local::rebase(jcursor pos) {
     if (m_operations.size() || m_pre_commit.size() || m_post_commit.size()) {
-        throw fostlib::exceptions::not_implemented(
-                __FUNCTION__, "This transaction has already been used");
+        throw fostlib::exceptions::not_implemented{
+                __PRETTY_FUNCTION__, "This transaction has already been used"};
     }
     m_position = std::move(pos);
     refresh();
