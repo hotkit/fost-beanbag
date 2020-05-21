@@ -1,5 +1,5 @@
 /**
-    Copyright 2012-2019 Red Anchor Trading Co. Ltd.
+    Copyright 2012-2020 Red Anchor Trading Co. Ltd.
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -13,58 +13,50 @@
 #include <fost/unicode>
 
 
-using namespace fostlib;
-namespace bfs = boost::filesystem;
-
-
 FSL_MAIN(
-        L"fost-jsondb-test-backup",
-        L"fost-jsondb-test-backup\n"
-        L"Test the backup process for Fost 4 JSON blobs\n"
-        L"Copyright (c) 2008-2014, Felspar Co. Ltd.")
+        "fost-jsondb-test-backup",
+        "fost-jsondb-test-backup\n"
+        "Test the backup process for Fost 4 JSON blobs\n"
+        "Copyright (c) 2008-2020 Red Anchor Trading Co. Ltd.")
 (fostlib::ostream &out, fostlib::arguments &args) {
-    const bfs::wpath directory(fostlib::unique_filename());
-    bfs::create_directories(directory);
+    fostlib::fs::path const directory(fostlib::unique_filename());
+    fostlib::fs::create_directories(directory);
 
-    const bfs::wpath backup(directory / L"filename.backup");
-    const bfs::wpath temp(directory / L"filename.tmp");
-    const bfs::wpath filename(directory / L"filename.txt");
+    const fostlib::fs::path backup(directory / "filename.backup");
+    const fostlib::fs::path temp(directory / "filename.tmp");
+    const fostlib::fs::path filename(directory / "filename.txt");
 
-    const string old_backup("old backup\n");
-    const string original("original contents\n");
-    const string updated("updated contents\n");
+    const fostlib::string old_backup("old backup\n");
+    const fostlib::string original("original contents\n");
+    const fostlib::string updated("updated contents\n");
 
-    if (bfs::exists(backup)) bfs::remove(backup);
-    if (bfs::exists(temp)) bfs::remove(temp);
-    if (bfs::exists(filename)) bfs::remove(filename);
+    if (fostlib::fs::exists(backup)) fostlib::fs::remove(backup);
+    if (fostlib::fs::exists(temp)) fostlib::fs::remove(temp);
+    if (fostlib::fs::exists(filename)) fostlib::fs::remove(filename);
 
-    FSL_CHECK_NOTHROW(utf::save_file(backup, old_backup));
+    FSL_CHECK_NOTHROW(fostlib::utf::save_file(backup, old_backup));
 
-    FSL_CHECK_NOTHROW(utf::save_file(filename, original));
-    string read1(utf::load_file(filename));
+    FSL_CHECK_NOTHROW(fostlib::utf::save_file(filename, original));
+    fostlib::string read1(fostlib::utf::load_file(filename));
     FSL_CHECK_EQ(read1, original);
 
-    FSL_CHECK_NOTHROW(if (bfs::exists(backup)) bfs::remove(backup);
-                      bfs::create_hard_link(filename, backup));
-    string read2(utf::load_file(backup));
+    FSL_CHECK_NOTHROW(if (fostlib::fs::exists(backup)) fostlib::fs::remove(backup);
+                      fostlib::fs::create_hard_link(filename, backup));
+    fostlib::string read2(fostlib::utf::load_file(backup));
     FSL_CHECK_EQ(read2, original);
 
-    FSL_CHECK_NOTHROW(utf::save_file(temp, updated));
-    string read3(utf::load_file(temp));
+    FSL_CHECK_NOTHROW(fostlib::utf::save_file(temp, updated));
+    fostlib::string read3(fostlib::utf::load_file(temp));
     FSL_CHECK_EQ(read3, updated);
-    string read4(utf::load_file(filename));
+    fostlib::string read4(fostlib::utf::load_file(filename));
     FSL_CHECK_EQ(read4, original);
-    string read5(utf::load_file(backup));
+    fostlib::string read5(fostlib::utf::load_file(backup));
     FSL_CHECK_EQ(read5, original);
 
-#if (BOOST_VERSION_MAJOR < 46)
-    if (bfs::exists(filename)) bfs::remove(filename);
-#endif
-
-    FSL_CHECK_NOTHROW(bfs::rename(temp, filename));
-    string read6(utf::load_file(filename));
+    FSL_CHECK_NOTHROW(fostlib::fs::rename(temp, filename));
+    fostlib::string read6(fostlib::utf::load_file(filename));
     FSL_CHECK_EQ(read6, updated);
-    string read7(utf::load_file(backup));
+    fostlib::string read7(fostlib::utf::load_file(backup));
     FSL_CHECK_EQ(read7, original);
 
     return 0;
