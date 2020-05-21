@@ -40,7 +40,8 @@ FSL_MAIN(
     fostlib::string read1(fostlib::utf::load_file(filename));
     FSL_CHECK_EQ(read1, original);
 
-    FSL_CHECK_NOTHROW(if (fostlib::fs::exists(backup)) fostlib::fs::remove(backup);
+    FSL_CHECK_NOTHROW(if (fostlib::fs::exists(backup))
+                              fostlib::fs::remove(backup);
                       fostlib::fs::create_hard_link(filename, backup));
     fostlib::string read2(fostlib::utf::load_file(backup));
     FSL_CHECK_EQ(read2, original);

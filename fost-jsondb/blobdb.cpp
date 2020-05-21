@@ -46,19 +46,13 @@ const bool c_jsondb_pretty_print_default = true;
 const bool c_jsondb_pretty_print_default = false;
 #endif
 const setting<bool> fostlib::c_jsondb_pretty_print{
-        "fost-orm/Cpp/fost-jsondb/blobdb.cpp",
-        "JSON DB",
-        "Pretty print database files",
-        c_jsondb_pretty_print_default,
-        true};
+        "fost-orm/Cpp/fost-jsondb/blobdb.cpp", "JSON DB",
+        "Pretty print database files", c_jsondb_pretty_print_default, true};
 
 
 const setting<string> fostlib::c_jsondb_root{
-        "fost-orm/Cpp/fost-jsondb/blobdb.cpp",
-        "JSON DB",
-        "Default file location",
-        "",
-        true};
+        "fost-orm/Cpp/fost-jsondb/blobdb.cpp", "JSON DB",
+        "Default file location", "", true};
 
 
 namespace {

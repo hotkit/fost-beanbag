@@ -28,7 +28,8 @@ FSL_MAIN(
         "Test the file handling for Fost 4 JSON blobs\n"
         "Copyright (c) 2005-Red Anchor Trading Co. Ltd.")
 (fostlib::ostream &out, fostlib::arguments &args) {
-    fostlib::fs::path dbname(fostlib::coerce<fostlib::fs::path>(fostlib::guid()));
+    fostlib::fs::path dbname(
+            fostlib::coerce<fostlib::fs::path>(fostlib::guid()));
 
     // Put an empty JSON blob in the database, then insert some data
     {
